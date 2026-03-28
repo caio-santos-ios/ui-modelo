@@ -17,6 +17,8 @@ export const DataTableCard = ({pagination, columns, changePage, actions}: TProps
         switch(type) {
             case "date":
                 return maskDate(value);
+            case "dateTime":
+                return maskDate(value, "seconds");
             default:
                 return value;
         }   

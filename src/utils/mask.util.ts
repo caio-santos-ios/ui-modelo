@@ -1,18 +1,32 @@
-export const maskDate = (dateString: string) => {
-    if (!dateString) return "";
+export const maskDate = (
+  dateString: string, 
+  format: "onlyDate" | "time" | "seconds" = "onlyDate"
+) => {
+  if (!dateString) return "";
 
-    const [dateArray] = dateString.split("T");
-    const [year, month, day ] = dateArray.split("-");
+  const arrayDate = dateString.split("T")[0].split("-");
+  const date = new Date(dateString);
+  
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  const formattedDate = `${arrayDate[2]}/${arrayDate[1]}/${arrayDate[0]}`;
 
-    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  const h = String(date.getHours()).padStart(2, "0");
+  const m = String(date.getMinutes()).padStart(2, "0");
+  const s = String(date.getSeconds()).padStart(2, "0");
 
-    return date.toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-    });
-}
-
+  switch (format) {
+    case "time":
+      return `${formattedDate} ${h}:${m}`;
+    case "seconds":
+      return `${formattedDate} ${h}:${m}:${s}`;
+    case "onlyDate":
+      return formattedDate;
+    default:
+      return formattedDate;
+  }
+};
 export const maskPhone = (event: React.ChangeEvent<HTMLInputElement>) => {
   let value = event.target.value.replace(/\D/g, '');
 
