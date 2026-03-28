@@ -8,7 +8,7 @@ type TProps = {
 
 const Pagination = ({currentPage, totalData, totalPages, totalCount, onPageChange}: TProps) => {
   return (
-    <div className="flex justify-between">
+    <div className="md:flex md:justify-between">
       <h4 className="text-gray-700 dark:text-gray-400">Mostrando {totalData} de {totalCount}</h4>
       <div className="flex items-center">
 
