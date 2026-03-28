@@ -1,4 +1,4 @@
-export type TProfilePermission = {
+export type TProfileUser = {
     id?: string;
     code: string;
     name: string;
@@ -7,7 +7,7 @@ export type TProfilePermission = {
     modules: TModule[];
 }
 
-export const ResetProfilePermission: TProfilePermission = {
+export const ResetProfileUser: TProfileUser = {
     id: "",
     name: "",
     code: "",

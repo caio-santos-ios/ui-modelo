@@ -9,7 +9,8 @@ export const menuRoutinesAtom = atom<NavItem[]>([
     authorized: false,
     code: "A",
     subItems: [
-      {name: "Usuários", path: "/master-data/users", code: "A1", pro: false, authorized: false },
+      {name: "Usuários",          path: "/master-data/users",          code: "A1", pro: false, authorized: false },
+      {name: "Perfil de Usuário", path: "/master-data/profile-users",  code: "A2", pro: false, authorized: false },
     ]
   }
 ]);

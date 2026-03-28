@@ -1,6 +1,17 @@
+"use client";
+
+import { loadingAtom } from "@/jotai/global/loading.jotai";
+import { useAtom } from "jotai";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function NotFound() {
+  const [_, setLoading] = useAtom(loadingAtom);
+
+  useEffect(() => {
+    setLoading(false);
+  }, []);
+
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden z-1">
       <div className="mx-auto w-full text-center">

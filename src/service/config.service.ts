@@ -71,20 +71,20 @@ export const resolveResponse = (response: any) => {
 };
 
 const handleApiErrors = (error: any) => {
-    if (error.response && error.response.status === 400) {
-        const data = error.response.data;
-        
-        if (data.errors && Array.isArray(data.errors)) {
-          return toast.warn(data.errors[0].message, {theme: 'colored'}); 
-        }
-        
-        if (data.errors && typeof data.errors === 'object') {
-          const firstKey = Object.keys(data.errors)[0];
-          return toast.warn(data.errors[firstKey][0], {theme: 'colored'}); 
-        }
+  if (error.response && error.response.status === 400) {
+    const data = error.response.data;
+    
+    if (data.errors && Array.isArray(data.errors)) {
+      return toast.warn(data.errors[0].message, {theme: 'colored'}); 
     }
+    
+    if (data.errors && typeof data.errors === 'object') {
+      const firstKey = Object.keys(data.errors)[0];
+      return toast.warn(data.errors[firstKey][0], {theme: 'colored'}); 
+    }
+  }
 
-    return error.message || "Ocorreu um erro inesperado. Tente novamente.";
+  return error.message || "Ocorreu um erro inesperado. Tente novamente.";
 };
 
 export const saveLocalStorage = (data: TDataLocal, hasToken: boolean = false) => {
@@ -97,33 +97,21 @@ export const saveLocalStorage = (data: TDataLocal, hasToken: boolean = false) =>
     localStorage.setItem("telemovviMaster", data.master);
   };
 
-  localStorage.setItem("telemovviExpirationDate", data.expirationDate);
-  localStorage.setItem("telemovviTypePlan", data.typePlan);
-  localStorage.setItem("telemovviSubscriberPlan", data.subscriberPlan);
   localStorage.setItem("telemovviName", data.name);
   localStorage.setItem("telemovviEmail", data.email);
   localStorage.setItem("telemovviAdmin", data.admin);
   localStorage.setItem("telemovviPhoto", data.photo);
-  localStorage.setItem("telemovviLogoCompany", data.logoCompany);
-  localStorage.setItem("telemovviNameCompany", data.nameCompany);
-  localStorage.setItem("telemovviNameStore", data.nameStore);
   localStorage.setItem("telemovviModules", JSON.stringify(data.modules));
 };
 
 export const removeLocalStorage = () => { 
   localStorage.removeItem("telemovviMaster");
-  localStorage.removeItem("telemovviExpirationDate");
-  localStorage.removeItem("telemovviTypePlan");
-  localStorage.removeItem("telemovviSubscriberPlan");
   localStorage.removeItem("telemovviToken");
   localStorage.removeItem("telemovviRefreshToken");
   localStorage.removeItem("telemovviName");
   localStorage.removeItem("telemovviEmail");
   localStorage.removeItem("telemovviAdmin");
   localStorage.removeItem("telemovviPhoto");
-  localStorage.removeItem("telemovviLogoCompany");
-  localStorage.removeItem("telemovviNameCompany");
-  localStorage.removeItem("telemovviNameStore");
   localStorage.removeItem("telemovviModules");
 };
 
@@ -144,4 +132,4 @@ export const resolveParamsRequest = (params: any, prefix = '') => {
   }
 
   return _params;
-}
+};
