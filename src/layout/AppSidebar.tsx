@@ -8,7 +8,6 @@ import { ChevronDownIcon } from "../icons/index";
 import { useAtom } from "jotai";
 import { iconAtom } from "@/jotai/global/icons.jotai";
 import { userAdmin } from "@/jotai/auth/auth.jotai";
-import { CompanyLogo } from "@/components/logoCompany/LogoCompany";
 import { NavItem } from "@/types/global/menu.type";
 import { menuRoutinesAtom } from "@/jotai/global/menu.jotai";
 import { Logo } from "@/components/logo/Logo";
@@ -94,9 +93,7 @@ const AppSidebar: React.FC = () => {
       <div className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
         <Link href={`${isAdmin ? '/dashboard' : '/master-data/profile'}`} className="w-full flex justify-center">
           {isExpanded || isHovered || isMobileOpen ? (
-            <div className="hidden lg:flex">
-              <Logo width={80} height={80} />
-            </div>
+            <Logo width={80} height={80} />
           ) : (
             <Logo width={40} height={40} />
           )}
