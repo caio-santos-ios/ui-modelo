@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function LoggerPage() {
   return (
     <div>
-      <PageBreadcrumb pageIcon="MdArchive" pageTitle="Logs" pageSubTitle="Auditoria" />
+      <PageBreadcrumb pageIcon="MdArchive" pageTitle="Logs" pageSubTitle="Configurações" />
       <LoggerTable />
     </div>
   );
