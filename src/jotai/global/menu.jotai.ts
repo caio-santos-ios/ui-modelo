@@ -4,13 +4,22 @@ import { atom } from "jotai";
 export const menuOpenAtom = atom<boolean>(false);
 export const menuRoutinesAtom = atom<NavItem[]>([
   {
-    icon: "FiGrid",
-    name: "Cadastros",
+    icon: "FiSettings",
+    name: "Configurações",
     authorized: false,
     code: "A",
     subItems: [
-      {name: "Usuários",          path: "/master-data/users",          code: "A1", pro: false, authorized: false },
-      {name: "Perfil de Usuário", path: "/master-data/profile-users",  code: "A2", pro: false, authorized: false },
+      {name: "Logs",          path: "/settings/logger",          code: "A1", pro: false, authorized: false },
     ]
-  }
+  },
+  {
+    icon: "FiGrid",
+    name: "Cadastros",
+    authorized: false,
+    code: "B",
+    subItems: [
+      {name: "Usuários",          path: "/master-data/users",          code: "B1", pro: false, authorized: false },
+      {name: "Perfil de Usuário", path: "/master-data/profile-users",  code: "B2", pro: false, authorized: false },
+    ]
+  },
 ]);

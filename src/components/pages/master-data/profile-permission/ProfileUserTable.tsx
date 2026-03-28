@@ -24,8 +24,8 @@ const columns: TDataTableColumns[] = [
   {title: "Data de Criação", label: "createdAt", type: "date"},
 ]
 
-const module = "A";
-const routine = "A2";
+const module = "B";
+const routine = "B2";
 
 export default function ProfileUserTable() {
   const [_, setLoading] = useAtom(loadingAtom);

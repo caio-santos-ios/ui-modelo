@@ -1,13 +1,16 @@
 "use client";
 
+import Pagination from "@/components/tables/Pagination";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { paginationAtom } from "@/jotai/global/pagination.jotai";
+import { maskDate } from "@/utils/mask.util";
 import { permissionDelete, permissionRead, permissionUpdate } from "@/utils/permission.util";
 import { useRouter } from "next/navigation";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { useModal } from "@/hooks/useModal";
 import { IconEdit } from "@/components/icons/iconEdit/IconEdit";
 import { IconDelete } from "@/components/icons/iconDelete/IconDelete";
@@ -18,16 +21,16 @@ import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
 
 const columns: TDataTableColumns[] = [
-  {title: "Código", label: "code", type: "text"},
-  {title: "Nome", label: "name", type: "text"},
-  {title: "E-mail", label: "email", type: "text"},
+  {title: "Metodo", label: "method", type: "text"},
+  {title: "Mensagem", label: "message", type: "text"},
+  {title: "Status", label: "statusCode", type: "text"},
   {title: "Data de Criação", label: "createdAt", type: "date"},
 ]
 
-const module = "B";
-const routine = "B1";
+const module = "A";
+const routine = "A1";
 
-export default function UserTable() {
+export default function LoggerTable() {
   const [_, setLoading] = useAtom(loadingAtom);
   const [pagination, setPagination] = useAtom(paginationAtom); 
   const { isOpen, openModal, closeModal } = useModal();
@@ -37,7 +40,7 @@ export default function UserTable() {
   const getAll = async (page: number) => {
     try {
       setLoading(true);
-      const {data} = await api.get(`/users?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
+      const {data} = await api.get(`/loggers?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
       const result = data.result;
 
       setPagination({
@@ -57,7 +60,7 @@ export default function UserTable() {
   const destroy = async () => {
     try {
       setLoading(true);
-      await api.delete(`/users/${user.id}`, configApi());
+      await api.delete(`/loggers/${user.id}`, configApi());
       resolveResponse({status: 204, message: "Excluído com sucesso"});
       closeModal();
       await getAll(pagination.currentPage);
@@ -72,7 +75,7 @@ export default function UserTable() {
     setUser(obj);
 
     if(action == "edit") {
-      router.push(`/master-data/users/${obj.id}`);
+      router.push(`/master-data/loggers/${obj.id}`);
     };
 
     if(action == "delete") {
