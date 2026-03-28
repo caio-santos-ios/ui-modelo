@@ -2,7 +2,8 @@ import axios from "axios";
 
 const url = process.env.NEXT_PUBLIC_API_URL;
 console.log("API Service initialized with base URL:", url);
-export const uriBase = "http://localhost:5097";
+// export const uriBase = "http://localhost:5097";
+export const uriBase = "https://api-modelo-production.up.railway.app";
 export const baseURL = `${uriBase}/api`;
 
 export const api = axios.create({
