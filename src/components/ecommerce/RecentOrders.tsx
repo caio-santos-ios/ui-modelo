@@ -44,11 +44,12 @@ export default function RecentOrders() {
   const [selectedStore] = useAtom(selectedStoreAtom);
 
   useEffect(() => {
-    api
-      .get(`/dashboard/recent-orders?selectedStore=${selectedStore}`, configApi())
-      .then((res) => setOrders(res.data?.result?.data ?? []))
-      .catch(() => setOrders([]))
-      .finally(() => setLoading(false));
+    setLoading(false);
+    // api
+    //   .get(`/dashboard/recent-orders?selectedStore=${selectedStore}`, configApi())
+    //   .then((res) => setOrders(res.data?.result?.data ?? []))
+    //   .catch(() => setOrders([]))
+    //   .finally(() => setLoading(false));
   }, []);
 
   return (

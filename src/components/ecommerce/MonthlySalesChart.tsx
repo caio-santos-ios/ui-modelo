@@ -28,11 +28,12 @@ export default function MonthlySalesChart() {
   const [selectedStore] = useAtom(selectedStoreAtom);
 
   useEffect(() => {
-    api
-      .get(`/dashboard/monthly-sales?selectedStore=${selectedStore}`, configApi())
-      .then((res) => setData(res.data?.result?.data ?? null))
-      .catch(() => setData(null))
-      .finally(() => setLoading(false));
+    setLoading(false);
+    // api
+    //   .get(`/dashboard/monthly-sales?selectedStore=${selectedStore}`, configApi())
+    //   .then((res) => setData(res.data?.result?.data ?? null))
+    //   .catch(() => setData(null))
+    //   .finally(() => setLoading(false));
   }, []);
 
   const totals = data?.totals ?? Array(12).fill(0);

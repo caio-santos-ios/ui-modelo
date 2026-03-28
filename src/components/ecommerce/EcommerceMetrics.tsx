@@ -27,17 +27,18 @@ export const EcommerceMetrics = () => {
   const [selectedStore] = useAtom(selectedStoreAtom);
 
   useEffect(() => {
-    api
-      .get(`/dashboard/cards?selectedStore=${selectedStore}`, configApi())
-      .then((res) => {
-        setData(res.data?.result?.data ?? null);
-      })
-      .catch(() => {
-        setData(null);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    setLoading(false);
+    // api
+    //   .get(`/dashboard/cards?selectedStore=${selectedStore}`, configApi())
+    //   .then((res) => {
+    //     setData(res.data?.result?.data ?? null);
+    //   })
+    //   .catch(() => {
+    //     setData(null);
+    //   })
+    //   .finally(() => {
+    //     setLoading(false);
+    //   });
   }, [selectedStore]);
 
   if (loading) {
