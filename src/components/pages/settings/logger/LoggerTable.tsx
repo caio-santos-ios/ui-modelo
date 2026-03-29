@@ -16,6 +16,7 @@ import { TDataTableColumns } from "@/types/global/data-table-card.type";
 
 const columns: TDataTableColumns[] = [
   {title: "Metodo", label: "method", type: "text"},
+  {title: "Rota", label: "path", type: "text"},
   {title: "Mensagem", label: "message", type: "text"},
   {title: "Status", label: "statusCode", type: "text"},
   {title: "Data de Criação", label: "createdAt", type: "dateTime"},
