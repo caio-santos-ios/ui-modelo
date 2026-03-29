@@ -1,7 +1,6 @@
 "use client";
 
 import { FiPlus } from "react-icons/fi";
-import { genericTableModalCreateAtom, genericTableTableAtom } from "@/jotai/masterData/genericTable.jotai";
 import { useAtom } from "jotai";
 
 type TProp = {
@@ -15,8 +14,8 @@ type TProp = {
 };
 
 export const SelectPlus = ({options, code, label, onAddClick, disabled, genericTable, ...rest}: TProp) => {
-    const [_, setModal] = useAtom(genericTableModalCreateAtom);
-    const [__, setTable] = useAtom(genericTableTableAtom);
+    // const [_, setModal] = useAtom(genericTableModalCreateAtom);
+    // const [__, setTable] = useAtom(genericTableTableAtom);
 
     return (
         <div className="relative">
@@ -31,10 +30,10 @@ export const SelectPlus = ({options, code, label, onAddClick, disabled, genericT
                 genericTable ? (
                     <button
                         type="button"
-                        onClick={() => {
-                            setTable(genericTable);
-                            setModal(true);
-                        }}
+                        // onClick={() => {
+                        //     setTable(genericTable);
+                        //     setModal(true);
+                        // }}
                         className="absolute right-0 p-3 bg-brand-500 hover:bg-brand-600 text-white transition-colors rounded-e-lg"
                         title="Adicionar novo">
                         <FiPlus size={20} />
