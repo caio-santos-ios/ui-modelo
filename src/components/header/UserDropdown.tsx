@@ -44,10 +44,7 @@ export default function UserDropdown() {
       setUserLogger({
         name: result.name,
         email: result.email,
-        photo: result.photo,
-        nameCompany: result.nameCompany,
-        nameStore: result.nameStore,
-        typeUser: ""
+        photo: result.photo
       });
   
       saveLocalStorage(result);
