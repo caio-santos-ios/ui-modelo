@@ -75,10 +75,7 @@ export default function UserMetaCard() {
         setUserLogger({
           name: result.name,
           email: result.email,
-          photo: result.photo,
-          nameCompany: result.nameCompany,
-          nameStore: result.nameStore,
-          typeUser: result.typeUser
+          photo: result.photo
         });
       };
   
@@ -86,10 +83,7 @@ export default function UserMetaCard() {
         id: result.id,
         name: result.name,
         email: result.email,
-        phone: result.phone,
-        whatsapp: result.whatsapp,
-        photo: result.photo,
-        address: result.address
+        phone: result.phone
       });
     } catch (error) {
       resolveResponse(error);
