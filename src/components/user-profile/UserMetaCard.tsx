@@ -46,7 +46,7 @@ export default function UserMetaCard() {
     try {
       const { status, data} = await api.put(`/users/profile-photo`, form, configApi(false));
       const result = data.result.data;
-      localStorage.setItem("photo", result.photo);
+      localStorage.setItem("telemovviPhoto", result.photo);
       
       setUserLogger({
         ...userLogger,
@@ -65,10 +65,7 @@ export default function UserMetaCard() {
   const getUser = async () => {
     try {
       setIsLoading(true);
-      const typeUser = localStorage.getItem("typeUser");
-      const uri = typeUser ? typeUser : "";
-
-      const {data} = await api.get(`/${['technical', 'seller'].includes(uri) ? 'employees' : 'users'}/logged`, configApi());
+      const {data} = await api.get(`/users/logged`, configApi());
       const result = data.result.data;
       
       if(result.photo) {
