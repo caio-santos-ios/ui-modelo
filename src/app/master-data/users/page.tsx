@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "This is Next.js Form Elements page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
 };
 
-export default function User() {
+export default function UserPage() {
   return (
     <div>
       <PageBreadcrumb pageIcon="MdPeople" pageTitle="Usuários" pageSubTitle="Cadastros" />

@@ -1,3 +1,5 @@
+"use client";
+
 import Button from "@/components/ui/button/Button"
 import { permissionCreate } from "@/utils/permission.util";
 import Link from "next/link";

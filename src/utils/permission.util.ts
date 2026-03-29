@@ -23,6 +23,7 @@ export const permissionRead = (module: string, subModule: string) => {
 
 export const permissionCreate = (module: string, subModule: string) => {
     const adminStr = getFromStorage("telemovviAdmin");
+    console.log("Admin:", adminStr);
     if (adminStr == "true") return true;
 
     const modulesStr = getFromStorage("telemovviModules");
