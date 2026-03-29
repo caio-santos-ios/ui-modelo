@@ -2,16 +2,16 @@ import { ResetAddress, TAddress } from "../address/address";
 
 export type TUser = {
     id: string;
-    photo: string;
     name: string;
     email: string;
+    profileUserId: string;
 }
 
 export const ResetUser: TUser = {
     id: "",
     email: "",
     name: "",
-    photo: ""
+    profileUserId: ""
 }
 
 export type TUserLogged = {

@@ -8,14 +8,16 @@ import { userAtom, userModalAtom } from "@/jotai/master-data/user.jotai";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { ResetUser, TUser } from "@/types/master-data/user/user.type";
+import { TProfileUser } from "@/types/setting/profile-permission/profile-permission.type";
 import { useAtom } from "jotai";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 export const UserModalCreate = () => {
     const [modal, setModal] = useAtom(userModalAtom);
     const [user, setUser] = useAtom(userAtom);
     const [_, setLoading] = useAtom(loadingAtom);
+    const [profileUsers, setProfileUsers] = useState<TProfileUser[]>([]);
 
     const { register, handleSubmit, reset, setValue, watch, getValues, formState: { errors }} = useForm<TUser>({
         defaultValues: ResetUser
@@ -73,8 +75,23 @@ export const UserModalCreate = () => {
             setLoading(false);
         }
     };
+    
+    const loaderProfileUser = async () => {
+        try {
+            setLoading(true);
+            const {data} = await api.get(`/profile-users/select?deleted=false`, configApi());
+            const result = data?.result?.data ?? [];
+            setProfileUsers(result);
+        } catch (error) {
+            resolveResponse(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
+        loaderProfileUser();
+
         if(user.id && modal) {
             getById(user.id);
         };
@@ -93,6 +110,18 @@ export const UserModalCreate = () => {
                         <Label title="E-mail"/>
                         <input placeholder="E-mail" {...register("email")} type="email" className="input-erp-primary input-erp-default"/>
                     </div>
+
+                    <div className="col-span-6 md:col-span-3">
+                        <Label title="Perfil do Usuário"/>
+                        <select {...register("profileUserId")} className="h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 text-gray-800 dark:bg-dark-900">
+                            <option value="" className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Selecione</option>
+                            {
+                                profileUsers.map((profileUser) => (
+                                    <option key={profileUser.id} value={profileUser.id} className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">{profileUser.name}</option>
+                                ))
+                            }
+                        </select>
+                    </div>   
                 </div>
                 <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
                     <Button size="sm" variant="outline" onClick={closeModal}>Cancelar</Button>

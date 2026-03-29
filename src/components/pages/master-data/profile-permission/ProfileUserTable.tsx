@@ -99,17 +99,18 @@ export default function ProfileUserTable() {
     <div>
       {
         pagination.data.length > 0 ? 
-        <DataTableCard pagination={pagination} columns={columns} changePage={changePage} actions={
+        <DataTableCard pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
           <>
             {
               permissionUpdate(module, routine) &&
-              <IconEdit action="edit" obj={{}} getObj={getObj}/>
+              <IconEdit action="edit" obj={obj} getObj={getObj}/>
             }
             {
               permissionDelete(module, routine) &&
-              <IconDelete action="delete" obj={{}} getObj={getObj}/> 
+              <IconDelete action="delete" obj={obj} getObj={getObj}/> 
             }
           </>
+        )
         }/>
         :
         <NotData />

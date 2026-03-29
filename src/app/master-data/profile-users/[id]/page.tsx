@@ -17,7 +17,7 @@ export default async function ProfilePermissionDetail({ params }: { params: Prom
     <div>
       <PageBreadcrumb pageIcon="MdAdminPanelSettings" pageTitle="Perfil de Usuário" pageSubTitle="Cadastros" />
       <div className="flex justify-end mb-2">
-        <Link href="/master-data/profile-permission">
+        <Link href="/master-data/profile-users">
           <Button type="submit" variant="outline" size="sm">Voltar</Button>
         </Link>
       </div>

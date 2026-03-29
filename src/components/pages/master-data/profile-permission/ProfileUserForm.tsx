@@ -94,7 +94,7 @@ export default function ProfileUserForm({id}: TProp) {
   const getById = async (id: string) => {
     try {
       setIsLoading(true);
-      const {data} = await api.get(`/profile-permissions/${id}`, configApi());
+      const {data} = await api.get(`/profile-users/${id}`, configApi());
       const result = data.result.data;
       reset(result);
     } catch (error) {
@@ -157,7 +157,7 @@ export default function ProfileUserForm({id}: TProp) {
   return (
     <>
       <ComponentCard title="Dados Gerais" hasHeader={false}>
-        <div className="grid grid-cols-6 gap-2 max-h-[calc(100dvh-20rem)] overflow-y-auto">
+        <div className="grid grid-cols-6 gap-2 max-h-[calc(100dvh-16rem)] md:max-h-[calc(100dvh-19rem)] overflow-y-auto">
           <div className="col-span-6 xl:col-span-2">
             <Label title="Nome"/>
             <input placeholder="Nome" {...register("name")} type="text" className="input-erp-primary input-erp-default"/>
