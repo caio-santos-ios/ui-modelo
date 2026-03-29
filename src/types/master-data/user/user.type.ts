@@ -3,13 +3,15 @@ export type TUser = {
     name: string;
     email: string;
     profileUserId: string;
+    password: string;
 }
 
 export const ResetUser: TUser = {
     id: "",
     email: "",
     name: "",
-    profileUserId: ""
+    profileUserId: "",
+    password: ""
 }
 
 export type TUserLogged = {
