@@ -1,4 +1,4 @@
-import { ResetUserLogged, TUserLogged } from "@/types/user/user.type";
+import { ResetUserLogged, TUserLogged } from "@/types/master-data/user/user.type";
 import { atom } from "jotai";
 
 export const userLoggerAtom = atom<TUserLogged>(ResetUserLogged);

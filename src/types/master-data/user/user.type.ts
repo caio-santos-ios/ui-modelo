@@ -1,5 +1,3 @@
-import { ResetAddress, TAddress } from "../address/address";
-
 export type TUser = {
     id: string;
     name: string;
@@ -33,8 +31,6 @@ export type TUserProfile = {
     email: string;
     phone: string;
     whatsapp: string;
-    
-    address: TAddress;
 }
 
 export const ResetUserProfile: TUserProfile = {
@@ -44,6 +40,4 @@ export const ResetUserProfile: TUserProfile = {
     email: "",
     phone: "",
     whatsapp: "",
-
-    address: ResetAddress
 }

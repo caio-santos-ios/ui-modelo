@@ -16,7 +16,7 @@ import { ModalDelete } from "@/components/modal-delete/ModalDelete";
 import { NotData } from "@/components/not-data/NotData";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
-import { ResetUserProfile, TUserProfile } from "@/types/user/user.type";
+import { ResetUserProfile, TUserProfile } from "@/types/master-data/user/user.type";
 
 const columns: TDataTableColumns[] = [
   {title: "Código", label: "code", type: "text"},
