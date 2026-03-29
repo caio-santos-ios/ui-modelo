@@ -11,9 +11,10 @@ type TProps = {
     changePage: (page: number) => void;
     actions?: (row: any) => ReactNode;
     heightContainer?: string;
+    isActions?: boolean;
 }
 
-export const DataTableCard = ({pagination, columns, changePage, actions, heightContainer = "max-h-[calc(100dvh-16rem)] md:max-h-[calc(100dvh-16.5rem)]"}: TProps) => {
+export const DataTableCard = ({pagination, columns, changePage, actions, isActions = false, heightContainer = "max-h-[calc(100dvh-16rem)] md:max-h-[calc(100dvh-16.5rem)]"}: TProps) => {
     const normalizeTableCell = (value: any, type: string) => {
         switch(type) {
             case "date":
@@ -41,7 +42,7 @@ export const DataTableCard = ({pagination, columns, changePage, actions, heightC
                                         ))
                                     }
                                     {
-                                        actions && (
+                                        actions && isActions && (
                                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Ações</TableCell>
                                         )
                                     }
@@ -57,7 +58,7 @@ export const DataTableCard = ({pagination, columns, changePage, actions, heightC
                                             ))
                                         }
                                         {
-                                            actions && (
+                                            actions && isActions && (
                                                 <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">
                                                     <div className="flex gap-3"> 
                                                         {actions(x)}
@@ -80,7 +81,7 @@ export const DataTableCard = ({pagination, columns, changePage, actions, heightC
                                     <span className="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">
                                         {normalizeTableCell(x[columns[0].label], columns[0].type)}
                                     </span>
-                                    {actions && (
+                                    {actions && isActions && (
                                         <div className="flex gap-2">
                                             {actions(x)}
                                         </div>

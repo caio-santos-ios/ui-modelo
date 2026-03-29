@@ -99,7 +99,7 @@ export default function ProfileUserTable() {
     <div>
       {
         pagination.data.length > 0 ? 
-        <DataTableCard pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
+        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
           <>
             {
               permissionUpdate(module, routine) &&

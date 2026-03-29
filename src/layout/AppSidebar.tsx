@@ -41,9 +41,9 @@ const AppSidebar: React.FC = () => {
     if (!modulesStr) return menu;
 
     const modules: any[] = JSON.parse(modulesStr);
-
     return menu.map((item) => {
       const newItem = { ...item };
+      newItem.authorized = false;
 
       if(isMaster) {
         newItem.authorized = true;
@@ -53,12 +53,29 @@ const AppSidebar: React.FC = () => {
         }));
       } else {
         const foundModule = modules.find((m: any) => m.code === newItem.code);
-  
         if (foundModule && foundModule.routines.length > 0) {
-          newItem.authorized = true;
+          let authorized = false;
+
+          foundModule.routines.forEach((x: any) => {
+            if(x.permissions.read || x.permissions.create || x.permissions.update || x.permissions.delete) {
+              authorized = true;
+            }
+          });
+          
+          newItem.authorized = authorized;
+          
+          foundModule.routines.find((x: any) => console.log(x.permissions))
+
           newItem.subItems = newItem.subItems?.map((sub) => ({
             ...sub,
-            authorized: foundModule.routines.some((r: any) => r.code === sub.code)
+            authorized: foundModule.routines.some((x: any) => 
+              x.code === sub.code && (
+                x.permissions.read || 
+                x.permissions.create || 
+                x.permissions.update || 
+                x.permissions.delete
+              )
+            )
           }));
         }
       }
@@ -106,7 +123,8 @@ const AppSidebar: React.FC = () => {
             {filteredNav.map((nav, index) => {
               const IconComponent = nav.icon ? icons[nav.icon] : null;
               const hasAccess = nav.authorized || isAdmin;
-
+              // console.log(isAdmin)
+              // console.log(nav.authorized)
               if (!hasAccess) return null;
 
               return (

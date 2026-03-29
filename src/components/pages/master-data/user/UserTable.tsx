@@ -34,7 +34,6 @@ export default function UserTable() {
   const { isOpen, openModal, closeModal } = useModal();
   const [user, setUser] = useAtom(userAtom);
   const [modal, setModal] = useAtom(userModalAtom);
-  const router = useRouter();
 
   const getAll = async (page: number) => {
     try {
@@ -102,7 +101,7 @@ export default function UserTable() {
     <div>
       {
         pagination.data.length > 0 ? 
-        <DataTableCard pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
+        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
           <>
             {
               permissionUpdate(module, routine) &&
