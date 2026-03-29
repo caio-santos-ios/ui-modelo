@@ -1,4 +1,5 @@
 "use client";
+
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
@@ -6,7 +7,6 @@ import Label from "../form/Label";
 import { userLoggerAtom } from "@/jotai/auth/auth.jotai";
 import { useAtom } from "jotai";
 import { useForm } from "react-hook-form";
-import { maskPhone } from "@/utils/mask.util";
 import DropzoneComponent from "../form/form-elements/DropZone";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { api, uriBase } from "@/service/api.service";

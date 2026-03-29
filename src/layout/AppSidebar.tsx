@@ -123,8 +123,7 @@ const AppSidebar: React.FC = () => {
             {filteredNav.map((nav, index) => {
               const IconComponent = nav.icon ? icons[nav.icon] : null;
               const hasAccess = nav.authorized || isAdmin;
-              // console.log(isAdmin)
-              // console.log(nav.authorized)
+
               if (!hasAccess) return null;
 
               return (

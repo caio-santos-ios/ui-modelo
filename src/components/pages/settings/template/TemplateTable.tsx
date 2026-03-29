@@ -117,7 +117,7 @@ export default function TemplateTable() {
               permissionUpdate(module, routine) &&
               <div title="Enviar E-mail" onClick={() => send(obj)} className="cursor-pointer text-blue-400 hover:text-blue-500">
                 <MdSend />
-            </div>
+              </div>
             }
             {
               permissionUpdate(module, routine) &&
