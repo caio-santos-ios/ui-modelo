@@ -5,8 +5,6 @@ import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
 import flatpickr from "flatpickr";
 import { Portuguese } from "flatpickr/dist/l10n/pt";
-import { api } from "@/service/api.service";
-import { configApi } from "@/service/config.service";
 import { TDashboardMonthlySales } from "@/types/dashboard/dashboard-card.type";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { useAtom } from "jotai";

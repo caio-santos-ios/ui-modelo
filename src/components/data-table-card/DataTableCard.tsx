@@ -9,16 +9,19 @@ type TProps = {
     pagination: TPagination;
     columns: TDataTableColumns[];
     changePage: (page: number) => void;
-    actions?: ReactNode;
+    actions?: (row: any) => ReactNode;
+    heightContainer?: string;
 }
 
-export const DataTableCard = ({pagination, columns, changePage, actions}: TProps) => {
+export const DataTableCard = ({pagination, columns, changePage, actions, heightContainer = "max-h-[calc(100dvh-16rem)] md:max-h-[calc(100dvh-16.5rem)]"}: TProps) => {
     const normalizeTableCell = (value: any, type: string) => {
         switch(type) {
             case "date":
                 return maskDate(value);
             case "dateTime":
                 return maskDate(value, "seconds");
+            case "booleanYesNo":
+                return value ? "Sim" : "Não";
             default:
                 return value;
         }   
@@ -26,9 +29,9 @@ export const DataTableCard = ({pagination, columns, changePage, actions}: TProps
 
     return (
         <>
-            <div className="erp-container-table rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3 mb-3">
-                <div className="max-w-full overflow-x-auto tele-container-table">
-                    <div className="min-w-[1102px] divide-y hidden md:flex">
+            <div className={`rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3 mb-3`}>
+                <div className={`${heightContainer} max-w-full overflow-x-auto`}>
+                    <div className="min-w-[1102px] divide-y hidden md:block">
                         <Table className="divide-y">
                             <TableHeader className="border-b border-gray-100 dark:border-white/5 tele-table-thead">
                                 <TableRow>
@@ -51,14 +54,13 @@ export const DataTableCard = ({pagination, columns, changePage, actions}: TProps
                                         {
                                             columns.map((column) => (
                                                 <TableCell key={column.label} className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{normalizeTableCell(x[column.label], column.type)}</TableCell>
-                                                // <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{x.code}</TableCell>
                                             ))
                                         }
                                         {
                                             actions && (
                                                 <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">
                                                     <div className="flex gap-3"> 
-                                                        {actions}
+                                                        {actions(x)}
                                                     </div>
                                                 </TableCell>
                                             )
@@ -70,7 +72,7 @@ export const DataTableCard = ({pagination, columns, changePage, actions}: TProps
 
                     </div>
                     
-                    <div className="md:hidden flex flex-col divide-y divide-gray-100 dark:divide-white/5">
+                    <div className="block md:hidden divide-y divide-gray-100 dark:divide-white/5">
                     {pagination.data.map((x: any) => (
                         <div key={x.id} className="px-4 py-4 flex flex-col gap-3">
                             {columns.length > 0 && (
@@ -80,7 +82,7 @@ export const DataTableCard = ({pagination, columns, changePage, actions}: TProps
                                     </span>
                                     {actions && (
                                         <div className="flex gap-2">
-                                            {actions}
+                                            {actions(x)}
                                         </div>
                                     )}
                                 </div>

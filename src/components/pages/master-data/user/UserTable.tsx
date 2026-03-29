@@ -16,9 +16,10 @@ import { ResetUser, TUser } from "@/types/master-data/user/user.type";
 import { NotData } from "@/components/not-data/NotData";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
+import { UserModalCreate } from "./UserModalCreate";
+import { userAtom, userModalAtom } from "@/jotai/master-data/user.jotai";
 
 const columns: TDataTableColumns[] = [
-  {title: "Código", label: "code", type: "text"},
   {title: "Nome", label: "name", type: "text"},
   {title: "E-mail", label: "email", type: "text"},
   {title: "Data de Criação", label: "createdAt", type: "date"},
@@ -31,7 +32,8 @@ export default function UserTable() {
   const [_, setLoading] = useAtom(loadingAtom);
   const [pagination, setPagination] = useAtom(paginationAtom); 
   const { isOpen, openModal, closeModal } = useModal();
-  const [user, setUser] = useState<TUser>(ResetUser);
+  const [user, setUser] = useAtom(userAtom);
+  const [modal, setModal] = useAtom(userModalAtom);
   const router = useRouter();
 
   const getAll = async (page: number) => {
@@ -72,7 +74,8 @@ export default function UserTable() {
     setUser(obj);
 
     if(action == "edit") {
-      router.push(`/master-data/users/${obj.id}`);
+      setModal(true);
+      setUser(obj);
     };
 
     if(action == "delete") {
@@ -93,74 +96,30 @@ export default function UserTable() {
     if(permissionRead(module, routine)) {
       getAll(1);
     };
-  }, []);
+  }, [modal]);
 
   return (
-    // pagination.data.length > 0 ?
-    // <>
-    //   <div className="erp-container-table rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3 mb-3">
-    //     <div className="max-w-full overflow-x-auto tele-container-table">
-    //       <div className="min-w-[1102px] divide-y">
-    //         <Table className="divide-y">
-    //           <TableHeader className="border-b border-gray-100 dark:border-white/5">
-    //             <TableRow>
-    //               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Nome</TableCell>
-    //               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">E-mail</TableCell>
-    //               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Data de Criação</TableCell>
-    //               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Ações</TableCell>
-    //             </TableRow>
-    //           </TableHeader>
-
-    //           <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
-    //             {pagination.data.map((x: any) => (
-    //               <TableRow key={x.id}>
-    //                 <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{x.name}</TableCell>
-    //                 <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{x.email}</TableCell>
-    //                 <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{maskDate(x.createdAt)}</TableCell>
-    //                 <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">
-    //                   <div className="flex gap-3">       
-    //                     {
-    //                       permissionUpdate("A", "A1") &&
-    //                       <IconEdit action="edit" obj={x} getObj={getObj}/>
-    //                     }   
-    //                     {
-    //                       permissionDelete("A", "A1") &&
-    //                       <IconDelete action="delete" obj={x} getObj={getObj}/>                                                   
-    //                     }                                          
-    //                 </div>
-    //                 </TableCell>
-    //               </TableRow>
-    //             ))}
-    //           </TableBody>
-    //         </Table>
-    //       </div>
-    //     </div>
-    //   </div>
-    //   <Pagination currentPage={pagination.currentPage} totalCount={pagination.totalCount} totalData={pagination.data.length} totalPages={pagination.totalPages} onPageChange={() => {}} />
-
-    //   <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Usuário" />          
-    // </>
-    // :
-    // <NotData />
     <div>
       {
         pagination.data.length > 0 ? 
-        <DataTableCard pagination={pagination} columns={columns} changePage={changePage} actions={
+        <DataTableCard pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
           <>
             {
               permissionUpdate(module, routine) &&
-              <IconEdit action="edit" obj={{}} getObj={getObj}/>
+              <IconEdit action="edit" obj={obj} getObj={getObj}/>
             }
             {
               permissionDelete(module, routine) &&
-              <IconDelete action="delete" obj={{}} getObj={getObj}/> 
+              <IconDelete action="delete" obj={obj} getObj={getObj}/> 
             }
           </>
+        )
         }/>
         :
         <NotData />
       }
-      <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Perfil de Usuário" />
+      <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Usuário" />
+      <UserModalCreate />
     </div>    
   );
 }
