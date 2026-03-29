@@ -20,7 +20,6 @@ import { MdSend } from "react-icons/md";
 
 const columns: TDataTableColumns[] = [
   {title: "Código", label: "code", type: "text"},
-  {title: "HTML", label: "html", type: "text"},
   {title: "Data de Criação", label: "createdAt", type: "date"},
 ]
 
