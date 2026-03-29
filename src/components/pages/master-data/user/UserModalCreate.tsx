@@ -8,7 +8,7 @@ import { userAtom, userModalAtom } from "@/jotai/master-data/user.jotai";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { ResetUser, TUser } from "@/types/master-data/user/user.type";
-import { TProfileUser } from "@/types/setting/profile-permission/profile-permission.type";
+import { TProfileUser } from "@/types/setting/profile-permission.type";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";

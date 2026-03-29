@@ -13,7 +13,7 @@ import Button from "@/components/ui/button/Button";
 import { iconAtom } from "@/jotai/global/icons.jotai";
 import { menuRoutinesAtom } from "@/jotai/global/menu.jotai";
 import { NavItem, NavSubItem } from "@/types/global/menu.type";
-import { ResetProfileUser, TProfileUser } from "@/types/setting/profile-permission/profile-permission.type";
+import { ResetProfileUser, TProfileUser } from "@/types/setting/profile-permission.type";
 
 type TProp = {
   id?: string;
