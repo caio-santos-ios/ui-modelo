@@ -2,17 +2,15 @@
 
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { paginationAtom } from "@/jotai/global/pagination.jotai";
 import { permissionDelete, permissionRead, permissionUpdate } from "@/utils/permission.util";
-import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/useModal";
 import { IconEdit } from "@/components/icons/iconEdit/IconEdit";
 import { IconDelete } from "@/components/icons/iconDelete/IconDelete";
 import { ModalDelete } from "@/components/modal-delete/ModalDelete";
-import { ResetUser, TUser } from "@/types/master-data/user/user.type";
 import { NotData } from "@/components/not-data/NotData";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";

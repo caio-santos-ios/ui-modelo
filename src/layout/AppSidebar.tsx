@@ -53,30 +53,32 @@ const AppSidebar: React.FC = () => {
         }));
       } else {
         const foundModule = modules.find((m: any) => m.code === newItem.code);
-        if (foundModule && foundModule.routines.length > 0) {
-          let authorized = false;
-
-          foundModule.routines.forEach((x: any) => {
-            if(x.permissions.read || x.permissions.create || x.permissions.update || x.permissions.delete) {
-              authorized = true;
-            }
-          });
-          
-          newItem.authorized = authorized;
-          
-          foundModule.routines.find((x: any) => console.log(x.permissions))
-
-          newItem.subItems = newItem.subItems?.map((sub) => ({
-            ...sub,
-            authorized: foundModule.routines.some((x: any) => 
-              x.code === sub.code && (
-                x.permissions.read || 
-                x.permissions.create || 
-                x.permissions.update || 
-                x.permissions.delete
+        if(foundModule.code != "A") {
+          if (foundModule && foundModule.routines.length > 0) {
+            let authorized = false;
+  
+            foundModule.routines.forEach((x: any) => {
+              if(x.permissions.read || x.permissions.create || x.permissions.update || x.permissions.delete) {
+                authorized = true;
+              }
+            });
+            
+            newItem.authorized = authorized;
+            
+            foundModule.routines.find((x: any) => console.log(x.permissions))
+  
+            newItem.subItems = newItem.subItems?.map((sub) => ({
+              ...sub,
+              authorized: foundModule.routines.some((x: any) => 
+                x.code === sub.code && (
+                  x.permissions.read || 
+                  x.permissions.create || 
+                  x.permissions.update || 
+                  x.permissions.delete
+                )
               )
-            )
-          }));
+            }));
+          }
         }
       }
 

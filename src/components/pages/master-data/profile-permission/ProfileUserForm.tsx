@@ -23,6 +23,7 @@ export default function ProfileUserForm({id}: TProp) {
   const [_, setIsLoading] = useAtom(loadingAtom);
   const [icons] = useAtom(iconAtom);
   const [menus] = useAtom<NavItem[]>(menuRoutinesAtom);
+  const [isMaster, setIsMaster] = useState(false);
   const router = useRouter();
 
   const { register, reset, setValue, watch, getValues } = useForm<TProfileUser>({
@@ -146,6 +147,9 @@ export default function ProfileUserForm({id}: TProp) {
   };
 
   useEffect(() => {
+    const masterStr = localStorage.getItem("telemovviMaster");
+    if(masterStr) setIsMaster(masterStr === "true");
+
     const initial = async () => {
       if(id != "create") {
         await getById(id!);
@@ -174,6 +178,8 @@ export default function ProfileUserForm({id}: TProp) {
                 {
                   menus.map(menu => {
                     const IconComponent = icons[menu.icon];
+
+                    if(menu.code === "A" && !isMaster) return null;
 
                     return (
                       <li className="col-span-6 lg:col-span-3 relative p-5 bg-white border border-gray-200 rounded-xl shadow-theme-sm dark:border-gray-800 dark:bg-white/5" key={menu.code}>

@@ -101,7 +101,7 @@ export default function UserMetaCard() {
             <div className="w-20 h-20 flex justify-center items-center overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
               {
                 userLogger.photo ?
-                <img className="w-full h-full object-cover rounded-full" src={`${uriBase}/${userLogger.photo}`} alt="foto do usuário" />
+                <img className="w-full h-full object-cover rounded-full bg-white border border-gray-200 dark:border-gray-800" src={userLogger.photo} alt="foto do usuário" />
                 :
                 <p className="font-bold text-6xl text-gray-800 dark:text-white/90">{normalizeName(userLogger.name)}</p>
               }
