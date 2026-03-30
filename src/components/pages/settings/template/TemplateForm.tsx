@@ -4,15 +4,18 @@ import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { useAtom } from "jotai";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import ComponentCard from "@/components/common/ComponentCard";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { ResetTemplate, TTemplate } from "@/types/setting/template.type";
-import TextArea from "@/components/form/input/TextArea";
-import { permissionUpdate } from "@/utils/permission.util";
+import { permissionRead, permissionUpdate } from "@/utils/permission.util";
+import dynamic from "next/dynamic";
+import ModalV2 from "@/components/ui/modalV2";
+import { TemplateModalPreview } from "./TemplateModalPreview";
+import { templateAtom, templateModalPreviewAtom } from "@/jotai/master-data/template.jotai";
 
 type TProp = {
   id?: string;
@@ -21,8 +24,13 @@ type TProp = {
 const module = "A";
 const routine = "A2";
 
+const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
+
 export default function TemplateForm({id}: TProp) {
-  const [_, setIsLoading] = useAtom(loadingAtom);
+  const [_, setLoading] = useAtom(loadingAtom);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [template, setTemplate] = useAtom(templateAtom);
+  const [__, setPreviewTemplateModal] = useAtom(templateModalPreviewAtom);
   const router = useRouter();
 
   const { register, reset, setValue, watch, getValues } = useForm<TTemplate>({
@@ -39,7 +47,7 @@ export default function TemplateForm({id}: TProp) {
     
   const create: SubmitHandler<TTemplate> = async (body: TTemplate) => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       const {data} = await api.post(`/templates`, body, configApi());
       const result = data.result;
       resolveResponse({status: 201, message: result.message});
@@ -47,33 +55,45 @@ export default function TemplateForm({id}: TProp) {
     } catch (error) {
       resolveResponse(error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
   
   const update: SubmitHandler<TTemplate> = async (body: TTemplate) => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       const {data} = await api.put(`/templates`, body, configApi());
       const result = data.result;
       resolveResponse({status: 200, message: result.message});
     } catch (error) {
       resolveResponse(error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   const getById = async (id: string) => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       const {data} = await api.get(`/templates/${id}`, configApi());
       const result = data.result.data;
       reset(result);
     } catch (error) {
       resolveResponse(error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
+    }
+  };
+
+  const send = async () => {
+    try {
+      setLoading(true);
+      await api.put(`/templates/send-mail`, {...getValues()}, configApi());
+      resolveResponse({status: 200, message: "Enviado com sucesso"});
+    } catch (error) {
+      resolveResponse(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,22 +109,54 @@ export default function TemplateForm({id}: TProp) {
   return (
     <>
       <ComponentCard title="Dados Gerais" hasHeader={false}>
-        <div className="grid grid-cols-6 gap-2 max-h-[calc(100dvh-16rem)] md:max-h-[calc(100dvh-19rem)] overflow-y-auto">
+        <div className="grid grid-cols-6 gap-2 max-h-[calc(100dvh-16rem)] md:max-h-[calc(100dvh-16rem)] overflow-y-auto">
           <div className="col-span-6">
             <Label title="Código"/>
             <input placeholder="Código" {...register("code")} type="text" className="input-erp-primary input-erp-default"/>
           </div>
           <div className="col-span-6">
             <Label title="HTML"/>
-            <TextArea rows={7} value={watch("html")} onChange={(v) => {setValue("html", v)}} placeholder="HTML"/>
+            <div className="rounded-lg overflow-hidden border border-gray-300 dark:border-gray-700">
+              <MonacoEditor
+                height={'450px'}
+                language="html"
+                theme="vs-dark"
+                value={watch("html")}
+                onChange={(value) => setValue("html", value ?? "")}
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 14,
+                  wordWrap: "on",
+                  formatOnPaste: true,
+                  formatOnType: true,
+                  automaticLayout: true,
+                  scrollBeyondLastLine: false,
+                  tabSize: 2,
+                }}
+              />
+            </div>
           </div>
         </div>
       </ComponentCard>
       {
-        permissionUpdate(module, routine) && (
-          <Button onClick={() => save({...getValues()})} type="submit" className="w-full xl:max-w-20 mt-2" size="sm">Salvar</Button>
+        permissionRead(module, routine) && (
+          <Button variant="outline" onClick={() => {
+            setPreviewTemplateModal(true);
+            setTemplate({...getValues()});
+          }} type="submit" className="max-w-20 mt-2" size="sm">Preview</Button>
         )
       }
+      {
+        permissionUpdate(module, routine) && (
+          <Button variant="outline" onClick={send} type="submit" className="max-w-20 mt-2 ms-2" size="sm">Enviar</Button>
+        )
+      }
+      {
+        permissionUpdate(module, routine) && (
+          <Button onClick={() => save({...getValues()})} type="submit" className="max-w-20 mt-2 ms-2" size="sm">Salvar</Button>
+        )
+      }
+      <TemplateModalPreview />
     </>
   );
 }

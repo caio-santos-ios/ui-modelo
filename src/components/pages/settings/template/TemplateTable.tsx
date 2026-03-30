@@ -16,7 +16,10 @@ import { NotData } from "@/components/not-data/NotData";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { ResetTemplate, TTemplate } from "@/types/setting/template.type";
-import { MdSend } from "react-icons/md";
+import { MdPageview, MdSend } from "react-icons/md";
+import { VscOpenPreview } from "react-icons/vsc";
+import { templateAtom, templateModalPreviewAtom } from "@/jotai/master-data/template.jotai";
+import { TemplateModalPreview } from "./TemplateModalPreview";
 
 const columns: TDataTableColumns[] = [
   {title: "Código", label: "code", type: "text"},
@@ -30,7 +33,8 @@ export default function TemplateTable() {
   const [_, setLoading] = useAtom(loadingAtom);
   const [pagination, setPagination] = useAtom(paginationAtom); 
   const { isOpen, openModal, closeModal } = useModal();
-  const [template, setTemplate] = useState<TTemplate>(ResetTemplate);
+  const [template, setTemplate] = useAtom(templateAtom);
+  const [__, setPreviewTemplateModal] = useAtom(templateModalPreviewAtom);
   const router = useRouter();
 
   const getAll = async (page: number) => {
@@ -82,6 +86,10 @@ export default function TemplateTable() {
   const getObj = (obj: any, action: string) => {
     setTemplate(obj);
 
+    if(action == "view") {
+      setPreviewTemplateModal(true);
+    };
+
     if(action == "edit") {
       router.push(`/settings/templates/${obj.id}`);
     };
@@ -113,6 +121,12 @@ export default function TemplateTable() {
         <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
           <>
             {
+              permissionRead(module, routine) &&
+              <div title="Visualizar" onClick={() => getObj(obj, "view")} className="cursor-pointer text-orange-400 hover:text-orange-500">
+                <MdPageview />
+              </div>
+            }
+            {
               permissionUpdate(module, routine) &&
               <div title="Enviar E-mail" onClick={() => send(obj)} className="cursor-pointer text-blue-400 hover:text-blue-500">
                 <MdSend />
@@ -133,6 +147,7 @@ export default function TemplateTable() {
         <NotData />
       }
       <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Perfil de Usuário" />
+      <TemplateModalPreview />
     </div>    
   );
 }
