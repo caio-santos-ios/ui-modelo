@@ -1,7 +1,7 @@
 import SignUpForm from "@/components/auth/SignUpForm";
 import { EcommerceMetrics } from "@/components/ecommerce/EcommerceMetrics";
 import MonthlySalesChart from "@/components/ecommerce/MonthlySalesChart";
-import MonthlyTarget from "@/components/ecommerce/MonthlyTarget";
+import BillingCard from "@/components/ecommerce/MonthlyTarget";
 import RecentOrders from "@/components/ecommerce/RecentOrders";
 import StatisticsChart from "@/components/ecommerce/StatisticsChart";
 import { Metadata } from "next";
@@ -19,7 +19,8 @@ export default function DashboardPage() {
       </div>
 
       <div className="col-span-12 xl:col-span-6">
-        <MonthlyTarget />
+        {/* <MonthlyTarget /> */}
+        <BillingCard />
       </div>
       
       <div className="col-span-12 xl:col-span-6">

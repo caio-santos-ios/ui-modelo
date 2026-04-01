@@ -20,7 +20,7 @@ function formatCurrency(value: number): string {
   }).format(value ?? 0);
 }
 
-export default function BillingCard() {
+export default function MonthlyTarget() {
   const [data, setData] = useState<TDashboardMonthlyTarget | null>(null);
   const [loading, setLoading] = useAtom(loadingAtom);
 
@@ -92,7 +92,7 @@ export default function BillingCard() {
         <div className="flex justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-              Faturamento Mensal
+              Desempenho Mensal
             </h3>
             <p className="mt-1 font-normal text-gray-500 text-theme-sm dark:text-gray-400">
               {isPositive

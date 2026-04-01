@@ -16,6 +16,9 @@ import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { UserModalCreate } from "./UserModalCreate";
 import { userAtom, userModalAtom } from "@/jotai/master-data/user.jotai";
+import { chatOpenAtom } from "@/jotai/global/chat.jotai";
+import { useChat } from "@/hooks/useChat";
+import { MdChat } from "react-icons/md";
 
 const columns: TDataTableColumns[] = [
   {title: "Nome", label: "name", type: "text"},
@@ -32,6 +35,8 @@ export default function UserTable() {
   const { isOpen, openModal, closeModal } = useModal();
   const [user, setUser] = useAtom(userAtom);
   const [modal, setModal] = useAtom(userModalAtom);
+  const { openChat } = useChat();
+  const [__, setChatOpen] = useAtom(chatOpenAtom);
 
   const getAll = async (page: number) => {
     try {
@@ -109,6 +114,19 @@ export default function UserTable() {
               permissionDelete(module, routine) &&
               <IconDelete action="delete" obj={obj} getObj={getObj}/> 
             }
+            <div
+              title="Enviar mensagem"
+              onClick={() => {
+                  openChat(
+                      { id: obj.id, name: obj.name, photo: obj.photo ?? "" },
+                      // conversationId é gerado ordenando os dois IDs
+                      [localStorage.getItem("telemovviId"), obj.id].sort().join("_")
+                  );
+                  setChatOpen(true);
+              }}
+              className="cursor-pointer text-brand-400 hover:text-brand-500">
+              <MdChat />
+          </div>
           </>
         )
         }/>

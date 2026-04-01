@@ -14,6 +14,7 @@ export type TDataLocal = {
     typePlan: string;
     subscriberPlan: string;
     expirationDate: string;
+    id: string;
 }
 
 export const ResetDataLocal: TDataLocal = {
@@ -31,5 +32,6 @@ export const ResetDataLocal: TDataLocal = {
     typeUser: "",
     typePlan: "",
     subscriberPlan: "",
-    expirationDate: ""
+    expirationDate: "",
+    id: ""
 } 

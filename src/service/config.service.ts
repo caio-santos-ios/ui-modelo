@@ -97,6 +97,7 @@ export const saveLocalStorage = (data: TDataLocal, hasToken: boolean = false) =>
     localStorage.setItem("telemovviMaster", data.master);
   };
 
+  localStorage.setItem("telemovviId", data.id);
   localStorage.setItem("telemovviName", data.name);
   localStorage.setItem("telemovviEmail", data.email);
   localStorage.setItem("telemovviAdmin", data.admin);
