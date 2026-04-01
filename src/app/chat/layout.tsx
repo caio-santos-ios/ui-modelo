@@ -1,6 +1,5 @@
 "use client";
 
-import { ChatWidget } from "@/components/chat/ChatWidget";
 import { useSidebar } from "@/context/SidebarContext";
 import AppHeader from "@/layout/AppHeader";
 import AppSidebar from "@/layout/AppSidebar";
@@ -24,7 +23,6 @@ export default function DashboardLayout({
         className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}>
         <AppHeader />
         <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
-        {/* <ChatWidget /> */}
       </div>
     </div>
   );

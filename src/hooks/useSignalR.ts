@@ -3,6 +3,19 @@
 import * as signalR from "@microsoft/signalr";
 import { useEffect, useRef, useState } from "react";
 
+const EXPECTED_ERRORS = [
+    "AbortError",
+    "Failed to start the HttpConnection before stop() was called",
+    "Cannot send data if the connection is not in the 'Connected' State",
+];
+
+const isExpectedError = (err: any): boolean => {
+    if (!err) return false;
+    if (err?.name === "AbortError") return true;
+    const msg: string = err?.message ?? String(err);
+    return EXPECTED_ERRORS.some((e) => msg.includes(e));
+};
+
 type UseSignalROptions = {
     hubUrl: string;
     onConnected?: (connection: signalR.HubConnection) => void;
@@ -17,7 +30,6 @@ export const useSignalR = ({ hubUrl, onConnected, onDisconnected }: UseSignalROp
         const token = localStorage.getItem("telemovviToken") ?? "";
         if (!token) return;
 
-        // Flag para evitar atualização de estado após desmontagem
         let isMounted = true;
 
         const connection = new signalR.HubConnectionBuilder()
@@ -26,7 +38,7 @@ export const useSignalR = ({ hubUrl, onConnected, onDisconnected }: UseSignalROp
                 transport: signalR.HttpTransportType.WebSockets,
             })
             .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
-            .configureLogging(signalR.LogLevel.Warning)
+            .configureLogging(signalR.LogLevel.None)
             .build();
 
         connectionRef.current = connection;
@@ -49,12 +61,10 @@ export const useSignalR = ({ hubUrl, onConnected, onDisconnected }: UseSignalROp
             }
         });
 
-        // Inicia a conexão e só registra os handlers se ainda estiver montado
         connection
             .start()
             .then(() => {
                 if (!isMounted) {
-                    // Componente desmontou enquanto conectava — para silenciosamente
                     connection.stop();
                     return;
                 }
@@ -62,24 +72,21 @@ export const useSignalR = ({ hubUrl, onConnected, onDisconnected }: UseSignalROp
                 onConnected?.(connection);
             })
             .catch((err) => {
-                // Ignora o erro de AbortError (causado pelo StrictMode / desmontagem rápida)
-                if (isMounted && err?.name !== "AbortError") {
-                    console.error(`[SignalR] ${hubUrl} connection error:`, err);
+                if (!isExpectedError(err)) {
+                    console.error(`[SignalR] ${hubUrl} error:`, err);
                 }
             });
 
         return () => {
             isMounted = false;
-            // Só para se a conexão já estiver estabelecida ou conectando
             if (
                 connection.state === signalR.HubConnectionState.Connected ||
                 connection.state === signalR.HubConnectionState.Connecting ||
                 connection.state === signalR.HubConnectionState.Reconnecting
             ) {
-                connection.stop();
+                connection.stop().catch(() => {});
             }
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hubUrl]);
 
     return { connection: connectionRef.current, isConnected };

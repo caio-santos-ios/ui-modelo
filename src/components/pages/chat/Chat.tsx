@@ -3,13 +3,10 @@
 import { useChat } from "@/hooks/useChat";
 import { api } from "@/service/api.service";
 import { configApi } from "@/service/config.service";
-// import { getLoggedUserId } from "@/utils/auth.util";
 import { useEffect, useRef, useState } from "react";
 import { MdSend, MdSearch } from "react-icons/md";
 import { TChatMessage, TChatUser } from "@/types/global/chat.type";
 import { getLoggedUserId } from "@/utils/auth.util";
-
-// ─── helpers ────────────────────────────────────────────────────────────────
 
 const timeLabel = (dateStr?: string) => {
     if (!dateStr) return "";
@@ -44,8 +41,6 @@ const UserAvatar = ({
     );
 };
 
-// ─── UserList ────────────────────────────────────────────────────────────────
-
 const UserList = ({
     users,
     activeUserId,
@@ -71,7 +66,6 @@ const UserList = ({
 
     return (
         <div className="flex flex-col h-full border-r border-gray-200 dark:border-gray-800">
-            {/* Search */}
             <div className="p-3 border-b border-gray-100 dark:border-gray-800">
                 <div className="relative">
                     <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -85,7 +79,6 @@ const UserList = ({
                 </div>
             </div>
 
-            {/* List */}
             <ul className="flex-1 overflow-y-auto custom-scrollbar">
                 {filtered.length === 0 && (
                     <li className="py-10 text-center text-sm text-gray-400">
@@ -135,8 +128,6 @@ const UserList = ({
     );
 };
 
-// ─── MessageArea ─────────────────────────────────────────────────────────────
-
 const MessageArea = ({
     activeUser,
     messages,
@@ -175,7 +166,6 @@ const MessageArea = ({
         typingTimer.current = setTimeout(onStopTyping, 2000);
     };
 
-    // Empty state
     if (!activeUser) {
         return (
             <div className="flex-1 flex flex-col items-center justify-center gap-3 text-gray-400 dark:text-gray-600">
@@ -189,7 +179,6 @@ const MessageArea = ({
 
     return (
         <div className="flex flex-col flex-1 overflow-hidden">
-            {/* Header */}
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200 dark:border-gray-800">
                 <UserAvatar name={activeUser.name} photo={activeUser.photo} size="md" />
                 <div>
@@ -204,7 +193,6 @@ const MessageArea = ({
                 </div>
             </div>
 
-            {/* Messages */}
             <div className="flex-1 overflow-y-auto custom-scrollbar px-5 py-4 flex flex-col gap-3">
                 {messages.length === 0 && (
                     <div className="flex-1 flex items-center justify-center">
@@ -229,7 +217,7 @@ const MessageArea = ({
                                         {msg.senderName}
                                     </span>
                                 )}
-                                <div className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed break-words ${
+                                <div className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed wrap-break-word ${
                                     isMine
                                         ? "bg-brand-500 text-white rounded-br-sm"
                                         : "bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white/90 rounded-bl-sm"
@@ -246,7 +234,6 @@ const MessageArea = ({
                 <div ref={bottomRef} />
             </div>
 
-            {/* Input */}
             <div className="flex items-center gap-3 px-4 py-3 border-t border-gray-200 dark:border-gray-800">
                 <input
                     type="text"
@@ -273,8 +260,6 @@ const MessageArea = ({
     );
 };
 
-// ─── ChatPage (main) ─────────────────────────────────────────────────────────
-
 export default function Chat() {
     const myId = getLoggedUserId();
 
@@ -299,7 +284,6 @@ export default function Chat() {
                 configApi()
             );
             const all: TChatUser[] = data?.result?.data ?? [];
-            // Remove o próprio usuário logado da lista
             setUsers(all.filter((u: any) => u.id !== myId));
         } catch {}
     };
@@ -307,7 +291,6 @@ export default function Chat() {
     useEffect(() => {
         loadUsers();
         fetchConversations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSelectUser = (user: TChatUser) => {
