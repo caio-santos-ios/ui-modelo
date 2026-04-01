@@ -53,7 +53,7 @@ const AppSidebar: React.FC = () => {
         }));
       } else {
         const foundModule = modules.find((m: any) => m.code === newItem.code);
-        if(foundModule.code != "A") {
+        if(foundModule && foundModule.code != "A") {
           if (foundModule && foundModule.routines.length > 0) {
             let authorized = false;
   
