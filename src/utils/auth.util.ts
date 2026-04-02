@@ -1,9 +1,17 @@
+import { ResetUserLogged, TUserLogged } from "@/types/master-data/user/user.type";
 import { jwtDecode } from "jwt-decode";
 
-type JwtPayload = { sub: string; email: string; };
+type JwtPayload = {
+    sub: string;
+    email: string;
+    unique_name?: string;
+};
+
+const isBrowser = typeof window !== "undefined";
 
 export const getLoggedUserId = (): string => {
     try {
+        if (!isBrowser) return "";
         const token = localStorage.getItem("telemovviToken") ?? "";
         if (!token) return "";
         const decoded = jwtDecode<JwtPayload>(token);
@@ -11,4 +19,21 @@ export const getLoggedUserId = (): string => {
     } catch {
         return "";
     }
+};
+
+export const getUserLogged = (): TUserLogged => {
+    if (!isBrowser) return ResetUserLogged;
+
+    const id     = localStorage.getItem("AluxCapitalId")     ?? "";
+    const admin  = localStorage.getItem("AluxCapitalAdmin")  ?? "false";
+    const master = localStorage.getItem("AluxCapitalMaster") ?? "false";
+
+    return {
+        email:  "",
+        name:   "",
+        photo:  "",
+        id,
+        admin:  admin  === "true",
+        master: master === "true",
+    };
 };

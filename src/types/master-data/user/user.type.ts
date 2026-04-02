@@ -14,16 +14,37 @@ export const ResetUser: TUser = {
     password: ""
 }
 
+
+export type TUserResetPassword = {
+    id: string;
+    password: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
+export const ResetUserResetPassword: TUserResetPassword = {
+    id: "",
+    password: "",
+    newPassword: "",
+    confirmPassword: ""
+}
+
 export type TUserLogged = {
     photo: string;
     name: string;
     email: string;
+    id: string;
+    admin: boolean;
+    master: boolean;
 }
 
 export const ResetUserLogged: TUserLogged = {
     photo: "",
     name: "",
-    email: ""
+    email: "",
+    id: "",
+    admin: false,
+    master: false
 }
 
 export type TUserProfile = {

@@ -20,6 +20,7 @@ const columns: TDataTableColumns[] = [
   {title: "Mensagem", label: "message", type: "text"},
   {title: "Status", label: "statusCode", type: "text"},
   {title: "Data de Criação", label: "createdAt", type: "dateTime"},
+  {title: "Usuário", label: "userName", type: "text"},
   {title: "Auditoria", label: "audit", type: "booleanYesNo"},
 ]
 
@@ -29,9 +30,6 @@ const routine = "A1";
 export default function LoggerTable() {
   const [_, setLoading] = useAtom(loadingAtom);
   const [pagination, setPagination] = useAtom(paginationAtom); 
-  const { openModal, closeModal } = useModal();
-  const [user, setUser] = useState<TUser>(ResetUser);
-  const router = useRouter();
 
   const getAll = async (page: number) => {
     try {

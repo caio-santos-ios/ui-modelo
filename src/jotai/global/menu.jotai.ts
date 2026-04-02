@@ -32,4 +32,17 @@ export const menuRoutinesAtom = atom<NavItem[]>([
       {name: "Perfil de Usuário", path: "/master-data/profile-users",  code: "B2", pro: false, authorized: false },
     ]
   },
+  {
+    icon: "MdAttachMoney",
+    name: "Financeiro",
+    authorized: false,
+    code: "D",
+    subItems: [
+      {name: "Formas de Pagamentos",  path: "/financial/payment-methods",     code: "D1", pro: false, authorized: false },
+      {name: "Contas a Receber",      path: "/financial/accounts-receivable", code: "D2", pro: false, authorized: false },
+      {name: "Contas a Pagar",        path: "/financial/accounts-payable",    code: "D3", pro: false, authorized: false },
+      {name: "Plano de Contas",       path: "/financial/chart-of-accounts",   code: "D4", pro: false, authorized: false },
+      {name: "DRE",                   path: "/financial/dre",                 code: "D5", pro: false, authorized: false },
+    ]
+  }
 ]);

@@ -19,6 +19,9 @@ import { userAtom, userModalAtom } from "@/jotai/master-data/user.jotai";
 import { chatOpenAtom } from "@/jotai/global/chat.jotai";
 import { useChat } from "@/hooks/useChat";
 import { MdChat } from "react-icons/md";
+import { FaLock } from "react-icons/fa";
+import { getUserLogged } from "@/utils/auth.util";
+import { TUserLogged } from "@/types/master-data/user/user.type";
 
 const columns: TDataTableColumns[] = [
   {title: "Nome", label: "name", type: "text"},
@@ -37,6 +40,8 @@ export default function UserTable() {
   const [modal, setModal] = useAtom(userModalAtom);
   const { openChat } = useChat();
   const [__, setChatOpen] = useAtom(chatOpenAtom);
+
+  const userLogged: TUserLogged = getUserLogged();
 
   const getAll = async (page: number) => {
     try {
@@ -106,6 +111,12 @@ export default function UserTable() {
         pagination.data.length > 0 ? 
         <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
           <>
+            {
+              permissionUpdate(module, routine) && (obj.id == userLogged.id || userLogged.admin || userLogged.master) &&
+              <div title="Alterar Senha" onClick={() => getObj(obj, "update-password")} className="cursor-pointer text-blue-400 hover:text-blue-500">
+                <FaLock />
+              </div>
+            }
             {
               permissionUpdate(module, routine) &&
               <IconEdit action="edit" obj={obj} getObj={getObj}/>
