@@ -35,6 +35,7 @@ export const Autorization = () => {
             const photo = localStorage.getItem("telemovviPhoto");
 
             setUserLogger({
+                ...ResetUserLogged,
                 name: name ? name : "",
                 email: email ? email : "",
                 photo: photo ? photo : "",
