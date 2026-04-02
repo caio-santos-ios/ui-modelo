@@ -180,6 +180,7 @@ export default function ProfileUserForm({id}: TProp) {
                     const IconComponent = icons[menu.icon];
 
                     if(menu.code === "A" && !isMaster) return null;
+                    if(!menu.subItems) return null;
 
                     return (
                       <li className="col-span-6 lg:col-span-3 relative p-5 bg-white border border-gray-200 rounded-xl shadow-theme-sm dark:border-gray-800 dark:bg-white/5" key={menu.code}>
