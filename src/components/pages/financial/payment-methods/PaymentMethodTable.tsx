@@ -20,6 +20,7 @@ import { IconEdit } from "@/components/icons/iconEdit/IconEdit";
 import { IconDelete } from "@/components/icons/iconDelete/IconDelete";
 import { ModalDelete } from "@/components/modal-delete/ModalDelete";
 
+
 export default function PaymentMethodTable() {
   const [_, setLoading] = useAtom(loadingAtom);
   const [pagination, setPagination] = useAtom(paginationAtom); 
