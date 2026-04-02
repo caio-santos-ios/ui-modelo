@@ -6,11 +6,12 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { syncAtom, userAdmin, userLoggerAtom } from "@/jotai/auth/auth.jotai";
-import { api, uriBase } from "@/service/api.service";
+import { api } from "@/service/api.service";
 import { MdSync } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
 import { configApi, removeLocalStorage, resolveResponse, saveLocalStorage } from "@/service/config.service";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
+import { ResetUserLogged } from "@/types/master-data/user/user.type";
 
 export default function UserDropdown() {
   const [_, setIsLoading] = useAtom(loadingAtom);
@@ -42,6 +43,7 @@ export default function UserDropdown() {
       const result = data.result.data;
       
       setUserLogger({
+        ...ResetUserLogged,
         name: result.name,
         email: result.email,
         photo: result.photo
