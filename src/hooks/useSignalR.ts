@@ -7,6 +7,7 @@ const EXPECTED_ERRORS = [
     "AbortError",
     "Failed to start the HttpConnection before stop() was called",
     "Cannot send data if the connection is not in the 'Connected' State",
+    "The connection was stopped during negotiation."
 ];
 
 const isExpectedError = (err: any): boolean => {
@@ -34,8 +35,8 @@ export const useSignalR = ({ hubUrl, onConnected, onDisconnected }: UseSignalROp
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl(`${process.env.NEXT_PUBLIC_API_URL}${hubUrl}?access_token=${token}`, {
-                skipNegotiation: true,
-                transport: signalR.HttpTransportType.WebSockets,
+                // skipNegotiation: true,
+                // transport: signalR.HttpTransportType.WebSockets,
             })
             .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
             .configureLogging(signalR.LogLevel.None)
