@@ -1,40 +1,45 @@
 "use client";
 
-import Pagination from "@/components/tables/Pagination";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { paginationAtom } from "@/jotai/global/pagination.jotai";
-import { maskDate } from "@/utils/mask.util";
 import { permissionDelete, permissionRead, permissionUpdate } from "@/utils/permission.util";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { NotData } from "@/components/not-data/NotData";
-import { storeLoggedAtom } from "@/jotai/global/store.jotai";
 import { useModal } from "@/hooks/useModal";
 import PaymentMethodModalCreate from "./PaymentMethodModalCreate";
-import { paymentMethodIdAtom, paymentMethodModalAtom } from "@/jotai/financial/payment-method.jotai";
-import { ResetPaymentMethod, TPaymentMethod } from "@/types/financial/payment-method.type";
+import { paymentMethodAtom, paymentMethodModalAtom } from "@/jotai/financial/payment-method.jotai";
+import { ResetPaymentMethod } from "@/types/financial/payment-method.type";
 import { IconEdit } from "@/components/icons/iconEdit/IconEdit";
 import { IconDelete } from "@/components/icons/iconDelete/IconDelete";
 import { ModalDelete } from "@/components/modal-delete/ModalDelete";
+import { TDataTableColumns } from "@/types/global/data-table-card.type";
+import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 
+const columns: TDataTableColumns[] = [
+  {title: "Código", label: "code", type: "text"},
+  {title: "Nome", label: "name", type: "text"},
+  {title: "Parcelas", label: "numberOfInstallments", type: "text"},
+  {title: "Data de Criação", label: "createdAt", type: "date"},
+]
+
+const module = "D";
+const routine = "D1";
 
 export default function PaymentMethodTable() {
   const [_, setLoading] = useAtom(loadingAtom);
   const [pagination, setPagination] = useAtom(paginationAtom); 
-  const [storeLogged] = useAtom(storeLoggedAtom);
-  const [paymentMethodId, setPaymentMethodId] = useAtom(paymentMethodIdAtom);  
+  const [paymentMethod, setPaymentMethod] = useAtom(paymentMethodAtom);  
   const { isOpen, openModal, closeModal } = useModal();
-  const [paymentMethod, setPaymentMethod] = useState<TPaymentMethod>(ResetPaymentMethod);
   const [modalCreate, setModalCreate] = useAtom(paymentMethodModalAtom);
 
   const getAll = async (page: number) => {
     try {
       setLoading(true);
       const {data} = await api.get(`/payment-methods?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
-      const result = data.result;
+      const result = data?.result?.data;
       
       setPagination({
         currentPage: result.currentPage,
@@ -65,7 +70,6 @@ export default function PaymentMethodTable() {
       await api.delete(`/payment-methods/${paymentMethod.id}`, configApi());
       resolveResponse({status: 204, message: "Excluído com sucesso"});
       closeModal();
-      setPaymentMethodId("");
       setPaymentMethod(ResetPaymentMethod);
       await getAll(pagination.currentPage);
     } catch (error) {
@@ -77,7 +81,6 @@ export default function PaymentMethodTable() {
 
   const getObj = (obj: any, action: string) => {
     setPaymentMethod(obj);
-    setPaymentMethodId(obj.id);
 
     if(action == "edit") {
       setModalCreate(true);
@@ -89,64 +92,33 @@ export default function PaymentMethodTable() {
   };
   
   useEffect(() => {
-    if(permissionRead("F", "F1")) {
+    if(permissionRead(module, routine)) {
       getAll(1);
     };
-  }, [storeLogged, modalCreate]);
+  }, [modalCreate]);
 
   return (
-    <>
-      <PaymentMethodModalCreate />
+    <div>
       {
-
-          pagination.data.length > 0 ?
+        pagination.data.length > 0 ? 
+        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
           <>
-            <div className="erp-container-table rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3 mb-3">
-              <div className="max-w-full overflow-x-auto tele-container-table">
-                <div className="min-w-[1102px] divide-y">
-                  <Table className="divide-y">
-                    <TableHeader className="border-b border-gray-100 dark:border-white/5 tele-table-thead">
-                      <TableRow>
-                        <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Código</TableCell>
-                        <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Nome</TableCell>
-                        <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Parcelas</TableCell>
-                        <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Data da Criação</TableCell>
-                        <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Ações</TableCell>
-                      </TableRow>
-                    </TableHeader>
-
-                    <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
-                      {pagination.data.map((x: any) => (
-                        <TableRow key={x.id}>
-                          <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{x.code}</TableCell>
-                          <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{x.name}</TableCell>
-                          <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{x.numberOfInstallments}</TableCell>
-                          <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{maskDate(x.createdAt)}</TableCell>
-                          <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">
-                            <div className="flex gap-3">       
-                              {
-                                permissionUpdate("F", "F1") &&
-                                <IconEdit action="edit" obj={x} getObj={getObj}/>
-                              }   
-                              {
-                                permissionDelete("F", "F1") &&
-                                <IconDelete action="delete" obj={x} getObj={getObj}/>                                                   
-                              }                                          
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
-            </div>
-            <Pagination currentPage={pagination.currentPage} totalCount={pagination.totalCount} totalData={pagination.data.length} totalPages={pagination.totalPages} onPageChange={changePage} />        
-            <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Forma de Pagamento" />          
+            {
+              permissionUpdate(module, routine) &&
+              <IconEdit action="edit" obj={obj} getObj={getObj}/>
+            }
+            {
+              permissionDelete(module, routine) &&
+              <IconDelete action="delete" obj={obj} getObj={getObj}/> 
+            }
           </>
-          :
-          <NotData />
-        }
-    </>
+        )
+        }/>
+        :
+        <NotData />
+      }
+      <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Forma de Pagamento" />          
+      <PaymentMethodModalCreate />
+    </div>
   );
 }

@@ -10,13 +10,13 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import Label from "@/components/form/Label";
 import React, { useEffect } from "react";
 import { NumericFormat } from "react-number-format";
-import { paymentMethodIdAtom, paymentMethodModalAtom } from "@/jotai/financial/payment-method.jotai";
+import { paymentMethodAtom, paymentMethodModalAtom } from "@/jotai/financial/payment-method.jotai";
 import { ResetPaymentMethod, TPaymentMethod } from "@/types/financial/payment-method.type";
 
 export default function PaymentMethodModalCreate() {
   const [_, setIsLoading] = useAtom(loadingAtom);
   const [modalCreate, setModalCreate] = useAtom(paymentMethodModalAtom);
-  const [paymentMethodId, setPaymentMethodId] = useAtom(paymentMethodIdAtom);
+  const [paymentMethod, setPaymentMethod] = useAtom(paymentMethodAtom);
 
   const { getValues, setValue, register, reset, watch, control } = useForm<TPaymentMethod>({
     defaultValues: ResetPaymentMethod
@@ -70,12 +70,12 @@ export default function PaymentMethodModalCreate() {
 
   const close = () => {
     setModalCreate(false);
-    setPaymentMethodId("");
+    setPaymentMethod(ResetPaymentMethod);
     reset(ResetPaymentMethod);
   };
 
   useEffect(() => {
-    if(!paymentMethodId) {
+    if(!paymentMethod.id) {
       setValue("interest", []);
       const array: {installment: number, value: number, transactionFee: number, surcharge: number}[] = [];
       
@@ -89,8 +89,8 @@ export default function PaymentMethodModalCreate() {
   
   useEffect(() => {
     const intial = async () => {
-      if(paymentMethodId) {
-        await getById(paymentMethodId);
+      if(paymentMethod.id) {
+        await getById(paymentMethod.id);
       };
     };
     intial();
@@ -177,7 +177,7 @@ export default function PaymentMethodModalCreate() {
           <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
             <Button size="sm" variant="outline" onClick={() => close()}>Cancelar</Button>
             {
-              paymentMethodId ? 
+              paymentMethod.id ? 
               <Button size="sm" variant="primary" onClick={() => update()}>Salvar</Button>
               :
               <Button size="sm" variant="primary" onClick={() => create()}>Adicionar</Button>
