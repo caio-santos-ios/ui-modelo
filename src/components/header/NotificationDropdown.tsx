@@ -7,13 +7,6 @@ import { useRouter } from "next/navigation";
 import { MdDoneAll, MdDelete } from "react-icons/md";
 import { TNotification } from "@/types/global/notification.type";
 
-const typeColors: Record<string, string> = {
-    info:    "bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15",
-    success: "bg-success-50 text-success-600 dark:bg-success-500/15",
-    warning: "bg-warning-50 text-warning-600 dark:bg-warning-500/15",
-    error:   "bg-error-50 text-error-600 dark:bg-error-500/15",
-};
-
 const typeDot: Record<string, string> = {
     info:    "bg-blue-light-500",
     success: "bg-success-500",
@@ -62,7 +55,7 @@ export default function NotificationDropdown() {
             <Dropdown
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
-                className="absolute -right-2 mt-[17px] flex max-h-[520px] w-[360px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark sm:right-0"
+                className="fixed! top-16 left-2 right-2 sm:absolute! sm:left-auto sm:right-0! sm:top-auto sm:mt-[17px] sm:w-[360px] flex max-h-[520px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
             >
                 {/* Header */}
                 <div className="flex items-center justify-between pb-3 mb-2 border-b border-gray-100 dark:border-gray-700">
