@@ -116,7 +116,7 @@ export default function AccountReceivableTable() {
     if (permissionRead(module, routine)) {
       getAll(1);
     }
-  }, [modalCreate, modalPayment]);
+  }, [modalCreate, modalPayment, modalCancel]);
 
   return (
     <div>

@@ -82,7 +82,7 @@ const AppSidebar: React.FC = () => {
 
       return newItem;
     });
-  }, []);
+  }, [menu]);
 
   useEffect(() => {
     if (openSubmenu !== null) {

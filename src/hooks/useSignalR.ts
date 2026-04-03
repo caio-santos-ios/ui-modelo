@@ -34,10 +34,7 @@ export const useSignalR = ({ hubUrl, onConnected, onDisconnected }: UseSignalROp
         let isMounted = true;
 
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(`${process.env.NEXT_PUBLIC_API_URL}${hubUrl}?access_token=${token}`, {
-                // skipNegotiation: true,
-                // transport: signalR.HttpTransportType.WebSockets,
-            })
+            .withUrl(`${process.env.NEXT_PUBLIC_API_URL}${hubUrl}?access_token=${token}`)
             .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
             .configureLogging(signalR.LogLevel.None)
             .build();
@@ -88,7 +85,7 @@ export const useSignalR = ({ hubUrl, onConnected, onDisconnected }: UseSignalROp
                 connection.stop().catch(() => {});
             }
         };
-    }, [hubUrl]);
+    }, [hubUrl, onConnected]);
 
     return { connection: connectionRef.current, isConnected };
 };

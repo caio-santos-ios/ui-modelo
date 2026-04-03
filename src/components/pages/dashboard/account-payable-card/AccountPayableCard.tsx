@@ -29,7 +29,7 @@ export const AccountPayableCard = () => {
     const getAll = async (startDate: string, endDate: string) => {
         try {
             const { data } = await api.get(`/dashboard/accounts-payable?startDate=${startDate}&endDate=${endDate}`, configApi());
-            const result = data?.result?.data?.data;
+            const result = data?.result?.data;
             setData(result);
         } catch (error) {
             resolveResponse(error);

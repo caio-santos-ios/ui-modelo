@@ -23,10 +23,10 @@ export const getLoggedUserId = (): string => {
 
 export const getUserLogged = (): TUserLogged => {
     if (!isBrowser) return ResetUserLogged;
-
-    const id     = localStorage.getItem("AluxCapitalId")     ?? "";
-    const admin  = localStorage.getItem("AluxCapitalAdmin")  ?? "false";
-    const master = localStorage.getItem("AluxCapitalMaster") ?? "false";
+    
+    const id     = localStorage.getItem("telemovviId")     ?? "";
+    const admin  = localStorage.getItem("telemovviAdmin")  ?? "false";
+    const master = localStorage.getItem("telemovviMaster") ?? "false";
 
     return {
         email:  "",

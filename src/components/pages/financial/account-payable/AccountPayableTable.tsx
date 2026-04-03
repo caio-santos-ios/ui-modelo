@@ -24,7 +24,7 @@ import AccountPayableModalPayment from "./AccountPayableModalPayment";
 import AccountPayableModalCreate from "./AccountPayableModalCreate";
 
 const columns: TDataTableColumns[] = [
-    {title: "Cliente",          label: "customerName",      type: "text"},
+    {title: "Fornecedor",       label: "supplierName",      type: "text"},
     {title: "Descrição",        label: "description",       type: "text"},
     {title: "Forma pg.",        label: "paymentMethodName", type: "text"},
     {title: "Valor",            label: "amount",            type: "money"},
@@ -116,7 +116,7 @@ export default function AccountPayableTable() {
         if (permissionRead(module, routine)) {
             getAll(1);
         }
-    }, [modalCreate, modalPayment]);
+    }, [modalCreate, modalPayment, modalCancel]);
 
     return (
         <div>

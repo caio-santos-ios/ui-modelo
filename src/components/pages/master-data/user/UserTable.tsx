@@ -15,13 +15,11 @@ import { NotData } from "@/components/not-data/NotData";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { UserModalCreate } from "./UserModalCreate";
-import { userAtom, userModalAtom } from "@/jotai/master-data/user.jotai";
-import { chatOpenAtom } from "@/jotai/global/chat.jotai";
-import { useChat } from "@/hooks/useChat";
-import { MdChat } from "react-icons/md";
+import { userAtom, userModalAtom, userModalUpdatePasswordAtom } from "@/jotai/master-data/user.jotai";
 import { FaLock } from "react-icons/fa";
 import { getUserLogged } from "@/utils/auth.util";
 import { TUserLogged } from "@/types/master-data/user/user.type";
+import { UserModalUpdatePassword } from "./UserModalUpdatePassword";
 
 const columns: TDataTableColumns[] = [
   {title: "Nome", label: "name", type: "text"},
@@ -38,8 +36,7 @@ export default function UserTable() {
   const { isOpen, openModal, closeModal } = useModal();
   const [user, setUser] = useAtom(userAtom);
   const [modal, setModal] = useAtom(userModalAtom);
-  const { openChat } = useChat();
-  const [__, setChatOpen] = useAtom(chatOpenAtom);
+  const [modalUpdatePassword, setModalUpdatePassword] = useAtom(userModalUpdatePasswordAtom);
 
   const userLogged: TUserLogged = getUserLogged();
 
@@ -85,6 +82,8 @@ export default function UserTable() {
       setUser(obj);
     };
 
+    if(action == "update-password") { setModalUpdatePassword(true); }
+
     if(action == "delete") {
       openModal();
     };
@@ -103,7 +102,7 @@ export default function UserTable() {
     if(permissionRead(module, routine)) {
       getAll(1);
     };
-  }, [modal]);
+  }, [modal, modalUpdatePassword]);
 
   return (
     <div>
@@ -131,6 +130,7 @@ export default function UserTable() {
         :
         <NotData />
       }
+      <UserModalUpdatePassword />
       <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Usuário" />
       <UserModalCreate />
     </div>    
