@@ -44,6 +44,10 @@ const AppSidebar: React.FC = () => {
     return menu.map((item) => {
       const newItem = { ...item };
       newItem.authorized = false;
+      if (!newItem.subItems) {
+          newItem.authorized = true;
+          return newItem;
+      }
 
       if(isMaster) {
         newItem.authorized = true;
