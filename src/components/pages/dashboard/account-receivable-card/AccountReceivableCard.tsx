@@ -28,7 +28,7 @@ export const AccountReceivableCard = () => {
 
     const getAll = async (startDate: string, endDate: string) => {
         try {
-            const { data } = await api.get(`/dashboard/accounts-payable?startDate=${startDate}&endDate=${endDate}`, configApi());
+            const { data } = await api.get(`/dashboard/accounts-receivable?startDate=${startDate}&endDate=${endDate}`, configApi());
             const result = data?.result?.data?.data;
             setData(result);
         } catch (error) {
@@ -90,12 +90,17 @@ export const AccountReceivableCard = () => {
                         Cancelado: {formatCurrency(data?.cancelAmount ?? 0)}{" "}
                         ({formatNumber(data?.cancelCount ?? 0)})
                     </span>
-                    {(data?.overdueAmount ?? 0) > 0 && (
+                    {data?.overdueAmount > 0 ?
                         <span className="text-xs text-red-500 dark:text-red-400">
                         Vencidas: {formatCurrency(data?.overdueAmount ?? 0)}{" "}
                         ({formatNumber(data?.overdueCount ?? 0)})
                         </span>
-                    )}
+                        :
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                        Vencidas: {formatCurrency(data?.overdueAmount ?? 0)}{" "}
+                        ({formatNumber(data?.overdueCount ?? 0)})
+                        </span>
+                    }
                     </div>
                 </div>
                 {(data?.overdueAmount ?? 0) > 0 ? (

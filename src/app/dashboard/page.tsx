@@ -1,10 +1,5 @@
-import SignUpForm from "@/components/auth/SignUpForm";
-import { EcommerceMetrics } from "@/components/ecommerce/EcommerceMetrics";
-import MonthlySalesChart from "@/components/ecommerce/MonthlySalesChart";
-import BillingCard from "@/components/ecommerce/MonthlyTarget";
-import RecentOrders from "@/components/ecommerce/RecentOrders";
-import StatisticsChart from "@/components/ecommerce/StatisticsChart";
-import { AccountReceivableCard } from "@/components/pages/dashboard/account-payable-card/AccountReceivableCard";
+import { AccountPayableCard } from "@/components/pages/dashboard/account-payable-card/AccountPayableCard";
+import { AccountReceivableCard } from "@/components/pages/dashboard/account-receivable-card/AccountReceivableCard";
 import { FilterDashboard } from "@/components/pages/dashboard/filter-dashboard/FilterDashboard";
 import { Metadata } from "next";
 
@@ -24,23 +19,8 @@ export default function DashboardPage() {
         <AccountReceivableCard />
       </div>
 
-      <div className="col-span-12 xl:col-span-6">
-        <EcommerceMetrics />
-      </div>
-
-      <div className="col-span-12 xl:col-span-6">
-        <BillingCard />
-      </div>
-      
-      <div className="col-span-12 xl:col-span-6">
-        <MonthlySalesChart />
-      </div>
-      <div className="col-span-12 xl:col-span-6">
-        <RecentOrders />
-      </div>
-
-      <div className="col-span-12">
-        <StatisticsChart />
+      <div className="col-span-12 md:col-span-6 lg:col-span-3">
+        <AccountPayableCard />
       </div>
     </div>
   ) 
