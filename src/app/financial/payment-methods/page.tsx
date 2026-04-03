@@ -4,7 +4,7 @@ import PaymentMethodTable from "@/components/pages/financial/payment-methods/Pay
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Telemovvi | Formas de Pagamentos",
+  title: "Sistema de Gestão | Formas de Pagamentos",
   description:
     "This is Next.js Form Elements page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
 };

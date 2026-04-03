@@ -4,7 +4,7 @@ import AccountPayableTable from "@/components/pages/financial/account-payable/Ac
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Telemovvi | Contas a Pagar",
+    title: "Sistema de Gestão | Contas a Pagar",
     description: "Gestão de contas a pagar",
 };
 

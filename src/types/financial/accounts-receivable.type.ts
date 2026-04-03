@@ -15,11 +15,13 @@ export type TAccountReceivable = {
     totalInstallments: number;
     dueDate: string;
     paidAt: string | null;
-    status: string; // "open" | "paid" | "partial" | "overdue" | "cancelled"
+    status: string;
     notes: string;
     createdAt: string;
     chartOfAccountId: string;
     issueDate: any;
+    isRecurrent: boolean;
+    typeRecurrent: string;
 }
 
 export const ResetAccountReceivable: TAccountReceivable = {
@@ -39,18 +41,25 @@ export const ResetAccountReceivable: TAccountReceivable = {
     totalInstallments: 1,
     dueDate: "",
     paidAt: null,
-    status: "open",
+    status: "Em Aberto",
     notes: "",
     createdAt: "",
     chartOfAccountId: "",
-    issueDate: new Date().toISOString().split("T")[0],
+    issueDate: "",
+    isRecurrent: false,
+    typeRecurrent: ""
 }
 
-export type TPayAccountReceivable = {
+export type TPaymentAccountReceivable = {
     id: string;
     amountPaid: number;
     paidAt: string;
-    status: string;
+}
+
+export const ResetPaymentAccountReceivable: TPaymentAccountReceivable = {
+    id: "",
+    amountPaid: 0,
+    paidAt: new Date().toISOString().split("T")[0],
 }
 
 export const statusLabel: Record<string, { label: string; color: string }> = {

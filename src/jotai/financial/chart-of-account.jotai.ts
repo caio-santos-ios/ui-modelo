@@ -1,5 +1,5 @@
+import { ResetChartOfAccounts, TChartOfAccounts } from "@/types/financial/chartofaccounts.type";
 import { atom } from "jotai";
 
 export const chartOfAccountModalAtom = atom<boolean>(false);
-export const chartOfAccountIdAtom = atom<string>("");
-export const chartOfAccountPayModalAtom = atom<boolean>(false);
+export const chartOfAccountAtom = atom<TChartOfAccounts>(ResetChartOfAccounts);

@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import Badge from "@/components/ui/badge/Badge";
 import { ArrowDownIcon, ArrowUpIcon, BoxIconLine, GroupIcon } from "@/icons";
-import { api } from "@/service/api.service";
-import { configApi } from "@/service/config.service";
 import { TDashboardCards } from "@/types/dashboard/dashboard-card.type";
 import { useAtom } from "jotai";
 import { loadingAtom } from "@/jotai/global/loading.jotai";

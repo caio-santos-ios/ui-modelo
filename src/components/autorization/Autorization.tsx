@@ -29,6 +29,7 @@ export const Autorization = () => {
                 setIsAdmin(false);
             };
         } else {
+            setIsLoading(false);
             const admin = localStorage.getItem("telemovviAdmin");
             const name = localStorage.getItem("telemovviName");
             const email = localStorage.getItem("telemovviEmail");

@@ -4,7 +4,7 @@ import AccountReceivableTable from "@/components/pages/financial/accounts-receiv
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Telemovvi | Contas a Receber",
+  title: "Sistema de Gestão | Contas a Receber",
   description: "Gestão de contas a receber",
 };
 

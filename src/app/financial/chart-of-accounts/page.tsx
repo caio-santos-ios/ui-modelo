@@ -4,7 +4,7 @@ import ChartOfAccountsTable from "@/components/pages/financial/chart-of-accounts
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Telemovvi | Plano de Contas",
+    title: "Sistema de Gestão | Plano de Contas",
     description: "Gestão do Plano de Contas",
 };
 

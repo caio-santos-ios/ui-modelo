@@ -5,3 +5,11 @@ export type TPagination = {
     currentPage: number,
     sizePage: number
 }
+
+export const ResetPagination: TPagination = {
+    data: [],
+    totalPages: 0,
+    totalCount: 0,
+    currentPage: 1,
+    sizePage: 10
+}

@@ -1,28 +1,39 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import Badge from "@/components/ui/badge/Badge";
 import { useAtom } from "jotai";
 import { paginationAtom } from "@/jotai/global/pagination.jotai";
 import { NotData } from "@/components/not-data/NotData";
-import Pagination from "@/components/tables/Pagination";
 import { useModal } from "@/hooks/useModal";
-import { permissionDelete, permissionUpdate } from "@/utils/permission.util";
+import { permissionDelete, permissionRead, permissionUpdate } from "@/utils/permission.util";
 import ChartOfAccountsModalCreate from "./ChartOfAccountsModalCreate";
-import { chartOfAccountIdAtom, chartOfAccountModalAtom } from "@/jotai/financial/chart-of-account.jotai";
-import { IconEdit } from "@/components/icons/iconEdit/IconEdit";
-import { IconDelete } from "@/components/icons/iconDelete/IconDelete";
+import { chartOfAccountAtom, chartOfAccountModalAtom } from "@/jotai/financial/chart-of-account.jotai";
+import { IconEdit } from "@/components/icons/global/iconEdit/IconEdit";
+import { IconDelete } from "@/components/icons/global/iconDelete/IconDelete";
 import { ModalDelete } from "@/components/modal-delete/ModalDelete";
+import { TDataTableColumns } from "@/types/global/data-table-card.type";
+import { DataTableCard } from "@/components/data-table-card/DataTableCard";
+
+const columns: TDataTableColumns[] = [
+  {title: "Código",           label: "code",       type: "text"},
+  {title: "Nome",             label: "name",       type: "text"},
+  {title: "Tipo",             label: "type",       type: "text"},
+  {title: "Grupo DRE",        label: "groupDRE",   type: "text"},
+  {title: "Data de Criação",  label: "createdAt",  type: "date"},
+];
+
+const module = "D";
+const routine = "D4";
 
 export default function ChartOfAccountsTable() {
   const [pagination, setPagination] = useAtom(paginationAtom);
   const [_, setLoading] = useState(true);
-  const [chartOfAccount, setChartOfAccount] = useState<any>({});
   const { isOpen, openModal, closeModal } = useModal();
   const [modalCreate, setModalCreate] = useAtom(chartOfAccountModalAtom);
-  const [___, setChartOfAccountId] = useAtom(chartOfAccountIdAtom);
+  const [chartOfAccount, setChartOfAccount] = useAtom(chartOfAccountAtom);
   const [groupsDespesaDRE] = useState<any[]>([
     { value: "none", level: 1, label: "Não mostrar no DRE" },    
     { value: "deducoes", level: 1, label: "Deduções" },
@@ -57,12 +68,12 @@ export default function ChartOfAccountsTable() {
   const getAll = async (page: number) => {
     try {
       setLoading(true);
-      const { data } = await api.get(`/chart-of-accounts?deleted=false&orderBy=dueDate&sort=asc&pageSize=10&pageNumber=${page}`, configApi());
+      const { data } = await api.get(`/chart-of-accounts?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
       const result = data.result.data;
       
       setPagination({
         currentPage: result.currentPage,
-        data: result.data ?? [],
+        data: result.data.map((x: any) => ({...x, type: getTypeBadge(x.type), groupDRE: getDescriptionGroupDRE(x.groupDRE, x.type)})) ?? [],
         sizePage: result.pageSize,
         totalPages: result.totalPages,
         totalCount: result.totalCount,
@@ -95,10 +106,7 @@ export default function ChartOfAccountsTable() {
   const getObj = (obj: any, action: string) => {
     setChartOfAccount(obj);
 
-    if (action === "edit") {
-      setChartOfAccountId(obj.id);
-      setModalCreate(true);
-    };
+    if (action === "edit") setModalCreate(true);
     if (action === "delete") openModal();
   };
 
@@ -119,89 +127,33 @@ export default function ChartOfAccountsTable() {
   }
   
   useEffect(() => {
-    getAll(1);
+    if (permissionRead(module, routine)) {
+      getAll(1);
+    }
   }, [modalCreate]);
 
   return (
-    <>
-      {pagination.data.length > 0 ? (
-      <>
-        <div className="erp-container-table rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3 mb-3">
-          <div className="max-w-full overflow-x-auto tele-container-table">
-            <div className="min-w-[1102px] divide-y">
-              <Table className="divide-y">
-                <TableHeader className="border-b border-gray-100 dark:border-white/5 tele-table-thead">
-                  <TableRow>
-                    <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Código</TableCell>
-                    <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Nome</TableCell>
-                    <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Tipo</TableCell>
-                    <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Grupo DRE</TableCell>
-                    <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Ações</TableCell>
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
-                    {pagination.data.map((x: any) => {
-                      return (
-                        <TableRow key={x.id}>
-                          <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400 text-sm">
-                            {x.code}
-                          </TableCell>
-                          <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400 text-sm">
-                            {x.name}
-                          </TableCell>
-                          <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400 text-sm">
-                            {getTypeBadge(x.type)}
-                          </TableCell>
-                          <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400 text-sm">
-                            {getDescriptionGroupDRE(x.groupDRE, x.type)}
-                          </TableCell>
-                          <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400 text-sm">
-                            {x.isAnalytical ? (
-                              <span className="text-blue-600 dark:text-blue-400">Sim</span>
-                            ) : (
-                              <span className="text-gray-400">Não</span>
-                            )}
-                          </TableCell>
-                          <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400 text-sm">
-                            <div className="flex gap-3 items-center">
-                              {permissionUpdate("H", "H2") && x.status !== "paid" && x.status !== "cancelled" && (
-                                <IconEdit action="edit" obj={x} getObj={getObj} />
-                              )}
-                              {permissionDelete("H", "H2") && x.status !== "paid" && x.status !== "cancelled" && (
-                                <IconDelete action="delete" obj={x} getObj={getObj} />
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        </div>
-
-        <Pagination
-          currentPage={pagination.currentPage}
-          totalCount={pagination.totalCount}
-          totalData={pagination.data.length}
-          totalPages={pagination.totalPages}
-          onPageChange={changePage}
-        />
-
-        <ModalDelete
-          confirm={destroy}
-          isOpen={isOpen}
-          closeModal={closeModal}
-          title="Excluir Plano de Contas"
-        />
-      </>
-      ) : (
+    <div>
+      {
+        pagination.data.length > 0 ? 
+        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
+          <>
+            {
+              permissionUpdate(module, routine) &&
+              <IconEdit action="edit" obj={obj} getObj={getObj}/>
+            }
+            {
+              permissionDelete(module, routine) &&
+              <IconDelete action="delete" obj={obj} getObj={getObj}/>
+            }
+          </>
+        )
+        }/>
+        :
         <NotData />
-      )}
-
+      }
       <ChartOfAccountsModalCreate />
-    </>
+      <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Plano de Contas" />          
+    </div>
   );
 }

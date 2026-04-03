@@ -1,7 +1,7 @@
 import { TPagination } from "@/types/global/pagination.type"
 import Pagination from "../tables/Pagination";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../table/Table";
-import { maskDate } from "@/utils/mask.util";
+import { formattedMoney, maskDate } from "@/utils/mask.util";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { ReactNode } from "react";
 
@@ -14,6 +14,28 @@ type TProps = {
     isActions?: boolean;
 }
 
+const statusLabel: {label: string; className: string;}[] = [
+    {label: "Em Aberto", className: "bg-gray-100 text-gray-700"},
+    {label: "Recebido Parcial", className: "bg-orange-100 text-orange-700"},
+    {label: "Recebido", className: "bg-green-100 text-green-700"},
+    {label: "Cancelado", className: "bg-red-100 text-red-700"},
+    {label: "Pago Parcial", className: "bg-orange-100 text-orange-700"},
+    {label: "Pago", className: "bg-green-100 text-green-700"},
+]
+
+const getStatusBadge = (status: string) => {
+    let s = statusLabel.find(x => x.label == status);
+    if(!s) {
+        s = { label: status, className: "bg-gray-100 text-gray-700" };
+    };
+
+    return (
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${s.className}`}>
+        {s.label}
+        </span>
+    );
+};
+
 export const DataTableCard = ({pagination, columns, changePage, actions, isActions = false, heightContainer = "max-h-[calc(100dvh-16rem)] md:max-h-[calc(100dvh-16.5rem)]"}: TProps) => {
     const normalizeTableCell = (value: any, type: string) => {
         switch(type) {
@@ -23,6 +45,10 @@ export const DataTableCard = ({pagination, columns, changePage, actions, isActio
                 return maskDate(value, "seconds");
             case "booleanYesNo":
                 return value ? "Sim" : "Não";
+            case "workflow":
+                return getStatusBadge(value);
+            case "money":
+                return formattedMoney(value);
             default:
                 return value;
         }   

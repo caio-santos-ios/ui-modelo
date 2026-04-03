@@ -1,44 +1,58 @@
 "use client";
 
-import Pagination from "@/components/tables/Pagination";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { paginationAtom } from "@/jotai/global/pagination.jotai";
-import { formattedMoney, maskDate } from "@/utils/mask.util";
 import { permissionDelete, permissionRead, permissionUpdate } from "@/utils/permission.util";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { NotData } from "@/components/not-data/NotData";
-import { storeLoggedAtom } from "@/jotai/global/store.jotai";
 import { useModal } from "@/hooks/useModal";
 import AccountReceivableModalCreate from "./AccountReceivableModalCreate";
-import AccountReceivableModalPay from "./AccountReceivableModalPay";
-import { MdPayment } from "react-icons/md";
-import { accountReceivableIdAtom, accountReceivableModalAtom, accountReceivablePayModalAtom } from "@/jotai/financial/accounts-receivable.jotai";
-import { ResetAccountReceivable, TAccountReceivable } from "@/types/financial/accounts-receivable.type";
-import { IconEdit } from "@/components/icons/iconEdit/IconEdit";
-import { IconDelete } from "@/components/icons/iconDelete/IconDelete";
-import { IconView } from "@/components/icons/iconView/IconView";
+import { accountReceivableAtom, accountReceivableCancelModalAtom, accountReceivableModalAtom, accountReceivablePaymentModalAtom } from "@/jotai/financial/accounts-receivable.jotai";
+import { ResetAccountReceivable } from "@/types/financial/accounts-receivable.type";
+import { IconEdit } from "@/components/icons/global/iconEdit/IconEdit";
+import { IconDelete } from "@/components/icons/global/iconDelete/IconDelete";
+import { IconView } from "@/components/icons/global/iconView/IconView";
 import { ModalDelete } from "@/components/modal-delete/ModalDelete";
+import { TDataTableColumns } from "@/types/global/data-table-card.type";
+import { DataTableCard } from "@/components/data-table-card/DataTableCard";
+import { IconPayment } from "@/components/icons/financial/IconPayment";
+import AccountReceivableModalPayment from "./AccountReceivableModalPayment";
+import { ResetPagination } from "@/types/global/pagination.type";
+import { IconCancel } from "@/components/icons/financial/IconCancel";
+
+const columns: TDataTableColumns[] = [
+  {title: "Cliente",          label: "customerName",      type: "text"},
+  {title: "Descrição",        label: "description",       type: "text"},
+  {title: "Forma pg.",        label: "paymentMethodName", type: "text"},
+  {title: "Valor",            label: "amount",            type: "money"},
+  {title: "Valor Recebido",   label: "amountPaid",        type: "money"},
+  {title: "Emissão",          label: "issueDate",         type: "date"},
+  {title: "Vencimento",       label: "dueDate",           type: "date"},
+  {title: "Status",           label: "status",            type: "workflow"},
+  {title: "Data de Criação",  label: "createdAt",         type: "date"},
+];
+
+const module = "D";
+const routine = "D2";
 
 export default function AccountReceivableTable() {
   const [_, setLoading] = useAtom(loadingAtom);
   const [pagination, setPagination] = useAtom(paginationAtom);
-  const [storeLogged] = useAtom(storeLoggedAtom);
-  const [accountReceivableId, setAccountReceivableId] = useAtom(accountReceivableIdAtom);
+  const [accountReceivable, setAccountReceivable] = useAtom(accountReceivableAtom);
   const { isOpen, openModal, closeModal } = useModal();
-  const [selected, setSelected] = useState<TAccountReceivable>(ResetAccountReceivable);
   const [modalCreate, setModalCreate] = useAtom(accountReceivableModalAtom);
-  const [payModal, setPayModal] = useAtom(accountReceivablePayModalAtom);
+  const [modalPayment, setModalPayment] = useAtom(accountReceivablePaymentModalAtom);
+  const [modalCancel, setModalCancel] = useAtom(accountReceivableCancelModalAtom);
 
   const getAll = async (page: number) => {
     try {
       setLoading(true);
-      const today = new Date().toISOString().split('T')[0];;
-      const { data } = await api.get(`/accounts-receivable?deleted=false&lte$issueDate=${today}&orderBy=issueDate&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
-      const result = data.result;
+      const { data } = await api.get(`/accounts-receivable?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
+      const result = data?.result?.data ?? ResetPagination;
+      
       setPagination({
         currentPage: result.currentPage,
         data: result.data ?? [],
@@ -61,12 +75,26 @@ export default function AccountReceivableTable() {
   const destroy = async () => {
     try {
       setLoading(true);
-      await api.delete(`/accounts-receivable/${selected.id}`, configApi());
+      await api.delete(`/accounts-receivable/${accountReceivable.id}`, configApi());
       resolveResponse({ status: 204, message: "Excluído com sucesso" });
       closeModal();
-      setAccountReceivableId("");
-      setSelected(ResetAccountReceivable);
-      await getAll(pagination.currentPage);
+      setAccountReceivable(ResetAccountReceivable);
+      await getAll(1);
+    } catch (error) {
+      resolveResponse(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const cancel = async () => {
+    try {
+      setLoading(true);
+      await api.put(`/accounts-receivable/cancel`, {...accountReceivable}, configApi());
+      resolveResponse({ status: 204, message: "Cancelado com sucesso" });
+      setAccountReceivable(ResetAccountReceivable);
+      setModalCancel(false);
+      await getAll(1);
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -75,109 +103,58 @@ export default function AccountReceivableTable() {
   };
 
   const getObj = (obj: any, action: string) => {
-    setSelected(obj);
-    setAccountReceivableId(obj.id);
+    setAccountReceivable(obj);
 
     if (action === "edit") setModalCreate(true);
     if (action === "view") setModalCreate(true);
     if (action === "delete") openModal();
-    if (action === "pay") setPayModal(true);
+    if (action === "pay") setModalPayment(true);
+    if (action === "cancel") setModalCancel(true);
   };
 
   useEffect(() => {
-    if (permissionRead("H", "H1")) {
+    if (permissionRead(module, routine)) {
       getAll(1);
     }
-  }, [storeLogged, modalCreate, payModal]);
-
-  const getStatusBadge = (status: string) => {
-    // const s = statusLabel[status] ?? { label: status, color: "bg-gray-100 text-gray-700" };
-    return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium`}>
-        {/* {s.label} */}
-      </span>
-    );
-  };
+  }, [modalCreate, modalPayment]);
 
   return (
-    <>
-      <AccountReceivableModalCreate />
-      <AccountReceivableModalPay />
-      {pagination.data.length > 0 ? (
-        <>
-          <div className="erp-container-table rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3 mb-3">
-            <div className="max-w-full overflow-x-auto tele-container-table">
-              <div className="min-w-[1102px] divide-y">
-                <Table className="divide-y">
-                  <TableHeader className="border-b border-gray-100 dark:border-white/5 tele-table-thead">
-                    <TableRow>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Cliente</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Descrição</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Forma Pgto</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Valor</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Valor Recebido</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Parcela</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Emissão</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Vencimento</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Status</TableCell>
-                      <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Ações</TableCell>
-                    </TableRow>
-                  </TableHeader>
-
-                  <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
-                    {pagination.data.map((x: any) => (
-                      <TableRow key={x.id}>
-                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-700 dark:text-gray-200 font-medium">{x.customerName}</TableCell>
-                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{x.description}</TableCell>
-                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{x.paymentMethodName}</TableCell>
-                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-700 dark:text-gray-200 font-medium">{formattedMoney(x.amount)}</TableCell>
-                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-700 dark:text-gray-200 font-medium">{formattedMoney(x.amountPaid)}</TableCell>
-                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{x.installmentNumber}/{x.totalInstallments}</TableCell>
-                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{maskDate(x.issueDate)}</TableCell>
-                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">{maskDate(x.dueDate)}</TableCell>
-                        <TableCell className="px-5 py-4 sm:px-6 text-start">{getStatusBadge(x.status)}</TableCell>
-                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">
-                          <div className="flex gap-3 items-center">
-                            {x.status !== "paid" && x.status !== "cancelled" && (
-                              <button
-                                title="Baixar título"
-                                onClick={() => getObj(x, "pay")}
-                                className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200 transition-colors"
-                              >
-                                <MdPayment size={18} />
-                              </button>
-                            )}
-                            {permissionUpdate("H", "H1") && x.status !== "paid" && x.status !== "cancelled" && (
-                              <IconEdit action="edit" obj={x} getObj={getObj} />
-                            )}
-                            {permissionDelete("H", "H1") && x.status !== "paid" && x.status !== "cancelled" && (
-                              <IconDelete action="delete" obj={x} getObj={getObj} />
-                            )}
-                            {permissionDelete("H", "H1") && (x.status == "paid" || x.status == "cancelled") && (
-                              <IconView action="view" obj={x} getObj={getObj} />
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          </div>
-          <Pagination
-            currentPage={pagination.currentPage}
-            totalCount={pagination.totalCount}
-            totalData={pagination.data.length}
-            totalPages={pagination.totalPages}
-            onPageChange={changePage}
-          />
-          {/* <CustomerModalCreate /> */}
-          <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Conta a Receber" />
-        </>
-      ) : (
+    <div>
+      {
+        pagination.data.length > 0 ? 
+        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine) || permissionRead(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
+          <>
+            {
+              permissionUpdate(module, routine) && obj.status !== "Recebido" && obj.status !== "Cancelado" &&
+              <IconPayment action="pay" obj={obj} getObj={getObj}/>
+            }
+            {
+              permissionUpdate(module, routine) && obj.status == "Em Aberto" &&
+              <IconEdit action="edit" obj={obj} getObj={getObj}/>
+            }
+            {
+              permissionDelete(module, routine) && (obj.status == "Recebido" || obj.status == "Recebido Parcial") &&
+              <IconCancel action="cancel" obj={obj} getObj={getObj}/>
+            }
+            {
+              permissionDelete(module, routine) && obj.status == "Em Aberto" &&
+              <IconDelete action="delete" obj={obj} getObj={getObj}/>
+            }
+            {
+              permissionRead(module, routine) && (obj.status == "Recebido" || obj.status == "Cancelado") &&
+              <IconView action="view" obj={obj} getObj={getObj} />
+            }
+          </>
+        )
+        }/>
+        :
         <NotData />
-      )}
-    </>
+      }
+      {/* <CustomerModalCreate /> */}
+      <AccountReceivableModalCreate />
+      <AccountReceivableModalPayment />
+      <ModalDelete confirm={cancel} isOpen={modalCancel} closeModal={() => setModalCancel(false)} title="Cancelar Conta a Receber" description="Deseja Cancelar esse Título?" />          
+      <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Conta a Receber" />          
+    </div>
   );
 }

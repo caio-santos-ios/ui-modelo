@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: "Telemovvi | Plano de Contas",
+    title: "Sistema de Gestão | Plano de Contas",
     description: "Gestão do Plano de Contas",
 };
 

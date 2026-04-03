@@ -1,8 +1,8 @@
 "use client";
 
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
-import { IconDelete } from "@/components/icons/iconDelete/IconDelete";
-import { IconEdit } from "@/components/icons/iconEdit/IconEdit";
+import { IconDelete } from "@/components/icons/global/iconDelete/IconDelete";
+import { IconEdit } from "@/components/icons/global/iconEdit/IconEdit";
 import { ModalDelete } from "@/components/modal-delete/ModalDelete";
 import { NotData } from "@/components/not-data/NotData";
 import { useModal } from "@/hooks/useModal";

@@ -3,7 +3,7 @@ import Chat from "@/components/pages/chat/Chat";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Telemovvi | Chat",
+    title: "Sistema de Gestão | Chat",
     description: "Chat em tempo real",
 };
 

@@ -19,7 +19,5 @@ export const PaymentMethodButtonCreate = () => {
 
     if (!hasPermission) return null;
     
-    return (
-        <Button onClick={() => setModal(true)} type="submit" className="" size="sm">Adicionar</Button>
-    )
+    return <Button onClick={() => setModal(true)} type="submit" className="" size="sm">Adicionar</Button>
 }

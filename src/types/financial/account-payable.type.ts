@@ -38,7 +38,7 @@ export const ResetAccountPayable: TAccountPayable = {
     totalInstallments: 1,
     dueDate: "",
     paidAt: "",
-    status: "open",
+    status: "Em Aberto",
     notes: "",
     chartOfAccountId: "",
     issueDate: new Date().toISOString().split("T")[0],
@@ -46,18 +46,16 @@ export const ResetAccountPayable: TAccountPayable = {
     typeRecurrent: ""
 };
 
-export type TPayAccountPayable = {
+export type TPaymentAccountPayable = {
     id: string;
     amountPaid: number;
     paidAt: string;
-    status: string;
 };
 
-export const ResetPayAccountPayable: TPayAccountPayable = {
+export const ResetPaymentAccountPayable: TPaymentAccountPayable = {
     id: "",
     amountPaid: 0,
     paidAt: new Date().toISOString().split("T")[0],
-    status: "paid",
 };
 
 export const statusLabelPayable: Record<string, { label: string; color: string }> = {

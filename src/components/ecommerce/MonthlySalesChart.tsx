@@ -2,8 +2,6 @@
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { api } from "@/service/api.service";
-import { configApi } from "@/service/config.service";
 import { TDashboardMonthlySales } from "@/types/dashboard/dashboard-card.type";
 import { useAtom } from "jotai";
 import { loadingAtom } from "@/jotai/global/loading.jotai";

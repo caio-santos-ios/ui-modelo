@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Telemovvi | Perfil de Usuário",
+  title: "Sistema de Gestão | Perfil de Usuário",
   description: "This is Next.js Form Elements page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
 };
 

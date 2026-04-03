@@ -65,8 +65,6 @@ const AppSidebar: React.FC = () => {
             
             newItem.authorized = authorized;
             
-            foundModule.routines.find((x: any) => console.log(x.permissions))
-  
             newItem.subItems = newItem.subItems?.map((sub) => ({
               ...sub,
               authorized: foundModule.routines.some((x: any) => 
@@ -109,12 +107,12 @@ const AppSidebar: React.FC = () => {
       ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}>
-      <div className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
+      <div className={`py-2 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
         <Link href={`${isAdmin ? '/dashboard' : '/master-data/profile'}`} className="w-full flex justify-center">
           {isExpanded || isHovered || isMobileOpen ? (
-            <Logo width={80} height={80} />
+            <Logo width={150} height={150} />
           ) : (
-            <Logo width={40} height={40} />
+            <Logo width={70} height={70} />
           )}
         </Link>
       </div>
