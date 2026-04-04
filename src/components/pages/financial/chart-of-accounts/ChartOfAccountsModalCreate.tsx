@@ -46,15 +46,15 @@ const groupsDespesaDRE: {value: string, level: number, label: string}[] = [
   { value: "outras_esp", level: 2, label: "(-) Outras despesas" },
 ];
 
-const groupsReceitaDRE: {type: string, value: string, level: number, label: string}[] = [
-  { type: "dre", value: "rec_bruta", level: 1, label: "Receita bruta" },
-  { type: "dre", value: "rec_vendas", level: 2, label: "(+) Receitas de vendas" },    
-  { type: "dre", value: "rec_fin", level: 1, label: "Receitas financeiras" },
-  { type: "dre", value: "rend_fin", level: 2, label: "(+) Rendimentos financeiros" },
-  { type: "dre", value: "jur_rec", level: 2, label: "(+) Juros/multas recebidos" },
-  { type: "dre", value: "desc_rec", level: 2, label: "(+) Descontos recebidos" },
-  { type: "dre", value: "rec_outras", level: 1, label: "Outras receitas" },
-  { type: "dre", value: "outras_rec_item", level: 2, label: "(+) Outras receitas" },
+const groupsReceitaDRE: {value: string, level: number, label: string}[] = [
+  { value: "rec_bruta", level: 1, label: "Receita bruta" },
+  { value: "rec_vendas", level: 2, label: "(+) Receitas de vendas" },    
+  { value: "rec_fin", level: 1, label: "Receitas financeiras" },
+  { value: "rend_fin", level: 2, label: "(+) Rendimentos financeiros" },
+  { value: "jur_rec", level: 2, label: "(+) Juros/multas recebidos" },
+  { value: "desc_rec", level: 2, label: "(+) Descontos recebidos" },
+  { value: "rec_outras", level: 1, label: "Outras receitas" },
+  { value: "outras_rec_item", level: 2, label: "(+) Outras receitas" },
 ];
 
 export default function ChartOfAccountsModalCreate() {
@@ -115,6 +115,7 @@ export default function ChartOfAccountsModalCreate() {
 
   useEffect(() => {
     const initial = async () => {
+      setChartOfAccount(ResetChartOfAccounts);
       reset(ResetChartOfAccounts);
 
       if(modal) {        

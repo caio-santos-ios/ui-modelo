@@ -27,7 +27,7 @@ export default function AccountPayableModalPayment() {
             setIsLoading(true);
             const { data } = await api.put(`/accounts-payable/pay`, { ...getValues(), id: accountPayable.id }, configApi());
             resolveResponse({ status: 200, message: data.result.message });
-            close();
+            closeModal();
         } catch (error) {
             resolveResponse(error);
         } finally {

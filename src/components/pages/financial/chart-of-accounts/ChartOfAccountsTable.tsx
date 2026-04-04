@@ -90,6 +90,7 @@ export default function ChartOfAccountsTable() {
       setLoading(true);
       await api.delete(`/chart-of-accounts/${chartOfAccount.id}`, configApi());
       resolveResponse({ status: 204, message: "Excluído com sucesso" });
+      closeModal();
       await getAll(pagination.currentPage);
     } catch (error) {
       resolveResponse(error);

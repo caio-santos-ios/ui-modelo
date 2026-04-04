@@ -4,7 +4,7 @@ import Badge from "@/components/ui/badge/Badge";
 import { filterDashboardAtom, searchFilterDashboardAtom } from "@/jotai/dashboard/filter-dashboard.jotai";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
-import { ResetDashboardAccountPayableCard, TDashboardAccountPayableCard } from "@/types/dashboard/dashboard-account-payable-card.type";
+import { ResetDashboardAccountPayableCard, TDashboardAccountPayableCard } from "@/types/dashboard/cards/dashboard-account-payable-card.type";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { IoArrowDownCircleOutline } from "react-icons/io5";
@@ -20,43 +20,13 @@ function formatCurrency(value: number): string {
 function formatNumber(value: number): string {
     return new Intl.NumberFormat("pt-BR").format(value ?? 0);
 }
+type TProps = {
+    data: TDashboardAccountPayableCard
+}
 
-export const AccountPayableCard = () => {
-    const [data, setData] = useState<TDashboardAccountPayableCard>(ResetDashboardAccountPayableCard);
-    const [filterDashboard] = useAtom(filterDashboardAtom);
-    const [search] = useAtom(searchFilterDashboardAtom);
-
-    const getAll = async (startDate: string, endDate: string) => {
-        try {
-            const { data } = await api.get(`/dashboard/accounts-payable?startDate=${startDate}&endDate=${endDate}`, configApi());
-            const result = data?.result?.data;
-            setData(result);
-        } catch (error) {
-            resolveResponse(error);
-        }
-    };
-    
-    useEffect(() => {
-        const today = new Date();
-
-        const formatDate = (date: any) => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        };
-
-        const firstDay = formatDate(new Date(today.getFullYear(), today.getMonth(), 1));
-        const lastDay = formatDate(new Date(today.getFullYear(), today.getMonth() + 1, 0));
-        getAll(firstDay, lastDay);
-    }, []);
-
-    useEffect(() => {
-        getAll(filterDashboard.startDate, filterDashboard.endDate);
-    }, [search]);
-
+export const AccountPayableCard = ({data}: TProps) => {
     return (
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 md:p-6">
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 md:p-6 min-h-70">
             <div className="flex items-center justify-center w-12 h-12 bg-red-50 rounded-xl dark:bg-red-900/20">
                 <svg
                     className="text-red-500 dark:text-red-400"
@@ -75,7 +45,7 @@ export const AccountPayableCard = () => {
                     <line x1="10" y1="16" x2="14" y2="16" />
                 </svg>
             </div>
-            <div className="flex items-end justify-between mt-5">
+            <div className="flex items-end justify-between mt-5 flex-wrap">
                 <div>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
                     Contas a Pagar
@@ -106,10 +76,7 @@ export const AccountPayableCard = () => {
                     </div>
                 </div>
                 {(data?.overdueAmount ?? 0) > 0 ? (
-                    <Badge color="error">
-                        <IoArrowDownCircleOutline className="text-error-500" />
-                        Vencidas
-                    </Badge>
+                    <Badge color="error">Vencidas</Badge>
                 ) : (
                     <Badge color="success">Em dia</Badge>
                 )}
