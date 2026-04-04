@@ -57,8 +57,8 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
 
   const fetchEmployees = async () => {
     try {
-      const { data } = await api.get("/employees/select/technicians", configApi());
-      setEmployees(data.result.data || []);
+      // const { data } = await api.get("/employees/select/technicians", configApi());
+      // setEmployees(data.result.data || []);
     } catch {}
   };
 
@@ -78,9 +78,9 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
   const getAutocompleSupplier = async (value: string) => {
     try {
         if(!value) return setSuppliers([]);
-        const {data} = await api.get(`/suppliers?deleted=false&orderBy=tradeName&sort=desc&pageSize=10&pageNumber=1&regex$or$tradeName=${value}&regex$or$corporateName=${value}`, configApi());
-        const result = data.result;
-        setSuppliers(result.data);
+        // const {data} = await api.get(`/suppliers?deleted=false&orderBy=tradeName&sort=desc&pageSize=10&pageNumber=1&regex$or$tradeName=${value}&regex$or$corporateName=${value}`, configApi());
+        // const result = data.result;
+        // setSuppliers(result.data);
     } catch (error) {
         resolveResponse(error);
     }

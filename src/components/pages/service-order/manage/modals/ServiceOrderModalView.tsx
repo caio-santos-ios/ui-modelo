@@ -50,8 +50,8 @@ export default function ServiceOrderModalView() {
 
     const fetchBrands = async () => {
         try {
-            const { data } = await api.get("/brands?deleted=false&pageSize=100&pageNumber=1", configApi());
-            setBrands(data.result.data || []);
+            // const { data } = await api.get("/brands?deleted=false&pageSize=100&pageNumber=1", configApi());
+            // setBrands(data.result.data || []);
         } catch {}
     };
     

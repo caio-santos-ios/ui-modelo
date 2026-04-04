@@ -36,8 +36,8 @@ export default function ServiceOrderDeviceTab({ register, watch, setValue, onSav
 
   const fetchBrands = async () => {
     try {
-      const { data } = await api.get("/brands?deleted=false&pageSize=100&pageNumber=1", configApi());
-      setBrands(data.result.data || []);
+      // const { data } = await api.get("/brands?deleted=false&pageSize=100&pageNumber=1", configApi());
+      // setBrands(data.result.data || []);
     } catch (error) {
       resolveResponse(error);
     }
@@ -56,7 +56,7 @@ export default function ServiceOrderDeviceTab({ register, watch, setValue, onSav
 
   const fetchType = async () => {
     try {
-      const { data } = await api.get(`/generic-tables/table/tipo-equipamentos-ordem-servico`, configApi());
+      // const { data } = await api.get(`/generic-tables/table/tipo-equipamentos-ordem-servico`, configApi());
       // setTypeDevice(data?.result?.data || []);
     } catch (error) {
       resolveResponse(error);
@@ -65,7 +65,7 @@ export default function ServiceOrderDeviceTab({ register, watch, setValue, onSav
 
   const fetchPhysicalCondition = async () => {
     try {
-      const { data } = await api.get(`/generic-tables/table/estado-fisico-ordem-servico`, configApi());
+      // const { data } = await api.get(`/generic-tables/table/estado-fisico-ordem-servico`, configApi());
       // setPhysicalCondition(data?.result?.data || []);
     } catch (error) {
       resolveResponse(error);

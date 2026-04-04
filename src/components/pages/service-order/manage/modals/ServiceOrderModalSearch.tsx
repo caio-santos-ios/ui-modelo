@@ -63,9 +63,9 @@ export default function ServiceOrderModalSearch() {
     const getAutocompleCustomer = async (value: string) => {
         try {
         if(!value) return setCustomers([]);
-        const {data} = await api.get(`/customers?deleted=false&orderBy=tradeName&sort=desc&pageSize=10&pageNumber=1&regex$or$tradeName=${value}&regex$or$corporateName=${value}&regex$or$document=${value}&regex$or$phone=${value}`, configApi());
-        const result = data.result;
-        setCustomers(result.data);
+        // const {data} = await api.get(`/customers?deleted=false&orderBy=tradeName&sort=desc&pageSize=10&pageNumber=1&regex$or$tradeName=${value}&regex$or$corporateName=${value}&regex$or$document=${value}&regex$or$phone=${value}`, configApi());
+        // const result = data.result;
+        // setCustomers(result.data);
         } catch (error) {
         resolveResponse(error);
         }
@@ -74,9 +74,9 @@ export default function ServiceOrderModalSearch() {
     const getSelectStore = async () => {
         try {
             setLoading(true);
-            const {data} = await api.get(`/stores/select?deleted=false`, configApi());
-            const result = data.result.data;
-            setStore(result);
+            // const {data} = await api.get(`/stores/select?deleted=false`, configApi());
+            // const result = data.result.data;
+            // setStore(result);
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -86,8 +86,8 @@ export default function ServiceOrderModalSearch() {
 
     const fetchBrands = async () => {
         try {
-            const { data } = await api.get("/brands?deleted=false&pageSize=100&pageNumber=1", configApi());
-            setBrands(data.result.data || []);
+            // const { data } = await api.get("/brands?deleted=false&pageSize=100&pageNumber=1", configApi());
+            // setBrands(data.result.data || []);
         } catch {}
     };
     
