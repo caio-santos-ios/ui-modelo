@@ -8,7 +8,7 @@ export const menuRoutinesAtom = atom<NavItem[]>([
     name: "Chat",
     authorized: false,
     code: "C",
-    path: "/chat",          // ← sem subItems, vai direto para a rota
+    path: "/chat",          
     subItems: undefined,
   },
   {
@@ -44,5 +44,15 @@ export const menuRoutinesAtom = atom<NavItem[]>([
       {name: "Plano de Contas",       path: "/financial/chart-of-accounts",   code: "D4", pro: false, authorized: false },
       {name: "DRE",                   path: "/financial/dre",                 code: "D5", pro: false, authorized: false },
     ]
-  }
+  },
+  {
+    icon: "MdBuild",
+    name: "Ordens de Serviços",
+    authorized: false,
+    code: "D",
+    subItems: [
+      {name: "Gerenciar O.S.",    path: "/order-services/manages",    code: "D1", pro: false, authorized: false },
+      {name: "Situações de O.S.", path: "/order-services/situations", code: "D2", pro: false, authorized: false },
+    ]
+  },
 ]);
