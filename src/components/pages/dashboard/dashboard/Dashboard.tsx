@@ -14,11 +14,12 @@ import { ResetDashboardAccountPayableCard, TDashboardAccountPayableCard } from "
 import { ResetDashboardAccountReceivableCard, TDashboardAccountReceivableCard } from "@/types/dashboard/cards/dashboard-account-receivable-card.type";
 import { ExpenseCategoryPie } from "../pie/ExpenseCategoryPie";
 import { EvolutionBalanceArea } from "../area/EvolutionBalanceArea";
-import { TopReceitasChart } from "../TopReceitasChart";
+import { TopRevenueBar } from "../bars/TopRevenueBar";
 import { EntriesExitsBar } from "../bars/EntriesExitsBar";
 import { ResetDashboardEntrieExitBar, TDashboardEntrieExitBar } from "@/types/dashboard/bars/dashboard-entrie-exit-bar.type";
 import { ResetDashboardExpenseCategoryPie, TDashboardExpenseCategoryPie } from "@/types/dashboard/pie/dashboard-expense-category-pie.type";
 import { ResetDashboardEvolutionBalanceArea, TDashboardEvolutionBalanceArea } from "@/types/dashboard/area/dashboard-evolution-balance-area.type";
+import { ResetDashboardTopRevenueBar, TDashboardTopRevenueBar } from "@/types/dashboard/bars/dashboard-top-revenue-bar.type";
 
 export const Dashboard = () => {
     const [filterDashboard, setFilterDashboard] = useAtom(filterDashboardAtom);
@@ -32,6 +33,7 @@ export const Dashboard = () => {
     
     // BARS
     const [dashboardEntrieExitBar, setDashboardEntrieExitBar] = useState<TDashboardEntrieExitBar>(ResetDashboardEntrieExitBar);
+    const [dashboardTopRevenueBar, setDashboardTopRevenueBar] = useState<TDashboardTopRevenueBar>(ResetDashboardTopRevenueBar);
     
     // PIE
     const [dashboardExpenseCategoryPie, setDashboardExpenseCategoryPie] = useState<TDashboardExpenseCategoryPie>(ResetDashboardExpenseCategoryPie);
@@ -45,7 +47,7 @@ export const Dashboard = () => {
             const [
                 accReCard, accPaCard, cashCard,
 
-                enExBar, exCat,
+                enExBar, topReve,
 
                 exCate,
 
@@ -58,7 +60,7 @@ export const Dashboard = () => {
 
                 // BARS
                 api.get(`/dashboard/entrie-exit?startDate=${startDate}&endDate=${endDate}`, configApi()),
-                api.get(`/dashboard/expense-category?startDate=${startDate}&endDate=${endDate}`, configApi()),
+                api.get(`/dashboard/top-revenue?startDate=${startDate}&endDate=${endDate}`, configApi()),
 
                 // PIE
                 api.get(`/dashboard/expense-category?startDate=${startDate}&endDate=${endDate}`, configApi()),
@@ -74,13 +76,12 @@ export const Dashboard = () => {
 
             // BARS
             setDashboardEntrieExitBar(enExBar?.data?.result?.data ?? ResetDashboardEntrieExitBar);
-            setDashboardExpenseCategoryPie(exCat?.data?.result?.data ?? ResetDashboardExpenseCategoryPie);
-
+            setDashboardTopRevenueBar(topReve?.data?.result?.data ?? ResetDashboardTopRevenueBar);
+            
             // PIE
             setDashboardExpenseCategoryPie(exCate?.data?.result?.data ?? ResetDashboardExpenseCategoryPie);
             
             // AREA
-            console.log(evoBal?.data?.result?.data)
             setDashboardEvolutionBalanceArea(evoBal?.data?.result?.data ?? ResetDashboardEvolutionBalanceArea);
         } catch (error) {
             resolveResponse(error);
@@ -156,7 +157,7 @@ export const Dashboard = () => {
                     <EvolutionBalanceArea data={dashboardEvolutionBalanceArea} />
                 </div>
                 <div className="col-span-12 md:col-span-12 lg:col-span-6">
-                    <TopReceitasChart />
+                    <TopRevenueBar data={dashboardTopRevenueBar} />
                 </div>
             </div>
         </div>

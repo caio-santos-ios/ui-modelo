@@ -2,24 +2,16 @@
 
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
+import { TDashboardTopRevenueBar } from "@/types/dashboard/bars/dashboard-top-revenue-bar.type";
+import { formattedMoney } from "@/utils/mask.util";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const mockData = {
-    categorias: [
-        "Manutenção e Suporte",
-        "Licenciamento de Software",
-        "Consultoria",
-        "Desenvolvimento de Sistema",
-        "Implantação",
-    ],
-    valores: [1800, 2400, 3200, 5500, 7800],
-};
+type TProps = {
+    data: TDashboardTopRevenueBar
+}
 
-const fmt = (val: number) =>
-    new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
-
-export const TopReceitasChart = () => {
+export const TopRevenueBar = ({data}: TProps) => {
     const options: ApexOptions = {
         chart: {
             type: "bar",
@@ -48,11 +40,11 @@ export const TopReceitasChart = () => {
             enabled: true,
             textAnchor: "start",
             style: { fontSize: "12px", colors: ["#667085"] },
-            formatter: (val) => fmt(Number(val)),
+            formatter: (val) => formattedMoney(Number(val)),
             offsetX: 8,
         },
         xaxis: {
-            categories: mockData.categorias,
+            categories: data.categories,
             labels: {
                 style: { colors: "#98A2B3", fontSize: "12px" },
                 formatter: (val) =>
@@ -78,11 +70,11 @@ export const TopReceitasChart = () => {
         },
         tooltip: {
             theme: "light",
-            y: { formatter: (val) => fmt(val) },
+            y: { formatter: (val) => formattedMoney(val) },
         },
     };
 
-    const series = [{ name: "Receita", data: mockData.valores }];
+    const series: any = [{ name: "Receita", data: data.categories }];
 
     return (
         <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 md:p-6">
@@ -96,7 +88,7 @@ export const TopReceitasChart = () => {
                     </p>
                 </div>
                 <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
-                    Total: {fmt(mockData.valores.reduce((a, b) => a + b, 0))}
+                    Total: {formattedMoney(data.balances.reduce((a, b) => a + b, 0))}
                 </span>
             </div>
             <ReactApexChart
