@@ -80,6 +80,7 @@ export const Dashboard = () => {
             setDashboardExpenseCategoryPie(exCate?.data?.result?.data ?? ResetDashboardExpenseCategoryPie);
             
             // AREA
+            console.log(evoBal?.data?.result?.data)
             setDashboardEvolutionBalanceArea(evoBal?.data?.result?.data ?? ResetDashboardEvolutionBalanceArea);
         } catch (error) {
             resolveResponse(error);
