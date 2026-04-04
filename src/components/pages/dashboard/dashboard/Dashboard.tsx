@@ -77,7 +77,7 @@ export const Dashboard = () => {
             // BARS
             setDashboardEntrieExitBar(enExBar?.data?.result?.data ?? ResetDashboardEntrieExitBar);
             setDashboardTopRevenueBar(topReve?.data?.result?.data ?? ResetDashboardTopRevenueBar);
-            
+            console.log(topReve?.data?.result?.data)
             // PIE
             setDashboardExpenseCategoryPie(exCate?.data?.result?.data ?? ResetDashboardExpenseCategoryPie);
             

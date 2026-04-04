@@ -74,18 +74,13 @@ export const TopRevenueBar = ({data}: TProps) => {
         },
     };
 
-    const series: any = [{ name: "Receita", data: data.categories }];
+    const series: any = [{ name: "Receita", data: data.balances }];
 
     return (
         <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 md:p-6">
             <div className="mb-4 flex items-start justify-between">
                 <div>
-                    <h3 className="text-base font-semibold text-gray-800 dark:text-white/90">
-                        Top Receitas
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Por categoria no período
-                    </p>
+                    <h3 className="text-base font-semibold text-gray-800 dark:text-white/90">Top Receitas</h3>
                 </div>
                 <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
                     Total: {formattedMoney(data.balances.reduce((a, b) => a + b, 0))}
@@ -95,8 +90,7 @@ export const TopRevenueBar = ({data}: TProps) => {
                 options={options}
                 series={series}
                 type="bar"
-                height={260}
-            />
+                height={260}/>
         </div>
     );
 };
