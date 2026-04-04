@@ -129,7 +129,7 @@ export default function AccountPayableTable() {
                         <IconPayment action="pay" obj={obj} getObj={getObj}/>
                     }
                     {
-                        permissionUpdate(module, routine) && (obj.status == "Em Aberto" || obj.status == "Cancelado") &&
+                        permissionUpdate(module, routine) && obj.status == "Em Aberto" &&
                         <IconEdit action="edit" obj={obj} getObj={getObj}/>
                     }
                     {
@@ -141,7 +141,7 @@ export default function AccountPayableTable() {
                         <IconDelete action="delete" obj={obj} getObj={getObj}/>
                     }
                     {
-                        permissionRead(module, routine) && (obj.status == "Pago" || obj.status == "Cancelado") &&
+                        permissionRead(module, routine) && obj.status != "Em Aberto" &&
                         <IconView action="view" obj={obj} getObj={getObj} />
                     }
                 </>

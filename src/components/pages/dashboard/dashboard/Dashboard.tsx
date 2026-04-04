@@ -12,16 +12,17 @@ import { configApi, resolveResponse } from "@/service/config.service";
 import { api } from "@/service/api.service";
 import { ResetDashboardAccountPayableCard, TDashboardAccountPayableCard } from "@/types/dashboard/cards/dashboard-account-payable-card.type";
 import { ResetDashboardAccountReceivableCard, TDashboardAccountReceivableCard } from "@/types/dashboard/cards/dashboard-account-receivable-card.type";
-import { EntradasSaidasChart } from "../entradas-saidas-chart/EntradasSaidasChart";
-import { DespesasCategoriaChart } from "../DespesasCategoriaChart";
+import { ExpenseCategoryPie } from "../pie/ExpenseCategoryPie";
 import { EvolucaoSaldoChart } from "../EvolucaoSaldoChart";
 import { TopReceitasChart } from "../TopReceitasChart";
 import { EntriesExitsBar } from "../bars/EntriesExitsBar";
 import { ResetDashboardEntrieExitBar, TDashboardEntrieExitBar } from "@/types/dashboard/bars/dashboard-entrie-exit-bar.type";
+import { ResetDashboardExpenseCategoryPie, TDashboardExpenseCategoryPie } from "@/types/dashboard/pie/dashboard-expense-category-pie.type";
 
 export const Dashboard = () => {
     const [filterDashboard, setFilterDashboard] = useAtom(filterDashboardAtom);
     const [search, setSearch] = useAtom(searchFilterDashboardAtom);
+    const [loading, setLoading] = useState<boolean>(false);
 
     // CARDS
     const [dashboardAccountPayableCard, setDashboardAccountPayableCard] = useState<TDashboardAccountPayableCard>(ResetDashboardAccountPayableCard);
@@ -30,44 +31,57 @@ export const Dashboard = () => {
     
     // BARS
     const [dashboardEntrieExitBar, setDashboardEntrieExitBar] = useState<TDashboardEntrieExitBar>(ResetDashboardEntrieExitBar);
+    
+    // PIE
+    const [dashboardExpenseCategoryPie, setDashboardExpenseCategoryPie] = useState<TDashboardExpenseCategoryPie>(ResetDashboardExpenseCategoryPie);
 
 
-    const getCards = async (startDate: string, endDate: string) => {
+    const getDashboards = async (startDate: string, endDate: string) => {
         try {
-            const [accReCard, accPaCard, cashCard] = await Promise.all([
+            const [
+                accReCard, accPaCard, cashCard,
+
+                enExBar, exCat,
+
+                exCate
+            ] = await Promise.all([
+                // CARDS
                 api.get(`/dashboard/accounts-receivable?startDate=${startDate}&endDate=${endDate}`, configApi()),
                 api.get(`/dashboard/accounts-payable?startDate=${startDate}&endDate=${endDate}`, configApi()),
                 api.get(`/dashboard/cash-flow?startDate=${startDate}&endDate=${endDate}`, configApi()),
+
+                // BARS
+                api.get(`/dashboard/entrie-exit?startDate=${startDate}&endDate=${endDate}`, configApi()),
+                api.get(`/dashboard/expense-category?startDate=${startDate}&endDate=${endDate}`, configApi()),
+
+                // PIE
+                api.get(`/dashboard/expense-category?startDate=${startDate}&endDate=${endDate}`, configApi()),
             ]);
+
 
             setDashboardAccountReceivableCard(accReCard?.data?.result?.data ?? ResetDashboardAccountReceivableCard);
             setDashboardAccountPayableCard(accPaCard?.data?.result?.data ?? ResetDashboardAccountPayableCard);
             setDashboardCashFlowCard(cashCard?.data?.result?.data ?? ResetDashboardCashFlowCard);
-        } catch (error) {
-            resolveResponse(error);
-        }
-    };
 
-    const getBars = async (startDate: string, endDate: string) => {
-        try {
-            const [enExBar] = await Promise.all([
-                api.get(`/dashboard/entrie-exit?startDate=${startDate}&endDate=${endDate}`, configApi()),
-            ]);
-            console.log(enExBar?.data?.result?.data)
+            // BARS
             setDashboardEntrieExitBar(enExBar?.data?.result?.data ?? ResetDashboardEntrieExitBar);
+            setDashboardExpenseCategoryPie(exCat?.data?.result?.data ?? ResetDashboardExpenseCategoryPie);
+
+            // PIE
+            setDashboardExpenseCategoryPie(exCate?.data?.result?.data ?? ResetDashboardExpenseCategoryPie);
         } catch (error) {
             resolveResponse(error);
         }
     };
     
     const handleFilter = () => {
+        setLoading(true);
         setFilterDashboard({
             startDate: filterDashboard.startDate,
             endDate: filterDashboard.endDate,
         });
-
-        getCards(filterDashboard.startDate, filterDashboard.endDate);
-        getBars(filterDashboard.startDate, filterDashboard.endDate);
+        getDashboards(filterDashboard.startDate, filterDashboard.endDate);
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -85,8 +99,7 @@ export const Dashboard = () => {
 
         setFilterDashboard({ startDate, endDate });
         
-        getCards(startDate, endDate);
-        getBars(startDate, endDate);
+        getDashboards(startDate, endDate);
     }, []);
 
     return (
@@ -101,7 +114,9 @@ export const Dashboard = () => {
                     <input type="date" value={filterDashboard.endDate} onChange={e => setFilterDashboard(prev => ({ ...prev, endDate: e.target.value }))} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white outline-none focus:border-blue-500" />
                 </div>
                 <div className="flex items-end">
-                    <Button onClick={handleFilter} size="sm" variant="primary">Filtrar</Button>
+                    <Button disabled={loading} onClick={handleFilter} size="sm" variant="primary">
+                        {loading ? 'Filtrando...' : 'Filtrar'}
+                    </Button>
                 </div>
             </div>
 
@@ -122,7 +137,7 @@ export const Dashboard = () => {
                     <EntriesExitsBar data={dashboardEntrieExitBar} />
                 </div>
                 <div className="col-span-12 md:col-span-12 lg:col-span-6">
-                    <DespesasCategoriaChart />
+                    <ExpenseCategoryPie data={dashboardExpenseCategoryPie} />
                 </div>
                 <div className="col-span-12 md:col-span-12 lg:col-span-6">
                     <EvolucaoSaldoChart />

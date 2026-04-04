@@ -47,32 +47,22 @@ export const AccountPayableCard = ({data}: TProps) => {
             </div>
             <div className="flex items-end justify-between mt-5 flex-wrap">
                 <div>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                    Contas a Pagar
-                    </span>
-                    <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-                    {formatCurrency(data?.totalAmount ?? 0)}
-                    </h4>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Contas a Pagar</span>
+                    <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{formatCurrency(data?.totalAmount ?? 0)}</h4>
+                    
                     <div className="mt-1 flex flex-col gap-0.5">
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
-                        Em aberto: {formatCurrency(data?.openAmount ?? 0)}{" "}
-                        ({formatNumber(data?.openCount ?? 0)})
-                    </span>
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
-                        Cancelado: {formatCurrency(data?.cancelAmount ?? 0)}{" "}
-                        ({formatNumber(data?.cancelCount ?? 0)})
-                    </span>
-                    {data?.overdueAmount > 0 ?
-                        <span className="text-xs text-red-500 dark:text-red-400">
-                        Vencidas: {formatCurrency(data?.overdueAmount ?? 0)}{" "}
-                        ({formatNumber(data?.overdueCount ?? 0)})
+                        <span className="text-xs text-gray-400 dark:text-gray-500">
+                            Em aberto: {formatCurrency(data?.openAmount ?? 0)}{" "}
+                            ({formatNumber(data?.openCount ?? 0)})
                         </span>
-                        :
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                        Vencidas: {formatCurrency(data?.overdueAmount ?? 0)}{" "}
-                        ({formatNumber(data?.overdueCount ?? 0)})
+                        <span className="text-xs text-gray-400 dark:text-gray-500">
+                            Cancelado: {formatCurrency(data?.cancelAmount ?? 0)}{" "}
+                            ({formatNumber(data?.cancelCount ?? 0)})
                         </span>
-                    }
+                        <span className={`text-xs ${data?.overdueAmount > 0 ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                            Vencidas: {formatCurrency(data?.overdueAmount ?? 0)}{" "}
+                            ({formatNumber(data?.overdueCount ?? 0)})
+                        </span>
                     </div>
                 </div>
                 {(data?.overdueAmount ?? 0) > 0 ? (

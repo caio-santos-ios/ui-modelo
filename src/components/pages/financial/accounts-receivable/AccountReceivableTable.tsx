@@ -141,7 +141,7 @@ export default function AccountReceivableTable() {
               <IconDelete action="delete" obj={obj} getObj={getObj}/>
             }
             {
-              permissionRead(module, routine) && (obj.status == "Recebido" || obj.status == "Cancelado") &&
+              permissionRead(module, routine) && obj.status != "Em Aberto" &&
               <IconView action="view" obj={obj} getObj={getObj} />
             }
           </>

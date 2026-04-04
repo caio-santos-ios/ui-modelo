@@ -81,14 +81,11 @@ export const EntriesExitsBar = ({data}: TProps) => {
     ];
     
     return (
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 md:p-6">
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 md:p-6 min-h-80">
             <div className="mb-4">
                 <h3 className="text-base font-semibold text-gray-800 dark:text-white/90">
                     Entradas vs Saídas
                 </h3>
-                {/* <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Últimos 6 meses
-                </p> */}
             </div>
             <ReactApexChart
                 options={options}
