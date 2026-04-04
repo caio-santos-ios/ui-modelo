@@ -6,11 +6,6 @@ import { TDashboardEvolutionBalanceArea } from "@/types/dashboard/area/dashboard
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const data = {
-    categories: ["Nov/24", "Dez/24", "Jan/25", "Fev/25", "Mar/25", "Abr/25"],
-    balances:      [1400, 5000, 1900, 6300, 10800, 14300],
-};
-
 type TProps = {
     data: TDashboardEvolutionBalanceArea
 }
@@ -83,9 +78,16 @@ export const EvolutionBalanceArea = ({data}: TProps) => {
 
     const series = [{ name: "Saldo", data: data.balances }];
 
-    const balancesAtual = data.balances[data.balances.length - 1];
-    const balancesAnterior = data.balances[data.balances.length - 2];
-    const variacao = ((balancesAtual - balancesAnterior) / balancesAnterior) * 100;
+    const lastNonZeroIndex = [...data.balances].reverse().findIndex(v => v > 0);
+    const currentIndex = lastNonZeroIndex === -1 ? data.balances.length - 1 : data.balances.length - 1 - lastNonZeroIndex;
+
+    const balancesAtual    = data.balances[currentIndex];
+    const balancesAnterior = data.balances[currentIndex - 1] ?? 0;
+
+    const variacao = balancesAnterior === 0
+        ? 0
+        : ((balancesAtual - balancesAnterior) / balancesAnterior) * 100;
+
     const positivo = variacao >= 0;
 
     return (
@@ -115,6 +117,7 @@ export const EvolutionBalanceArea = ({data}: TProps) => {
                 </div>
             </div>
             <ReactApexChart
+                key={JSON.stringify(data.balances)}
                 options={options}
                 series={series}
                 type="area"

@@ -69,7 +69,7 @@ export const Dashboard = () => {
                 api.get(`/dashboard/evolution-balance?startDate=${startDate}&endDate=${endDate}`, configApi()),
             ]);
 
-
+            //CARDS 
             setDashboardAccountReceivableCard(accReCard?.data?.result?.data ?? ResetDashboardAccountReceivableCard);
             setDashboardAccountPayableCard(accPaCard?.data?.result?.data ?? ResetDashboardAccountPayableCard);
             setDashboardCashFlowCard(cashCard?.data?.result?.data ?? ResetDashboardCashFlowCard);
@@ -77,7 +77,7 @@ export const Dashboard = () => {
             // BARS
             setDashboardEntrieExitBar(enExBar?.data?.result?.data ?? ResetDashboardEntrieExitBar);
             setDashboardTopRevenueBar(topReve?.data?.result?.data ?? ResetDashboardTopRevenueBar);
-            console.log(topReve?.data?.result?.data)
+            
             // PIE
             setDashboardExpenseCategoryPie(exCate?.data?.result?.data ?? ResetDashboardExpenseCategoryPie);
             
