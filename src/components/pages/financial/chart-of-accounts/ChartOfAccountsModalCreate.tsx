@@ -115,8 +115,6 @@ export default function ChartOfAccountsModalCreate() {
 
   useEffect(() => {
     const initial = async () => {
-      setChartOfAccount(ResetChartOfAccounts);
-      reset(ResetChartOfAccounts);
 
       if(modal) {        
         if (chartOfAccount.id) {
@@ -175,7 +173,7 @@ export default function ChartOfAccountsModalCreate() {
         </div>
 
         <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-          <Button size="sm" variant="outline" onClick={() => closeModal()}>Cancelar</Button>
+          <Button size="sm" variant="outline" onClick={closeModal}>Cancelar</Button>
           {
             chartOfAccount.id ? <Button size="sm" variant="primary" onClick={update}>Salvar</Button> : <Button size="sm" variant="primary" onClick={create}>Adicionar</Button> 
           }

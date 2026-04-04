@@ -25,14 +25,6 @@ export const CashFlowCard = ({data}: TProps) => {
                             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
                                 {formattedMoney(data?.balance ?? 0)}
                             </h4>
-                            {
-                                data.balance > 0 &&
-                                <IoMdArrowRoundUp className="text-green-400" size={30} />
-                            }
-                            {
-                                data.balance < 0 &&
-                                <IoMdArrowRoundDown className="text-red-400" size={30} />
-                            }
                         </div>
                     </div>
                 </div>
