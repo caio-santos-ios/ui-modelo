@@ -2,15 +2,19 @@
 
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
+import { TDashboardEvolutionBalanceArea } from "@/types/dashboard/area/dashboard-evolution-balance-area.type";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const mockData = {
+const data = {
     categories: ["Nov/24", "Dez/24", "Jan/25", "Fev/25", "Mar/25", "Abr/25"],
-    saldo:      [1400, 5000, 1900, 6300, 10800, 14300],
+    balances:      [1400, 5000, 1900, 6300, 10800, 14300],
 };
 
-export const EvolucaoSaldoChart = () => {
+type TProps = {
+    data: TDashboardEvolutionBalanceArea
+}
+export const EvolutionBalanceArea = ({data}: TProps) => {
     const options: ApexOptions = {
         chart: {
             type: "area",
@@ -42,7 +46,7 @@ export const EvolucaoSaldoChart = () => {
             hover: { size: 6 },
         },
         xaxis: {
-            categories: mockData.categories,
+            categories: data.categories,
             labels: {
                 style: { colors: "#98A2B3", fontSize: "12px" },
             },
@@ -77,11 +81,11 @@ export const EvolucaoSaldoChart = () => {
         },
     };
 
-    const series = [{ name: "Saldo", data: mockData.saldo }];
+    const series = [{ name: "Saldo", data: data.balances }];
 
-    const saldoAtual = mockData.saldo[mockData.saldo.length - 1];
-    const saldoAnterior = mockData.saldo[mockData.saldo.length - 2];
-    const variacao = ((saldoAtual - saldoAnterior) / saldoAnterior) * 100;
+    const balancesAtual = data.balances[data.balances.length - 1];
+    const balancesAnterior = data.balances[data.balances.length - 2];
+    const variacao = ((balancesAtual - balancesAnterior) / balancesAnterior) * 100;
     const positivo = variacao >= 0;
 
     return (
@@ -91,16 +95,13 @@ export const EvolucaoSaldoChart = () => {
                     <h3 className="text-base font-semibold text-gray-800 dark:text-white/90">
                         Evolução do Saldo
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Últimos 6 meses
-                    </p>
                 </div>
                 <div className="text-right">
                     <p className="text-lg font-bold text-gray-800 dark:text-white/90">
                         {new Intl.NumberFormat("pt-BR", {
                             style: "currency",
                             currency: "BRL",
-                        }).format(saldoAtual)}
+                        }).format(balancesAtual)}
                     </p>
                     <span
                         className={`text-xs font-medium ${

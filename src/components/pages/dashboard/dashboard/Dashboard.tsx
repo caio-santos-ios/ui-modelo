@@ -13,11 +13,12 @@ import { api } from "@/service/api.service";
 import { ResetDashboardAccountPayableCard, TDashboardAccountPayableCard } from "@/types/dashboard/cards/dashboard-account-payable-card.type";
 import { ResetDashboardAccountReceivableCard, TDashboardAccountReceivableCard } from "@/types/dashboard/cards/dashboard-account-receivable-card.type";
 import { ExpenseCategoryPie } from "../pie/ExpenseCategoryPie";
-import { EvolucaoSaldoChart } from "../EvolucaoSaldoChart";
+import { EvolutionBalanceArea } from "../area/EvolutionBalanceArea";
 import { TopReceitasChart } from "../TopReceitasChart";
 import { EntriesExitsBar } from "../bars/EntriesExitsBar";
 import { ResetDashboardEntrieExitBar, TDashboardEntrieExitBar } from "@/types/dashboard/bars/dashboard-entrie-exit-bar.type";
 import { ResetDashboardExpenseCategoryPie, TDashboardExpenseCategoryPie } from "@/types/dashboard/pie/dashboard-expense-category-pie.type";
+import { ResetDashboardEvolutionBalanceArea, TDashboardEvolutionBalanceArea } from "@/types/dashboard/area/dashboard-evolution-balance-area.type";
 
 export const Dashboard = () => {
     const [filterDashboard, setFilterDashboard] = useAtom(filterDashboardAtom);
@@ -34,6 +35,9 @@ export const Dashboard = () => {
     
     // PIE
     const [dashboardExpenseCategoryPie, setDashboardExpenseCategoryPie] = useState<TDashboardExpenseCategoryPie>(ResetDashboardExpenseCategoryPie);
+    
+    // AREA
+    const [dashboardEvolutionBalanceArea, setDashboardEvolutionBalanceArea] = useState<TDashboardEvolutionBalanceArea>(ResetDashboardEvolutionBalanceArea);
 
 
     const getDashboards = async (startDate: string, endDate: string) => {
@@ -43,7 +47,9 @@ export const Dashboard = () => {
 
                 enExBar, exCat,
 
-                exCate
+                exCate,
+
+                evoBal
             ] = await Promise.all([
                 // CARDS
                 api.get(`/dashboard/accounts-receivable?startDate=${startDate}&endDate=${endDate}`, configApi()),
@@ -56,6 +62,9 @@ export const Dashboard = () => {
 
                 // PIE
                 api.get(`/dashboard/expense-category?startDate=${startDate}&endDate=${endDate}`, configApi()),
+                
+                // AREA
+                api.get(`/dashboard/evolution-balance?startDate=${startDate}&endDate=${endDate}`, configApi()),
             ]);
 
 
@@ -69,6 +78,9 @@ export const Dashboard = () => {
 
             // PIE
             setDashboardExpenseCategoryPie(exCate?.data?.result?.data ?? ResetDashboardExpenseCategoryPie);
+            
+            // AREA
+            setDashboardEvolutionBalanceArea(evoBal?.data?.result?.data ?? ResetDashboardEvolutionBalanceArea);
         } catch (error) {
             resolveResponse(error);
         }
@@ -140,7 +152,7 @@ export const Dashboard = () => {
                     <ExpenseCategoryPie data={dashboardExpenseCategoryPie} />
                 </div>
                 <div className="col-span-12 md:col-span-12 lg:col-span-6">
-                    <EvolucaoSaldoChart />
+                    <EvolutionBalanceArea data={dashboardEvolutionBalanceArea} />
                 </div>
                 <div className="col-span-12 md:col-span-12 lg:col-span-6">
                     <TopReceitasChart />
