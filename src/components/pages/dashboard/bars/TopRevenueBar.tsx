@@ -77,7 +77,7 @@ export const TopRevenueBar = ({data}: TProps) => {
     const series: any = [{ name: "Receita", data: data.balances }];
 
     return (
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 md:p-6">
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 md:p-6 min-h-70">
             <div className="mb-4 flex items-start justify-between">
                 <div>
                     <h3 className="text-base font-semibold text-gray-800 dark:text-white/90">Top Receitas</h3>
