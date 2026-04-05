@@ -1,6 +1,6 @@
 import PageBreadcrumb from "@/components/pageBreadcrumb/PageBreadcrumb";
 import { ServiceOrderButtonCreate } from "@/components/pages/commercial/service-order/buttons/ServiceOrderButtonCreate";
-import { ServiceOrderButtonSearch } from "@/components/pages/commercial/service-order/buttons/ServiceOrderButtonSearch";
+// import { ServiceOrderButtonSearch } from "@/components/pages/commercial/service-order/buttons/ServiceOrderButtonSearch";
 import ServiceOrderTable from "@/components/pages/commercial/service-order/ServiceOrderTable";
 import { Metadata } from "next";
 
@@ -15,7 +15,7 @@ export default function Manages() {
             <PageBreadcrumb pageIcon="MdBuild" pageTitle="Ordem de Serviço" pageSubTitle="Ordens de Serviços" />
             <div className="flex justify-end mb-3 gap-4">
                 <ServiceOrderButtonCreate />
-                <ServiceOrderButtonSearch />
+                {/* <ServiceOrderButtonSearch /> */}
             </div>
             <ServiceOrderTable />
         </div>
