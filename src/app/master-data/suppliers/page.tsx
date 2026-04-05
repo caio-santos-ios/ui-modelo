@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function SupplierPage() {
   return (
     <div>
-      <PageBreadcrumb pageIcon="MdPerson" pageTitle="Fornecedores" pageSubTitle="Cadastros" />
+      <PageBreadcrumb pageIcon="MdLocalShipping" pageTitle="Fornecedores" pageSubTitle="Cadastros" />
       <div className="flex justify-end mb-2">
         <SupplierButtonCreate />
       </div>
