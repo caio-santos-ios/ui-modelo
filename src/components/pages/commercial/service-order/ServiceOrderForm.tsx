@@ -9,8 +9,6 @@ import { useForm } from "react-hook-form";
 import ServiceOrderItemsTab from "./tabs/ServiceOrderItemsTab";
 import ServiceOrderCloseModal from "./modals/ServiceOrderCloseModal";
 import { useRouter } from "next/navigation";
-import { currentMomentServiceOrderAtom } from "@/jotai/serviceOrder/manege.jotai";
-import { situationsAtom } from "@/jotai/serviceOrder/situation.jotai";
 import { CustomerModalCreate } from "../../master-data/customer/CustomerModalCreate";
 import { SupplierModalCreate } from "../../master-data/supplier/SupplierModalCreate";
 import { ResetCustomer } from "@/types/master-data/customer.type";
@@ -30,8 +28,6 @@ export default function ServiceOrderForm({ id }: TProp) {
   const [currentTab, setCurrentTab] = useState("data");
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [warrantyInfo, setWarrantyInfo] = useState<any>(null);
-  const [___, setCurrentMoment] = useAtom(currentMomentServiceOrderAtom);
-  const [situations, setSituations] = useAtom(situationsAtom);
   const [__, setCustomer] = useAtom(customerAtom);
   const router = useRouter();
 
@@ -97,7 +93,6 @@ export default function ServiceOrderForm({ id }: TProp) {
   };
 
   useEffect(() => {
-    setCurrentMoment("start");
     setCustomer(ResetCustomer);
     if (isEdit) {
       getById(id!);

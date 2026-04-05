@@ -10,8 +10,6 @@ import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { permissionDelete, permissionUpdate } from "@/utils/permission.util";
 import Button from "@/components/ui/button/Button";
-import { currentMomentServiceOrderAtom } from "@/jotai/serviceOrder/manege.jotai";
-import { situationsAtom } from "@/jotai/serviceOrder/situation.jotai";
 import { IconEdit } from "@/components/icons/global/iconEdit/IconEdit";
 import { IconDelete } from "@/components/icons/global/iconDelete/IconDelete";
 import { ResetServiceOrderItem, TServiceOrderItem } from "@/types/commercial/sales-order-item.type";
@@ -27,9 +25,6 @@ export default function ServiceOrderItemsTab({ serviceOrderId }: TProp) {
   const [form, setForm] = useState<any>({});
   const [employees, setEmployees] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any[]>([]);
-  const [____, setSituations] = useAtom(situationsAtom);
-  // const [__, setSupplierModalCreate] = useAtom(supplierModalCreateAtom);
-  const [___, setCurrentMoment] = useAtom(currentMomentServiceOrderAtom);
 
   const fetchItems = async () => {
     try {

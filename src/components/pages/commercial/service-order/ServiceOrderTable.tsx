@@ -10,8 +10,6 @@ import { formattedMoney, maskDate } from "@/utils/mask.util";
 import { permissionRead } from "@/utils/permission.util";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/useModal";
-// import ServiceOrderModalSearch from "./modals/ServiceOrderModalSearch";
-import { serviceOrderIdAtom, serviceOrderModalViewAtom } from "@/jotai/serviceOrder/manege.jotai";
 import { ServiceOrderModalCreate } from "./modals/ServiceOrderModalCreate";
 import { Avatar } from "@/components/kanban/Kanban";
 import { IconDelete } from "@/components/icons/global/iconDelete/IconDelete";
@@ -42,8 +40,6 @@ export default function ServiceOrderTable() {
   const [selected, setSelected] = useState<TServiceOrder>(ResetServiceOrder);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [__, setModalView] = useAtom(serviceOrderModalViewAtom);
-  const [___, setServiceOrderId] = useAtom(serviceOrderIdAtom);
 
   // ✅ Estado local para renderizar e reagir ao drag & drop
   const [items, setItems] = useState<any[]>([]);
@@ -99,11 +95,6 @@ export default function ServiceOrderTable() {
     setSelected(obj);
     if (action === "edit" || action === "view") router.push(`/commercials/service-orders/${obj.id}`);
     if (action === "delete") openModal();
-  };
-
-  const modalDetails = (id: string) => {
-    setModalView(true);
-    setServiceOrderId(id);
   };
 
   // ─── Drag & Drop ────────────────────────────────────────────────────────────
