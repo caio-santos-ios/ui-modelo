@@ -18,9 +18,10 @@ import { CustomerModalCreate } from "./CustomerModalCreate";
 import { customerAtom, customerModalAtom } from "@/jotai/master-data/customer.jotai";
 
 const columns: TDataTableColumns[] = [
-  {title: "Nome", label: "corporateName", type: "text"},
-  {title: "Documento", label: "document", type: "text"},
-  {title: "E-mail", label: "email", type: "text"},
+  {title: "Nome",            label: "corporateName", type: "text"},
+  {title: "Documento",       label: "document", type: "text"},
+  {title: "E-mail",          label: "email", type: "text"},
+  {title: "Telefone",        label: "phone", type: "text"},
   {title: "Data de Criação", label: "createdAt", type: "date"},
 ]
 

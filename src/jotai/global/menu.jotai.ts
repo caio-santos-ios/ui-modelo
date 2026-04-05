@@ -48,13 +48,12 @@ export const menuRoutinesAtom = atom<NavItem[]>([
     ]
   },
   {
-    icon: "MdBuild",
-    name: "Ordens de Serviços",
+    icon: "IoBriefcaseOutline",
+    name: "Comercial",
     authorized: false,
-    code: "D",
+    code: "E",
     subItems: [
-      {name: "Gerenciar O.S.",    path: "/order-services/manages",    code: "D1", pro: false, authorized: false },
-      {name: "Situações de O.S.", path: "/order-services/situations", code: "D2", pro: false, authorized: false },
+      {name: "Ordem de Serviço",  path: "/commercials/service-orders",     code: "E1", pro: false, authorized: false },
     ]
-  },
+  }
 ]);

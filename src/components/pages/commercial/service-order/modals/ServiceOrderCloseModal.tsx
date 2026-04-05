@@ -10,12 +10,11 @@ import { toast } from "react-toastify";
 
 type TProp = {
   serviceOrderId: string;
-  isWarranty: boolean;
   onClose: () => void;
   onSuccess: () => void;
 };
 
-export default function ServiceOrderCloseModal({ serviceOrderId, isWarranty, onClose, onSuccess }: TProp) {
+export default function ServiceOrderCloseModal({ serviceOrderId, onClose, onSuccess }: TProp) {
   const [_, setLoading] = useAtom(loadingAtom);
   const [warrantyDays, setWarrantyDays] = useState(90);
   const [paymentMethodId, setPaymentMethodId] = useState("");
@@ -38,7 +37,7 @@ export default function ServiceOrderCloseModal({ serviceOrderId, isWarranty, onC
 
   const fetchOrderTotal = async () => {
     try {
-      const { data } = await api.get(`/serviceOrderItems?deleted=false&serviceOrderId=${serviceOrderId}&pageSize=100&pageNumber=1`, configApi());
+      const { data } = await api.get(`/service-order-items?deleted=false&serviceOrderId=${serviceOrderId}&pageSize=100&pageNumber=1`, configApi());
       const items = data.result.data || [];
       const total = items.reduce((acc: number, item: any) => acc + (item.quantity * item.price), 0);
       setSubtotal(total);
@@ -46,14 +45,12 @@ export default function ServiceOrderCloseModal({ serviceOrderId, isWarranty, onC
   };
 
   useEffect(() => {
-    if (!isWarranty) {
-      fetchPaymentMethods();
-      fetchOrderTotal();
-    }
+    fetchPaymentMethods();
+    fetchOrderTotal();
   }, []);
 
   const handleClose = async () => {
-    if (!isWarranty && !paymentMethodId) {
+    if (!paymentMethodId) {
       toast.warn("Selecione a forma de pagamento para encerrar a O.S.", { theme: 'colored' })
       return;
     };
@@ -66,13 +63,12 @@ export default function ServiceOrderCloseModal({ serviceOrderId, isWarranty, onC
       const payload = {
         id: serviceOrderId,
         warrantyDays,
-        paymentMethodId: isWarranty ? "" : paymentMethodId,
-        paymentMethodName: isWarranty ? "" : paymentMethodName,
+        paymentMethodId: paymentMethodId,
         numberOfInstallments: installments,
         value: valueParcels ? valueParcels.value : 0
       };
 
-      const { data } = await api.put("/serviceOrders/close", payload, configApi());
+      const { data } = await api.put("/service-orders/close", payload, configApi());
       resolveResponse({ status: 200, message: data.result?.message || "OS encerrada com sucesso" });
       onSuccess();
     } catch (error) {
@@ -135,12 +131,6 @@ export default function ServiceOrderCloseModal({ serviceOrderId, isWarranty, onC
             </button>
           </div>
 
-          {isWarranty && (
-            <div className="mb-5 p-3 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800/50 dark:bg-amber-900/20 text-sm text-amber-800 dark:text-amber-300">
-              ⚠ <strong>Garantia Interna</strong> — a OS será encerrada sem geração financeira.
-            </div>
-          )}
-
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               Período de Garantia
@@ -170,64 +160,59 @@ export default function ServiceOrderCloseModal({ serviceOrderId, isWarranty, onC
             </p>
           </div>
 
-          {/* Payment (only if not warranty) */}
-          {!isWarranty && (
-            <>
-              <div className="border-t border-gray-100 dark:border-white/10 pt-4 mb-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-normal text-gray-700 dark:text-gray-300">Subtotal</h4>
-                  <span className="text-md font-bold text-gray-800 dark:text-white/90">{formattedMoney(subTotal)}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-normal text-gray-700 dark:text-gray-300">Taxa de transação</h4>
-                  <span className="text-sm font-bold text-gray-800 dark:text-white/90">{formattedMoney(transactionFee)}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-normal text-gray-700 dark:text-gray-300">Acréscimo</h4>
-                  <span className="text-sm font-bold text-gray-800 dark:text-white/90">{formattedMoney(surcharge)}</span>
-                </div>
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Total</h4>
-                  <span className="text-md font-bold text-gray-800 dark:text-white/90">{formattedMoney(total)}</span>
-                </div>
+          <div className="border-t border-gray-100 dark:border-white/10 pt-4 mb-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-normal text-gray-700 dark:text-gray-300">Subtotal</h4>
+              <span className="text-md font-bold text-gray-800 dark:text-white/90">{formattedMoney(subTotal)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-normal text-gray-700 dark:text-gray-300">Taxa de transação</h4>
+              <span className="text-sm font-bold text-gray-800 dark:text-white/90">{formattedMoney(transactionFee)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-normal text-gray-700 dark:text-gray-300">Acréscimo</h4>
+              <span className="text-sm font-bold text-gray-800 dark:text-white/90">{formattedMoney(surcharge)}</span>
+            </div>
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Total</h4>
+              <span className="text-md font-bold text-gray-800 dark:text-white/90">{formattedMoney(total)}</span>
+            </div>
 
-                <div className="mb-3">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Forma de Pagamento</label>
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Forma de Pagamento</label>
+              <select
+                value={paymentMethodId}
+                onChange={(e) => {
+                  const pm = paymentMethods.find((p: any) => p.id === e.target.value);
+                  setPaymentMethodId(e.target.value);
+                  setPaymentMethodName(pm?.name || "");
+                }}
+                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 text-gray-800"
+              >
+                <option value="">Selecionar</option>
+                {paymentMethods.map((pm: any) => (
+                  <option key={pm.id} value={pm.id} className="dark:bg-gray-900">{pm.name}</option>
+                ))}
+              </select>
+            </div>
+            {
+              paymentMethodId && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Parcelas</label>
                   <select
-                    value={paymentMethodId}
-                    onChange={(e) => {
-                      const pm = paymentMethods.find((p: any) => p.id === e.target.value);
-                      setPaymentMethodId(e.target.value);
-                      setPaymentMethodName(pm?.name || "");
-                    }}
-                    className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 text-gray-800"
-                  >
-                    <option value="">Selecionar</option>
-                    {paymentMethods.map((pm: any) => (
-                      <option key={pm.id} value={pm.id} className="dark:bg-gray-900">{pm.name}</option>
+                    value={installments}
+                    onChange={(e) => setInstallments(Number(e.target.value))}
+                    className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 text-gray-800">
+                    {listOfParcels.map((n, i) => (
+                      <option key={i} value={n.installment} className="dark:bg-gray-900">
+                        {n.label}
+                      </option>
                     ))}
                   </select>
                 </div>
-                {
-                  paymentMethodId && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Parcelas</label>
-                      <select
-                        value={installments}
-                        onChange={(e) => setInstallments(Number(e.target.value))}
-                        className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 text-gray-800">
-                        {listOfParcels.map((n, i) => (
-                          <option key={i} value={n.installment} className="dark:bg-gray-900">
-                            {n.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )
-                }
-              </div>
-            </>
-          )}
+              )
+            }
+          </div>
 
           <div className="flex gap-3">
             <button
@@ -240,7 +225,7 @@ export default function ServiceOrderCloseModal({ serviceOrderId, isWarranty, onC
               onClick={handleClose}
               className="flex-1 h-11 rounded-lg bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-colors"
             >
-              {isWarranty ? "Encerrar (Garantia)" : "Confirmar e Encerrar"}
+              onfirmar e Encerrar
             </button>
           </div>
         </div>

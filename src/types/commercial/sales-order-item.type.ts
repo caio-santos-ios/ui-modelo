@@ -1,8 +1,8 @@
-export type TServiceOrder = {
+export type TServiceOrderItem = {
     id: string;
-    code: string;
-    customerId: string;
-    customerName: string;
+    itemType: string;
+    quantity: number;
+    price: number;
     status: string;
     openingDate: any,
     forecasDate: any,
@@ -12,11 +12,11 @@ export type TServiceOrder = {
     notes: string;
 }
 
-export const ResetServiceOrder: TServiceOrder = {
+export const ResetServiceOrderItem: TServiceOrderItem = {
     id: "",
-    code: "",
-    customerId: "",
-    customerName: "",
+    itemType: "",
+    quantity: 0,
+    price: 0,
     status: "Em Aberto",
     openingDate: null,
     forecasDate: null,

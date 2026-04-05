@@ -32,7 +32,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
         )
       }
 
-      <div className={`p-4 ${hasHeader ? 'border-t' : ''} border-gray-100 dark:border-gray-800 sm:p-6`}>
+      <div className={`p-4 ${hasHeader ? 'border-t' : ''} border-gray-100 dark:border-gray-800`}>
         <div className="space-y-6">{children}</div>
       </div>
     </div>

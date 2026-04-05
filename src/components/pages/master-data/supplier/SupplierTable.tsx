@@ -18,10 +18,11 @@ import { SupplierModalCreate } from "./SupplierModalCreate";
 import { supplierAtom, supplierModalAtom } from "@/jotai/master-data/supplier.jotai";
 
 const columns: TDataTableColumns[] = [
-  {title: "Nome", label: "corporateName", type: "text"},
-  {title: "Documento", label: "document", type: "text"},
-  {title: "E-mail", label: "email", type: "text"},
-  {title: "Data de Criação", label: "createdAt", type: "date"},
+  {title: "Nome",             label: "corporateName", type: "text"},
+  {title: "Documento",        label: "document", type: "text"},
+  {title: "E-mail",           label: "email", type: "text"},
+  {title: "Telefone",         label: "phone", type: "text"},
+  {title: "Data de Criação",  label: "createdAt", type: "date"},
 ]
 
 const module = "B";

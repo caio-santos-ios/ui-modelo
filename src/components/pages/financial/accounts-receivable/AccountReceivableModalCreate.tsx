@@ -143,14 +143,16 @@ export default function AccountReceivableModalCreate() {
               <input disabled={watch("status") != "Em Aberto"} maxLength={200} placeholder="Descrição" {...register("description")} type="text" className="input-erp-primary input-erp-default" />
             </div>
 
-            {/* <div className="col-span-6">
+            {/* 
+            <div className="col-span-6">
               <Label title="Cliente" required={false}/>
               <AutocompletePlus onAddClick={() => {
                   setCustomerModalCreate(true); 
                 }} placeholder="Buscar cliente..." defaultValue={watch("customerName")} objKey="id" objValue="tradeName" onSearch={(value: string) => getAutocompleCustomer(value)} onSelect={(opt) => {
                 setValue("customerId", opt.id);
               }} options={customers}/>
-            </div> */}
+            </div> 
+            */}
 
             <div className="col-span-6 lg:col-span-4">
               <Label title="Forma de Pagamento" required={false} />

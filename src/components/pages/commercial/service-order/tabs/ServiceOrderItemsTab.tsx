@@ -8,29 +8,23 @@ import { configApi, resolveResponse } from "@/service/config.service";
 import { formattedMoney, maskMoney } from "@/utils/mask.util";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
-import { ResetServiceOrderItem, TServiceOrderItem } from "@/types/order-service/order-service.type";
 import { permissionDelete, permissionUpdate } from "@/utils/permission.util";
 import Button from "@/components/ui/button/Button";
-import AutocompletePlus from "@/components/form/AutocompletePlus";
-// import { supplierModalCreateAtom } from "@/jotai/masterData/supplier.jotai";
 import { currentMomentServiceOrderAtom } from "@/jotai/serviceOrder/manege.jotai";
 import { situationsAtom } from "@/jotai/serviceOrder/situation.jotai";
 import { IconEdit } from "@/components/icons/global/iconEdit/IconEdit";
 import { IconDelete } from "@/components/icons/global/iconDelete/IconDelete";
+import { ResetServiceOrderItem, TServiceOrderItem } from "@/types/commercial/sales-order-item.type";
 
 type TProp = {
   serviceOrderId: string;
-  isWarranty: boolean;
-  isClosed: boolean;
 };
 
-const emptyItem = (): TServiceOrderItem => ({ ...ResetServiceOrderItem });
-
-export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClosed }: TProp) {
+export default function ServiceOrderItemsTab({ serviceOrderId }: TProp) {
   const [_, setLoading] = useAtom(loadingAtom);
-  const [items, setItems] = useState<TServiceOrderItem[]>([]);
+  const [items, setItems] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState<TServiceOrderItem>(emptyItem());
+  const [form, setForm] = useState<any>({});
   const [employees, setEmployees] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [____, setSituations] = useAtom(situationsAtom);
@@ -40,34 +34,9 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get(`/serviceOrderItems?deleted=false&serviceOrderId=${serviceOrderId}&pageSize=50&pageNumber=1`, configApi());
+      const { data } = await api.get(`/service-order-items?deleted=false&serviceOrderId=${serviceOrderId}&pageSize=50&pageNumber=1`, configApi());
       const result = data.result;
       setItems(result.data || []);
-
-      if(result.data.length > 0) {
-        setCurrentMoment("quite");
-        getSelectSituations("quite");
-      } 
-    } catch (error) {
-      resolveResponse(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchEmployees = async () => {
-    try {
-      // const { data } = await api.get("/employees/select/technicians", configApi());
-      // setEmployees(data.result.data || []);
-    } catch {}
-  };
-
-  const getSelectSituations = async (moment: "start" | "quite" | "end") => {
-    try {
-      setLoading(true);
-      const { data } = await api.get(`/situations/select?deleted=false&${moment}=true`, configApi());
-      const result = data.result.data;
-      setSituations(result)
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -87,30 +56,22 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
   };
 
   const saveItem = async () => {
-    if (!form.description || !form.technicianId) {
-      alert("Descrição e técnico são obrigatórios.");
-      return;
-    }
     try {
       setLoading(true);
-      const userId = localStorage.getItem("userId") || "";
       const payload = {
         ...form,
         serviceOrderId,
-        total: form.quantity * form.price,
-        createdBy: userId,
-        company: localStorage.getItem("nameCompany") || "",
-        store: localStorage.getItem("nameStore") || "",
-        plan: localStorage.getItem("typePlan") || "",
+        total: form.quantity * form.price
       };
+
       if (form.id) {
-        await api.put("/serviceOrderItems", payload, configApi());
+        await api.put("/service-order-items", payload, configApi());
         resolveResponse({ status: 200, message: "Item atualizado com sucesso" });
       } else {
-        await api.post("/serviceOrderItems", payload, configApi());
+        await api.post("/service-order-items", payload, configApi());
         resolveResponse({ status: 201, message: "Item adicionado com sucesso" });
       }
-      setForm(emptyItem());
+      setForm({});
       setShowForm(false);
       fetchItems();
     } catch (error) {
@@ -123,7 +84,7 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
   const deleteItem = async (item: TServiceOrderItem) => {
     try {
       setLoading(true);
-      await api.delete(`/serviceOrderItems/${item.id}`, configApi());
+      await api.delete(`/service-order-items/${item.id}`, configApi());
       resolveResponse({ status: 204, message: "Item removido" });
       fetchItems();
     } catch (error) {
@@ -135,26 +96,18 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
 
   useEffect(() => {
     fetchItems();
-    fetchEmployees();
   }, []);
 
   const total = items.reduce((acc, item) => acc + (item.quantity * item.price), 0);
 
   return (
     <ComponentCard title="Peças e Serviços" hasHeader={false}>
-      {isWarranty && (
-        <div className="mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800/50 dark:bg-amber-900/20 text-sm text-amber-800 dark:text-amber-300">
-          ⚠ <strong>Garantia Interna ativa</strong> — itens podem ser lançados, mas nenhum financeiro será gerado.
-        </div>
-      )}
-
-      {/* Items table */}
       {items.length > 0 && (
         <div className="rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden mb-4">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 dark:bg-white/3">
               <tr>
-                {["Tipo", "Descrição", "Qtd", "Valor Unit.", "Total", "Técnico", "Ações"].map((h) => (
+                {["Tipo", "Descrição", "Qtd", "Valor Unit.", "Total", "Ações"].map((h) => (
                   <th key={h} className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 text-xs">{h}</th>
                 ))}
               </tr>
@@ -171,14 +124,11 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
                   <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{item.quantity}</td>
                   <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{formattedMoney(item.price)}</td>
                   <td className="px-4 py-3 font-medium text-gray-800 dark:text-white/90">{formattedMoney(item.quantity * item.price)}</td>
-                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{item.technicianName}</td>
                   <td className="px-4 py-3">
-                    {!isClosed && (
-                      <div className="flex gap-2">
-                        {permissionUpdate("A", "A4") && <IconEdit action="edit" obj={{}} getObj={() => {setForm(item); setShowForm(true);}} />}
-                        {permissionDelete("A", "A4") && <IconDelete action="delete" obj={{}} getObj={() => {deleteItem(item)}} />}
-                      </div>
-                    )}
+                    <div className="flex gap-2">
+                      {permissionUpdate("A", "A4") && <IconEdit action="edit" obj={{}} getObj={() => {setForm(item); setShowForm(true);}} />}
+                      {permissionDelete("A", "A4") && <IconDelete action="delete" obj={{}} getObj={() => {deleteItem(item)}} />}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -187,20 +137,7 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
         </div>
       )}
 
-      {/* Total */}
-      {items.length > 0 && (
-        <div className="flex justify-end mb-4">
-          <div className="text-right">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Total</p>
-            <p className={`text-xl font-bold ${isWarranty ? "text-amber-600 dark:text-amber-400" : "text-gray-800 dark:text-white/90"}`}>
-              {isWarranty ? "R$ 0,00 (Garantia)" : formattedMoney(total)}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Add item form */}
-      {showForm && !isClosed && (
+      {showForm && (
         <div className="border border-gray-200 dark:border-white/10 rounded-xl p-4 mb-4 bg-gray-50 dark:bg-white/3">
           <h4 className="font-medium text-gray-800 dark:text-white/90 mb-3 text-sm">
             {form.id ? "Editar Item" : "Adicionar Item"}
@@ -210,7 +147,7 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
               <Label title="Tipo" />
               <select
                 value={form.itemType}
-                onChange={(e) => setForm((p) => ({ ...p, itemType: e.target.value }))}
+                onChange={(e) => setForm((p: any) => ({ ...p, itemType: e.target.value }))}
                 className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 text-gray-800"
               >
                 <option value="service">Serviço</option>
@@ -223,7 +160,7 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
                 type="text"
                 placeholder="Descrição do serviço ou peça"
                 value={form.description}
-                onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                onChange={(e) => setForm((p: any) => ({ ...p, description: e.target.value }))}
                 className="input-erp-primary input-erp-default"
               />
             </div>
@@ -233,7 +170,7 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
                 type="number"
                 min={1}
                 value={form.quantity}
-                onChange={(e) => setForm((p) => ({ ...p, quantity: Number(e.target.value) }))}
+                onChange={(e) => setForm((p: any) => ({ ...p, quantity: Number(e.target.value) }))}
                 className="input-erp-primary input-erp-default"
               />
             </div>
@@ -246,37 +183,11 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
                 onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
                   maskMoney(e);
                   const val = parseFloat(e.target.value.replace(/\./g, "").replace(",", ".")) || 0;
-                  setForm((p) => ({ ...p, price: val }));
+                  setForm((p: any) => ({ ...p, price: val }));
                 }}
                 className="input-erp-primary input-erp-default"
               />
             </div>
-            <div className="col-span-6 xl:col-span-2">
-              <Label title="Técnico Responsável" />
-              <select
-                value={form.technicianId}
-                onChange={(e) => {
-                  const emp = employees.find((em: any) => em.id === e.target.value);
-                  setForm((p) => ({ ...p, technicianId: e.target.value, technicianName: emp?.name || "" }));
-                }}
-                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 text-gray-800"
-              >
-                <option value="">Selecionar técnico...</option>
-                {employees.map((e: any) => (
-                  <option key={e.id} value={e.id} className="dark:bg-gray-900">{e.name}</option>
-                ))}
-              </select>
-            </div>
-            {/* {form.itemType === "part" && (
-              <div className="col-span-6 xl:col-span-3">
-                <Label title="Fornecedor" required={false} />
-                <AutocompletePlus onAddClick={() => {
-                  setSupplierModalCreate(true);
-                }} placeholder="Buscar fornecedor..." defaultValue={form.supplierName} objKey="id" objValue="tradeName" onSearch={(value: string) => getAutocompleSupplier(value)} onSelect={(opt) => {
-                  setForm((p) => ({ ...p, supplierName: opt.tradeName, supplierId: opt.id}))
-                }} options={suppliers}/>
-              </div>
-            )} */}
           </div>
           <div className="flex gap-2 mt-3">
             <button
@@ -286,7 +197,7 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
               {form.id ? "Salvar" : "Adicionar"}
             </button>
             <button
-              onClick={() => { setForm(emptyItem()); setShowForm(false); }}
+              onClick={() => { setForm(ResetServiceOrderItem); setShowForm(false); }}
               className="h-9 px-4 rounded-lg border border-gray-300 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancelar
@@ -295,9 +206,9 @@ export default function ServiceOrderItemsTab({ serviceOrderId, isWarranty, isClo
         </div>
       )}
 
-      {!isClosed && !showForm && (
+      {!showForm && (
         <Button size="sm" variant="primary" onClick={() => {
-          setForm(emptyItem()); setShowForm(true);
+          setForm(ResetServiceOrderItem); setShowForm(true);
         }}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3.333v9.334M3.333 8h9.334" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
           Adicionar Item</Button>
