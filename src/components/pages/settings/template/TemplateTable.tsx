@@ -18,7 +18,7 @@ import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { ResetTemplate, TTemplate } from "@/types/setting/template.type";
 import { MdPageview, MdSend } from "react-icons/md";
 import { VscOpenPreview } from "react-icons/vsc";
-import { templateAtom, templateModalPreviewAtom } from "@/jotai/master-data/template.jotai";
+import { templateAtom, templateModalPreviewAtom } from "@/jotai/settings/template.jotai";
 import { TemplateModalPreview } from "./TemplateModalPreview";
 
 const columns: TDataTableColumns[] = [

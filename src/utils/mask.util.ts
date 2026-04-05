@@ -177,3 +177,24 @@ export const formattedCPF = (value: string): string => {
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2") 
     .substring(0, 14);                     
 };
+
+export const formattedDocument = (value: string): string => {
+  if (!value) return "";
+
+  const onlyDigits = value.replace(/\D/g, "");
+
+  if (onlyDigits.length <= 11) {
+    return onlyDigits
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+      .substring(0, 14);
+  }
+
+  return onlyDigits
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2")
+    .substring(0, 18);
+};

@@ -1,4 +1,4 @@
-import { ResetUser, TUser } from "@/types/master-data/user/user.type";
+import { ResetUser, TUser } from "@/types/master-data/user.type";
 import { atom } from "jotai";
 
 export const userModalAtom = atom<boolean>(false);

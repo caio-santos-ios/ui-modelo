@@ -3,7 +3,7 @@
 import Button from "@/components/ui/button/Button";
 import ModalV2 from "@/components/ui/modalV2"
 import { loadingAtom } from "@/jotai/global/loading.jotai";
-import { templateAtom, templateModalPreviewAtom } from "@/jotai/master-data/template.jotai";
+import { templateAtom, templateModalPreviewAtom } from "@/jotai/settings/template.jotai";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { ResetTemplate, TTemplate } from "@/types/setting/template.type";

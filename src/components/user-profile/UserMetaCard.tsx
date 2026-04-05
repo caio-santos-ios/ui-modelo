@@ -12,7 +12,7 @@ import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { api, uriBase } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { useEffect } from "react";
-import { ResetUserLogged, ResetUserProfile, TUserProfile } from "@/types/master-data/user/user.type";
+import { ResetUserLogged, ResetUserProfile, TUserProfile } from "@/types/master-data/user.type";
 
 export default function UserMetaCard() {
   const [userLogger, setUserLogger] = useAtom(userLoggerAtom);

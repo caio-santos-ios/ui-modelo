@@ -9,7 +9,7 @@ import { paginationAtom } from "@/jotai/global/pagination.jotai";
 import { permissionRead } from "@/utils/permission.util";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/useModal";
-import { ResetUser, TUser } from "@/types/master-data/user/user.type";
+import { ResetUser, TUser } from "@/types/master-data/user.type";
 import { NotData } from "@/components/not-data/NotData";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";

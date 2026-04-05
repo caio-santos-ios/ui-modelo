@@ -1,7 +1,7 @@
 import { TPagination } from "@/types/global/pagination.type"
 import Pagination from "../tables/Pagination";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../table/Table";
-import { formattedMoney, maskDate } from "@/utils/mask.util";
+import { formattedDocument, formattedMoney, maskDate } from "@/utils/mask.util";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { ReactNode } from "react";
 

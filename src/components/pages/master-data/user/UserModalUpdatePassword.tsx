@@ -8,7 +8,7 @@ import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { userAtom, userModalUpdatePasswordAtom } from "@/jotai/master-data/user.jotai";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
-import { ResetUser, ResetUserResetPassword, TUserResetPassword } from "@/types/master-data/user/user.type";
+import { ResetUser, ResetUserResetPassword, TUserResetPassword } from "@/types/master-data/user.type";
 import { useAtom } from "jotai";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";

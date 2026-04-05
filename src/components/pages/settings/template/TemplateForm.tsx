@@ -15,7 +15,7 @@ import { permissionRead, permissionUpdate } from "@/utils/permission.util";
 import dynamic from "next/dynamic";
 import ModalV2 from "@/components/ui/modalV2";
 import { TemplateModalPreview } from "./TemplateModalPreview";
-import { templateAtom, templateModalPreviewAtom } from "@/jotai/master-data/template.jotai";
+import { templateAtom, templateModalPreviewAtom } from "@/jotai/settings/template.jotai";
 
 type TProp = {
   id?: string;

@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { userAdmin, userLoggerAtom } from "@/jotai/auth/auth.jotai";
 import { removeLocalStorage } from "@/service/config.service";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
-import { ResetUserLogged } from "@/types/master-data/user/user.type";
+import { ResetUserLogged } from "@/types/master-data/user.type";
 
 export const Autorization = () => {
     const [_, setIsLoading] = useAtom(loadingAtom);
