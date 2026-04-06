@@ -2,14 +2,11 @@
 
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { paginationAtom } from "@/jotai/global/pagination.jotai";
 import { permissionRead } from "@/utils/permission.util";
-import { useRouter } from "next/navigation";
-import { useModal } from "@/hooks/useModal";
-import { ResetUser, TUser } from "@/types/master-data/user.type";
 import { NotData } from "@/components/not-data/NotData";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
@@ -22,6 +19,7 @@ const columns: TDataTableColumns[] = [
   {title: "Data de Criação", label: "createdAt", type: "dateTime"},
   {title: "Usuário", label: "userName", type: "text"},
   {title: "Auditoria", label: "audit", type: "booleanYesNo"},
+  {title: "Tempo Segundos", label: "time", type: "int"},
 ]
 
 const module = "A";
