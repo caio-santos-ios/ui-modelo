@@ -7,7 +7,7 @@ import { useAtom } from "jotai";
 import Button from "@/components/ui/button/Button";
 import { Controller, useForm } from "react-hook-form";
 import Label from "@/components/form/Label";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import AutocompletePlus from "@/components/form/AutocompletePlus";
 import { accountReceivableAtom, accountReceivableModalAtom } from "@/jotai/financial/accounts-receivable.jotai";
@@ -15,6 +15,7 @@ import { ResetAccountReceivable, TAccountReceivable } from "@/types/financial/ac
 import Checkbox from "@/components/form/input/Checkbox";
 import ModalV2 from "@/components/ui/modalV2";
 import { customerAtom, customerModalAtom } from "@/jotai/master-data/customer.jotai";
+import { ResetCustomer } from "@/types/master-data/customer.type";
 
 export default function AccountReceivableModalCreate() {
   const [_, setIsLoading] = useAtom(loadingAtom);
@@ -25,10 +26,12 @@ export default function AccountReceivableModalCreate() {
   const [__, setCustomerModalCreate] = useAtom(customerModalAtom);
   const [customer, setCustomer] = useAtom(customerAtom);
   const [chartOfAccounts, setChartOfAccounts] = useState<any[]>([]);
-
+  const abortRef = useRef<AbortController | null>(null);
+  
   const { getValues, setValue, register, reset, control, watch } = useForm<TAccountReceivable>({
     defaultValues: ResetAccountReceivable
   });
+
 
   const create = async () => {
     try {
@@ -95,10 +98,18 @@ export default function AccountReceivableModalCreate() {
 
   const getAutocompleCustomer = async (value: string) => {
     try {
-      if(!value) return setCustomers([]);
+      abortRef.current?.abort();
+
+      if (!value.trim()) {
+        setCustomers([]);
+        return;
+      }
+
+      abortRef.current = new AbortController();
+
       const {data} = await api.get(`/customers?deleted=false&orderBy=tradeName&sort=desc&pageSize=10&pageNumber=1&regex$or$tradeName=${value}&regex$or$corporateName=${value}&regex$or$document=${value}`, configApi());
-      const result = data.result.data ?? [];
-      setCustomers(result.data);
+      const result = data.result.data?.data ?? [];
+      setCustomers(result);
     } catch (error) {
       resolveResponse(error);
     }
@@ -122,6 +133,7 @@ export default function AccountReceivableModalCreate() {
       reset(ResetAccountReceivable);
       setPaymentMethods([]);
       setChartOfAccounts([]);
+      setCustomers([]);
 
       if(modal) {
         await getPaymentMethods();
@@ -143,7 +155,6 @@ export default function AccountReceivableModalCreate() {
               <Label title="Descrição" />
               <input disabled={watch("status") != "Em Aberto"} maxLength={200} placeholder="Descrição" {...register("description")} type="text" className="input-erp-primary input-erp-default" />
             </div>
-
             
             <div className="col-span-6">
               <Label title="Cliente" required={false}/>
@@ -151,6 +162,7 @@ export default function AccountReceivableModalCreate() {
                   setCustomerModalCreate(true); 
                 }} placeholder="Buscar cliente..." defaultValue={watch("customerName")} objKey="id" objValue="tradeName" onSearch={(value: string) => getAutocompleCustomer(value)} onSelect={(opt) => {
                 setValue("customerId", opt.id);
+                setCustomers([]);
               }} options={customers}/>
             </div>
 

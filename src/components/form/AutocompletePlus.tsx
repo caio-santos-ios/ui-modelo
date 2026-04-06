@@ -20,7 +20,7 @@ export default function AutocompletePlus({ options, onSelect, onSearch, placehol
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
-    const selectedRef = useRef(false); // trava após seleção
+    const selectedRef = useRef(false);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -40,14 +40,13 @@ export default function AutocompletePlus({ options, onSelect, onSearch, placehol
         }
     }, [defaultValue]);
 
-    // Quando o pai atualiza options, só abre se NÃO foi uma seleção
     useEffect(() => {
         if (selectedRef.current) {
             selectedRef.current = false;
             return;
         }
-        if (options.length > 0) setIsOpen(true);
-    }, [options]);
+        setIsOpen(options.length > 0 && searchTerm.trim().length > 0);
+    }, [options, searchTerm]);
 
     const handleSelect = (opt: any) => {
         selectedRef.current = true;
@@ -67,26 +66,19 @@ export default function AutocompletePlus({ options, onSelect, onSearch, placehol
                     value={searchTerm}
                     onChange={(e) => {
                         selectedRef.current = false;
-                        setSearchTerm(e.target.value);
-                        onSearch(e.target.value);
+                        const value = e.target.value;
+                        setSearchTerm(value);
+                        // ✅ fecha imediatamente se input vazio, sem esperar o options atualizar
+                        if (!value.trim()) setIsOpen(false);
+                        onSearch(value);
                     }}
                 />
                 {searchTerm ? (
-                    <button
-                        type="button"
-                        onClick={onEditClick}
-                        className="absolute right-0 p-3 bg-brand-500 hover:bg-brand-600 text-white transition-colors rounded-e-lg"
-                        title="Editar"
-                    >
+                    <button type="button" onClick={onEditClick} className="absolute right-0 p-3 bg-brand-500 hover:bg-brand-600 text-white transition-colors rounded-e-lg" title="Editar">
                         <FiEdit2 size={20} />
                     </button>
                 ) : (
-                    <button
-                        type="button"
-                        onClick={onAddClick}
-                        className="absolute right-0 p-3 bg-brand-500 hover:bg-brand-600 text-white transition-colors rounded-e-lg"
-                        title="Adicionar novo"
-                    >
+                    <button type="button" onClick={onAddClick} className="absolute right-0 p-3 bg-brand-500 hover:bg-brand-600 text-white transition-colors rounded-e-lg" title="Adicionar novo">
                         <FiPlus size={20} />
                     </button>
                 )}

@@ -7,7 +7,7 @@ import { useAtom } from "jotai";
 import Button from "@/components/ui/button/Button";
 import { Controller, useForm } from "react-hook-form";
 import Label from "@/components/form/Label";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import AutocompletePlus from "@/components/form/AutocompletePlus";
 import { ResetAccountPayable, TAccountPayable } from "@/types/financial/account-payable.type";
@@ -26,6 +26,7 @@ export default function AccountPayableModalCreate() {
     const [__, setSupplierModalCreate] = useAtom(supplierModalAtom);
     const [supplier] = useAtom(supplierAtom);
     const [chartOfAccounts, setChartOfAccounts] = useState<any[]>([]);
+    const abortRef = useRef<AbortController | null>(null);
 
     const { getValues, setValue, register, reset, control, watch } = useForm<TAccountPayable>({ defaultValues: ResetAccountPayable });
 
@@ -82,7 +83,12 @@ export default function AccountPayableModalCreate() {
 
     const getAutocompleSupplier = async (value: string) => {
         try {
+            abortRef.current?.abort();
+
             if(!value) return setSuppliers([]);
+
+            abortRef.current = new AbortController();
+            
             const {data} = await api.get(`/suppliers?deleted=false&orderBy=tradeName&sort=desc&pageSize=10&pageNumber=1&regex$or$tradeName=${value}&regex$or$corporateName=${value}`, configApi());
             const result = data.result.data ?? [];
             setSuppliers(result.data);
@@ -147,6 +153,7 @@ export default function AccountPayableModalCreate() {
                             setSupplierModalCreate(true);
                         }} placeholder="Buscar fornecedor..." defaultValue={watch("supplierName")} objKey="id" objValue="tradeName" onSearch={(value: string) => getAutocompleSupplier(value)} onSelect={(opt) => {
                             setValue("supplierId", opt.id);
+                            setSuppliers([]);
                         }} options={suppliers}/>
                     </div>
 

@@ -23,6 +23,7 @@ import AccountReceivableModalPayment from "./AccountReceivableModalPayment";
 import { ResetPagination } from "@/types/global/pagination.type";
 import { IconCancel } from "@/components/icons/financial/IconCancel";
 import { CustomerModalCreate } from "../../master-data/customer/CustomerModalCreate";
+import { CustomerModalMinimalCreate } from "../../master-data/customer/CustomerModalCreateMinimal";
 
 const columns: TDataTableColumns[] = [
   {title: "Cliente",          label: "customerName",      type: "text"},
@@ -151,7 +152,7 @@ export default function AccountReceivableTable() {
         :
         <NotData />
       }
-      <CustomerModalCreate />
+      <CustomerModalMinimalCreate />
       <AccountReceivableModalCreate />
       <AccountReceivableModalPayment />
       <ModalDelete confirm={cancel} isOpen={modalCancel} closeModal={() => setModalCancel(false)} title="Cancelar Conta a Receber" description="Deseja Cancelar esse Título?" />          
