@@ -130,7 +130,7 @@ export default function AccountReceivableTable() {
               <IconPayment action="pay" obj={obj} getObj={getObj}/>
             }
             {
-              permissionUpdate(module, routine) &&
+              permissionUpdate(module, routine) && obj.status == "Em Aberto" &&
               <IconEdit action="edit" obj={obj} getObj={getObj}/>
             }
             {
