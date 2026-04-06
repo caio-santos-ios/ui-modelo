@@ -20,6 +20,7 @@ export const menuRoutinesAtom = atom<NavItem[]>([
       {name: "Logs",          path: "/settings/logger",          code: "A1", pro: false, authorized: false },
       {name: "Templates",     path: "/settings/templates",       code: "A2", pro: false, authorized: false },
       {name: "Triggers",      path: "/settings/triggers",        code: "A3", pro: false, authorized: false },
+      {name: "Auditoria",     path: "/settings/audits",          code: "A4", pro: false, authorized: false },
     ]
   },
   {

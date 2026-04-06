@@ -16,6 +16,7 @@ import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { CustomerModalCreate } from "./CustomerModalCreate";
 import { customerAtom, customerModalAtom } from "@/jotai/master-data/customer.jotai";
+import { ResetPagination } from "@/types/global/pagination.type";
 
 const columns: TDataTableColumns[] = [
   {title: "Nome",            label: "corporateName", type: "text"},
@@ -39,7 +40,7 @@ export default function CustomerTable() {
     try {
       setLoading(true);
       const {data} = await api.get(`/customers?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
-      const result = data.result;
+      const result = data.result.data ?? ResetPagination;
 
       setPagination({
         currentPage: result.currentPage,
