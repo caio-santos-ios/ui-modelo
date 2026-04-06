@@ -15,6 +15,7 @@ import Checkbox from "@/components/form/input/Checkbox";
 import { TPaymentMethod } from "@/types/financial/payment-method.type";
 import { accountPayableAtom, accountPayableModalAtom } from "@/jotai/financial/accounts-payable.jotai";
 import ModalV2 from "@/components/ui/modalV2";
+import { supplierAtom, supplierModalAtom } from "@/jotai/master-data/supplier.jotai";
 
 export default function AccountPayableModalCreate() {
     const [_, setIsLoading] = useAtom(loadingAtom);
@@ -22,8 +23,8 @@ export default function AccountPayableModalCreate() {
     const [accountPayable, setAccountPayable] = useAtom(accountPayableAtom);
     const [paymentMethods, setPaymentMethods] = useState<TPaymentMethod[]>([]);
     const [suppliers, setSuppliers] = useState<any[]>([]);
-    // const [__, setSupplierModalCreate] = useAtom(supplierModalCreateAtom);
-    // const [supplier] = useAtom(supplierAtom);
+    const [__, setSupplierModalCreate] = useAtom(supplierModalAtom);
+    const [supplier] = useAtom(supplierAtom);
     const [chartOfAccounts, setChartOfAccounts] = useState<any[]>([]);
 
     const { getValues, setValue, register, reset, control, watch } = useForm<TAccountPayable>({ defaultValues: ResetAccountPayable });
@@ -106,12 +107,12 @@ export default function AccountPayableModalCreate() {
         reset(ResetAccountPayable);
     };
 
-    // useEffect(() => {
-    //     if(supplier.id && supplier.tradeName) {
-    //     setValue("supplierId", supplier.id);
-    //     setValue("supplierName", supplier.tradeName);
-    //     };
-    // }, [supplier])
+    useEffect(() => {
+        if(supplier.id && supplier.tradeName) {
+        setValue("supplierId", supplier.id);
+        setValue("supplierName", supplier.tradeName);
+        };
+    }, [supplier]);
 
     useEffect(() => {
         const initial = async () => {
@@ -140,14 +141,14 @@ export default function AccountPayableModalCreate() {
                         <input disabled={watch("status") != "Em Aberto"} maxLength={100} placeholder="Descrição" {...register("description")} type="text" className="input-erp-primary input-erp-default" />
                     </div>
 
-                    {/* <div className="col-span-6">
+                    <div className="col-span-6">
                         <Label title="Fornecedor" required={false} />
                         <AutocompletePlus onAddClick={() => {
                             setSupplierModalCreate(true);
                         }} placeholder="Buscar fornecedor..." defaultValue={watch("supplierName")} objKey="id" objValue="tradeName" onSearch={(value: string) => getAutocompleSupplier(value)} onSelect={(opt) => {
                             setValue("supplierId", opt.id);
                         }} options={suppliers}/>
-                    </div> */}
+                    </div>
 
                     <div className="col-span-6 lg:col-span-4">
                         <Label title="Forma de Pagamento" required={false} />

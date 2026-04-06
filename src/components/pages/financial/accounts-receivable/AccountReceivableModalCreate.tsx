@@ -14,6 +14,7 @@ import { accountReceivableAtom, accountReceivableModalAtom } from "@/jotai/finan
 import { ResetAccountReceivable, TAccountReceivable } from "@/types/financial/accounts-receivable.type";
 import Checkbox from "@/components/form/input/Checkbox";
 import ModalV2 from "@/components/ui/modalV2";
+import { customerAtom, customerModalAtom } from "@/jotai/master-data/customer.jotai";
 
 export default function AccountReceivableModalCreate() {
   const [_, setIsLoading] = useAtom(loadingAtom);
@@ -21,8 +22,8 @@ export default function AccountReceivableModalCreate() {
   const [accountReceivable, setAccountReceivable] = useAtom(accountReceivableAtom);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
-  // const [__, setCustomerModalCreate] = useAtom(customerModalCreateAtom);
-  // const [customer, setCustomer] = useAtom(customerAtom);
+  const [__, setCustomerModalCreate] = useAtom(customerModalAtom);
+  const [customer, setCustomer] = useAtom(customerAtom);
   const [chartOfAccounts, setChartOfAccounts] = useState<any[]>([]);
 
   const { getValues, setValue, register, reset, control, watch } = useForm<TAccountReceivable>({
@@ -109,12 +110,12 @@ export default function AccountReceivableModalCreate() {
     reset();
   };
 
-  // useEffect(() => {
-  //   if(customer.id && customer.tradeName) {
-  //     setValue("customerId", customer.id);
-  //     setValue("customerName", customer.tradeName);
-  //   };
-  // }, [customer])
+  useEffect(() => {
+    if(customer.id && customer.tradeName) {
+      setValue("customerId", customer.id);
+      setValue("customerName", customer.tradeName);
+    };
+  }, [customer]);
 
   useEffect(() => {
     const initial = async () => {
@@ -143,7 +144,7 @@ export default function AccountReceivableModalCreate() {
               <input disabled={watch("status") != "Em Aberto"} maxLength={200} placeholder="Descrição" {...register("description")} type="text" className="input-erp-primary input-erp-default" />
             </div>
 
-            {/* 
+            
             <div className="col-span-6">
               <Label title="Cliente" required={false}/>
               <AutocompletePlus onAddClick={() => {
@@ -151,8 +152,7 @@ export default function AccountReceivableModalCreate() {
                 }} placeholder="Buscar cliente..." defaultValue={watch("customerName")} objKey="id" objValue="tradeName" onSearch={(value: string) => getAutocompleCustomer(value)} onSelect={(opt) => {
                 setValue("customerId", opt.id);
               }} options={customers}/>
-            </div> 
-            */}
+            </div>
 
             <div className="col-span-6 lg:col-span-4">
               <Label title="Forma de Pagamento" required={false} />

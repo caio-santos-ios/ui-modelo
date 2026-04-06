@@ -22,6 +22,7 @@ import { IconPayment } from "@/components/icons/financial/IconPayment";
 import AccountReceivableModalPayment from "./AccountReceivableModalPayment";
 import { ResetPagination } from "@/types/global/pagination.type";
 import { IconCancel } from "@/components/icons/financial/IconCancel";
+import { CustomerModalCreate } from "../../master-data/customer/CustomerModalCreate";
 
 const columns: TDataTableColumns[] = [
   {title: "Cliente",          label: "customerName",      type: "text"},
@@ -129,7 +130,7 @@ export default function AccountReceivableTable() {
               <IconPayment action="pay" obj={obj} getObj={getObj}/>
             }
             {
-              permissionUpdate(module, routine) && obj.status == "Em Aberto" &&
+              permissionUpdate(module, routine) &&
               <IconEdit action="edit" obj={obj} getObj={getObj}/>
             }
             {
@@ -150,7 +151,7 @@ export default function AccountReceivableTable() {
         :
         <NotData />
       }
-      {/* <CustomerModalCreate /> */}
+      <CustomerModalCreate />
       <AccountReceivableModalCreate />
       <AccountReceivableModalPayment />
       <ModalDelete confirm={cancel} isOpen={modalCancel} closeModal={() => setModalCancel(false)} title="Cancelar Conta a Receber" description="Deseja Cancelar esse Título?" />          

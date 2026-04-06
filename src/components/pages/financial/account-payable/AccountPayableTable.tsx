@@ -22,6 +22,7 @@ import { accountPayableAtom, accountPayableCancelModalAtom, accountPayableModalA
 import { ResetAccountPayable } from "@/types/financial/account-payable.type";
 import AccountPayableModalPayment from "./AccountPayableModalPayment";
 import AccountPayableModalCreate from "./AccountPayableModalCreate";
+import { SupplierModalCreate } from "../../master-data/supplier/SupplierModalCreate";
 
 const columns: TDataTableColumns[] = [
     {title: "Fornecedor",       label: "supplierName",      type: "text"},
@@ -129,7 +130,7 @@ export default function AccountPayableTable() {
                         <IconPayment action="pay" obj={obj} getObj={getObj}/>
                     }
                     {
-                        permissionUpdate(module, routine) && obj.status == "Em Aberto" &&
+                        permissionUpdate(module, routine) &&
                         <IconEdit action="edit" obj={obj} getObj={getObj}/>
                     }
                     {
@@ -149,7 +150,7 @@ export default function AccountPayableTable() {
                 :
                 <NotData />
             }
-            {/* <CustomerModalCreate /> */}
+            <SupplierModalCreate />
             <AccountPayableModalCreate />
             <AccountPayableModalPayment /> 
             <ModalDelete confirm={cancel} isOpen={modalCancel} closeModal={() => setModalCancel(false)} title="Cancelar Conta a Pagar" description="Deseja Cancelar esse Título?" />          
