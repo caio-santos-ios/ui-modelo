@@ -84,7 +84,7 @@ export default function AccountPayableModalCreate() {
         try {
             if(!value) return setSuppliers([]);
             const {data} = await api.get(`/suppliers?deleted=false&orderBy=tradeName&sort=desc&pageSize=10&pageNumber=1&regex$or$tradeName=${value}&regex$or$corporateName=${value}`, configApi());
-            const result = data.result;
+            const result = data.result.data ?? [];
             setSuppliers(result.data);
         } catch (error) {
             resolveResponse(error);

@@ -97,7 +97,7 @@ export default function AccountReceivableModalCreate() {
     try {
       if(!value) return setCustomers([]);
       const {data} = await api.get(`/customers?deleted=false&orderBy=tradeName&sort=desc&pageSize=10&pageNumber=1&regex$or$tradeName=${value}&regex$or$corporateName=${value}&regex$or$document=${value}`, configApi());
-      const result = data.result;
+      const result = data.result.data ?? [];
       setCustomers(result.data);
     } catch (error) {
       resolveResponse(error);
