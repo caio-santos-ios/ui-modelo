@@ -238,7 +238,7 @@ export default function AccountPayableModalCreate() {
                 <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
                     <Button size="sm" variant="outline" onClick={closeModal}>Cancelar</Button>
                     {
-                        (watch("status") != "Pago" && watch("status") != "Cancelado") &&
+                        // (watch("status") != "Pago" && watch("status") != "Cancelado") &&
                         (accountPayable.id ? <Button size="sm" variant="primary" onClick={update}>Salvar</Button> : <Button size="sm" variant="primary" onClick={create}>Adicionar</Button>)
                     }
                 </div>

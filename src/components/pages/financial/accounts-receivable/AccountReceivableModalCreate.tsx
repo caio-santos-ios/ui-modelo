@@ -256,7 +256,7 @@ export default function AccountReceivableModalCreate() {
           <div className="flex items-center gap-3 lg:justify-end">
             <Button size="sm" variant="outline" onClick={() => closeModal()}>Cancelar</Button>
             {
-              (watch("status") != "Recebido" && watch("status") != "Cancelado") &&
+              // (watch("status") != "Recebido" && watch("status") != "Cancelado") &&
               (
                 accountReceivable.id ? <Button size="sm" variant="primary" onClick={update}>Salvar</Button> : <Button size="sm" variant="primary" onClick={create}>Adicionar</Button>
               )
