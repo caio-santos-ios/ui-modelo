@@ -117,11 +117,11 @@ export default function ServiceOrderDataTab({ register, watch, setValue, getValu
           </div>
           <div className="col-span-6 lg:col-span-3">
             <Label title="Descrição"/>
-            <TextArea rows={5} placeholder="Descrição" value={watch("description")} onChange={(e) => {setValue("description", e)}} />
+            <TextArea rows={15} placeholder="Descrição" value={watch("description")} onChange={(e) => {setValue("description", e)}} />
           </div>
           <div className="col-span-6 lg:col-span-3">
             <Label title="Observações Internas" required={false} />
-            <TextArea rows={5} placeholder="Observações Internas" value={watch("notes")} onChange={(e) => setValue("notes", e)}/>
+            <TextArea rows={15} placeholder="Observações Internas" value={watch("notes")} onChange={(e) => setValue("notes", e)}/>
           </div>
         </div>
       </ComponentCard>
