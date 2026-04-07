@@ -89,8 +89,8 @@ export const ServiceOrderModalCreate = () => {
         try {
         if(!value) return setCustomers([]);
             const {data} = await api.get(`/customers?deleted=false&orderBy=tradeName&sort=desc&pageSize=10&pageNumber=1&regex$or$tradeName=${value}&regex$or$corporateName=${value}&regex$or$document=${value}`, configApi());
-            const result = data.result;
-            setCustomers(result.data);
+            const result = data.result.data.data ?? [];
+            setCustomers(result);
         } catch (error) {
             resolveResponse(error);
         }
