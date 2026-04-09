@@ -91,7 +91,7 @@ export default function ServiceOrderDataTab({ register, watch, setValue, getValu
   return (
     <>
       <ComponentCard title="Dados do Equipamento" hasHeader={false}>
-        <div className="grid grid-cols-6 gap-3 max-h-[calc(100dvh-20rem)] md:max-h-[calc(100dvh-20rem)] overflow-y-auto px-3">
+        <div className="grid grid-cols-6 gap-3 max-h-[calc(100dvh-20rem)] md:max-h-[calc(100dvh-20.5rem)] overflow-y-auto px-3">
           <div className="col-span-6 lg:col-span-3">
             <Label title="Cliente"/>
             <AutocompletePlus onAddClick={() => {
