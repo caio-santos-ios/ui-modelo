@@ -5,6 +5,7 @@ import Autocomplete from "@/components/form/Autocomplete";
 import AutocompletePlus from "@/components/form/AutocompletePlus";
 import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
+import { RichTextEditor } from "@/components/form/RichTextEditor";
 import { SelectPlus } from "@/components/form/SelectPlus";
 import Button from "@/components/ui/button/Button";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
@@ -31,6 +32,7 @@ export default function ServiceOrderDataTab({ register, watch, setValue, getValu
   const [customer, setCustomer] = useAtom(customerAtom);
   const [customers, setCustomers] = useState<TCustomer[]>([]);
   const router = useRouter();
+  const description = watch("description");
 
   const getAutocompleCustomer = async (value: string) => {
     try {
@@ -115,13 +117,20 @@ export default function ServiceOrderDataTab({ register, watch, setValue, getValu
               <option value="Urgente">Urgente</option>
             </select>
           </div>
-          <div className="col-span-6 lg:col-span-3">
+          <div className="col-span-6 lg:col-span-4">
             <Label title="Descrição"/>
-            <TextArea rows={15} placeholder="Descrição" value={watch("description")} onChange={(e) => {setValue("description", e)}} />
+            <RichTextEditor
+              label=""
+              placeholder="Descrição"
+              value={description}
+              onChange={(html) => setValue("description", html)}
+              minHeight={335}
+              height={335}
+            />
           </div>
-          <div className="col-span-6 lg:col-span-3">
+          <div className="col-span-6 lg:col-span-2">
             <Label title="Observações Internas" required={false} />
-            <TextArea rows={15} placeholder="Observações Internas" value={watch("notes")} onChange={(e) => setValue("notes", e)}/>
+            <TextArea rows={18} placeholder="Observações Internas" value={watch("notes")} onChange={(e) => setValue("notes", e)}/>
           </div>
         </div>
       </ComponentCard>
