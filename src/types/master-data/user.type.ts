@@ -36,6 +36,8 @@ export type TUserLogged = {
     id: string;
     admin: boolean;
     master: boolean;
+    role: string;
+    blocked: boolean;
 }
 
 export const ResetUserLogged: TUserLogged = {
@@ -44,7 +46,9 @@ export const ResetUserLogged: TUserLogged = {
     email: "",
     id: "",
     admin: false,
-    master: false
+    master: false,
+    role: "",
+    blocked: false
 }
 
 export type TUserProfile = {

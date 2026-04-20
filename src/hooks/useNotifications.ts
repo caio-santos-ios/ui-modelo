@@ -14,6 +14,12 @@ export const useNotifications = () => {
     const [unreadCount, setUnreadCount]     = useAtom(unreadNotifCountAtom);
     const connectionRef = useRef<signalR.HubConnection | null>(null);
 
+    const playNotificationSound = () => {
+        const audio = new Audio("/sounds/notification.mp3");
+        audio.volume = 0.5;
+        audio.play().catch(() => {});
+    };
+
     const fetchNotifications = useCallback(async () => {
         try {
             const { data } = await api.get("/notifications?limit=30", configApi());
@@ -27,9 +33,14 @@ export const useNotifications = () => {
         (conn: signalR.HubConnection) => {
             connectionRef.current = conn;
 
+            conn.off("ReceiveNotification");
+            conn.off("NotificationRead");
+            conn.off("AllNotificationsRead");
+
             conn.on("ReceiveNotification", (notif: TNotification) => {
                 setNotifications((prev) => [notif, ...prev]);
                 setUnreadCount((prev) => prev + 1);
+                playNotificationSound();
             });
 
             conn.on("NotificationRead", (id: string) => {

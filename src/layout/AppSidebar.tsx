@@ -113,11 +113,7 @@ const AppSidebar: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}>
       <div className={`py-2 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
         <Link href={`${isAdmin ? '/dashboard' : '/master-data/profile'}`} className="w-full flex justify-center">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <Logo width={70} height={70} />
-          ) : (
-            <Logo width={70} height={70} />
-          )}
+          <Logo width={70} height={70} />
         </Link>
       </div>
 

@@ -41,9 +41,7 @@ export default function ServiceOrderTable() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  // ✅ Estado local para renderizar e reagir ao drag & drop
   const [items, setItems] = useState<any[]>([]);
-  // ✅ Por coluna: qual está com drag sobre ela
   const [dragOverCol, setDragOverCol] = useState<string | null>(null);
   const dragId = useRef<string | null>(null);
   const router = useRouter();
@@ -54,10 +52,7 @@ export default function ServiceOrderTable() {
       if (search) strSearch += `&regex$or$code=${search}&regex$or$customerName=${search}&regex$or$device.serialImei`;
       if (statusFilter) strSearch += `&status=${statusFilter}`;
 
-      const { data } = await api.get(
-        `/service-orders?${strSearch}&orderBy=createdAt&sort=desc&pageSize=999&pageNumber=${page}`,
-        configApi()
-      );
+      const { data } = await api.get(`/service-orders?${strSearch}&orderBy=createdAt&sort=desc&pageSize=999&pageNumber=${page}`, configApi());
       const result = data.result;
 
       setPagination({
@@ -68,7 +63,6 @@ export default function ServiceOrderTable() {
         totalCount: result.totalCount,
       });
 
-      // ✅ Sincroniza o estado local com os dados da API
       setItems(result.data);
     } catch (error) {
       resolveResponse(error);
@@ -97,8 +91,6 @@ export default function ServiceOrderTable() {
     if (action === "delete") openModal();
   };
 
-  // ─── Drag & Drop ────────────────────────────────────────────────────────────
-
   const handleDragStart = (e: React.DragEvent, id: string) => {
     dragId.current = id;
     e.dataTransfer.effectAllowed = "move";
@@ -111,7 +103,6 @@ export default function ServiceOrderTable() {
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
-    // ✅ Só limpa se saiu do elemento da coluna de verdade (não de um filho)
     if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node)) {
       setDragOverCol(null);
     }
@@ -129,7 +120,6 @@ export default function ServiceOrderTable() {
     const item = items.find((o) => o.id === id);
     if (!item || item.status === colKey) return;
 
-    // ✅ Atualiza localmente (otimista) — UI reage na hora
     setItems((prev) => prev.map((o) => (o.id === id ? { ...o, status: colKey } : o)));
 
     try {
@@ -139,8 +129,6 @@ export default function ServiceOrderTable() {
       resolveResponse(error);
     }
   };
-
-  // ─── Effects ────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     if (permissionRead(module, routine)) getAll(1);
@@ -162,7 +150,6 @@ export default function ServiceOrderTable() {
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, col.key)}
             >
-              {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-black/5 dark:border-white/5">
                 <div className="flex items-center gap-2">
                   <span className={`h-2 w-2 rounded-full ${col.dot}`} />
@@ -188,7 +175,6 @@ export default function ServiceOrderTable() {
                     key={os.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, os.id)}
-                    // onClick={() => modalDetails(os.id)}
                     className="cursor-grab active:cursor-grabbing rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-150 hover:border-brand-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-brand-600 select-none"
                   >
                     <div className="flex items-start justify-between gap-2 mb-3">

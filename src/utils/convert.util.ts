@@ -17,11 +17,8 @@ export const convertInputStringMoney = (value: string): string => {
 export const convertMoneyToNumber = (value: string | number): number => {
   if (value === null || value === undefined || value === "") return 0;
 
-  // Se já for um número (por algum motivo da API), apenas retorna
   if (typeof value === "number") return value;
 
-  // 1. Remove os pontos de milhar (ex: 1.466,66 -> 1466,66)
-  // 2. Substitui a vírgula pelo ponto (ex: 1466,66 -> 1466.66)
   const cleanedValue = value
     .replace(/\./g, "") 
     .replace(",", ".");
@@ -52,4 +49,25 @@ export const convertNumberMoney = (value: number): string => {
     .toFixed(2)                   
     .replace(".", ",")             
     .replace(/\B(?=(\d{3})+(?!\d))/g, "."); 
+};
+
+export const convertObjFormData = (obj: any): FormData => {
+  const formData = new FormData();
+
+  Object.keys(obj).forEach(key => {
+    const value = obj[key];
+    if(value) {
+      if (Array.isArray(value)) {
+        value.forEach(item => formData.append(`${key}[]`, item));
+      } 
+      else if (typeof value === 'object' && !(value instanceof File) && !(value instanceof Blob)) {
+      formData.append(key, JSON.stringify(value));
+      } 
+      else {
+        formData.append(key, value);
+      }
+    }
+  });
+
+  return formData;
 };
