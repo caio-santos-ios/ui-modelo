@@ -30,14 +30,14 @@ export type TRoutine = {
 
 export type TModule = {
     id: string;
-    code: string;
-    description: string;
-    routines: TRoutine[]
+    Code: string;
+    Description: string;
+    Routines: TRoutine[]
 }
 
 export const ResetModule: TModule = {
     id: "",
-    code: "",
-    description: "",
-    routines: []
+    Code: "",
+    Description: "",
+    Routines: []
 }

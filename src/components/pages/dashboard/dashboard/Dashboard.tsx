@@ -23,7 +23,6 @@ import { ResetDashboardTopRevenueBar, TDashboardTopRevenueBar } from "@/types/da
 
 export const Dashboard = () => {
     const [filterDashboard, setFilterDashboard] = useAtom(filterDashboardAtom);
-    const [search, setSearch] = useAtom(searchFilterDashboardAtom);
     const [loading, setLoading] = useState<boolean>(false);
 
     // CARDS

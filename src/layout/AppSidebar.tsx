@@ -7,10 +7,11 @@ import { useSidebar } from "../context/SidebarContext";
 import { ChevronDownIcon } from "../icons/index";
 import { useAtom } from "jotai";
 import { iconAtom } from "@/jotai/global/icons.jotai";
-import { userAdmin } from "@/jotai/auth/auth.jotai";
+import { userAdmin, userLoggerAtom } from "@/jotai/auth/auth.jotai";
 import { NavItem } from "@/types/global/menu.type";
 import { menuRoutinesAtom } from "@/jotai/global/menu.jotai";
 import { Logo } from "@/components/logo/Logo";
+import { getUserLogged } from "@/utils/auth.util";
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -18,6 +19,7 @@ const AppSidebar: React.FC = () => {
   const [icons] = useAtom(iconAtom);
   const [isAdmin] = useAtom(userAdmin);
   const [menu] = useAtom(menuRoutinesAtom);
+  const [userLogged] = useAtom(userLoggerAtom);
 
   const [openSubmenu, setOpenSubmenu] = useState<{ index: number } | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
@@ -34,49 +36,43 @@ const AppSidebar: React.FC = () => {
   const getAuthorizedMenu = useCallback(() => {
     if (typeof window === "undefined") return [];
 
-    const modulesStr = localStorage.getItem("telemovviModules");
-    const masterStr = localStorage.getItem("telemovviMaster");
-    const isMaster = masterStr ? masterStr == "true" : false;
-
-    if (!modulesStr) return menu;
-
-    const modules: any[] = JSON.parse(modulesStr);
     return menu.map((item) => {
       const newItem = { ...item };
       newItem.authorized = false;
       if (!newItem.subItems) {
-          newItem.authorized = true;
-          return newItem;
+        newItem.authorized = true;
+        return newItem;
       }
 
-      if(isMaster) {
+      const user = getUserLogged();
+
+      if(user.master) {
         newItem.authorized = true;
         newItem.subItems = newItem.subItems?.map((sub) => ({
           ...sub,
           authorized: true
         }));
       } else {
-        const foundModule = modules.find((m: any) => m.code === newItem.code);
-        if(foundModule && foundModule.code != "A") {
-          if (foundModule && foundModule.routines.length > 0) {
+        const foundModule = user.modules.find((m: any) => m.Code === newItem.code);
+        if(foundModule && foundModule.Code != "A") {
+          if (foundModule && foundModule.Routines.length > 0) {
             let authorized = false;
   
-            foundModule.routines.forEach((x: any) => {
-              if(x.permissions.read || x.permissions.create || x.permissions.update || x.permissions.delete) {
+            foundModule.Routines.forEach((x: any) => {
+              if(x.Permissions.Read || x.Permissions.Create || x.Permissions.Update || x.Permissions.Delete) {
                 authorized = true;
               }
             });
             
             newItem.authorized = authorized;
-            
             newItem.subItems = newItem.subItems?.map((sub) => ({
               ...sub,
-              authorized: foundModule.routines.some((x: any) => 
-                x.code === sub.code && (
-                  x.permissions.read || 
-                  x.permissions.create || 
-                  x.permissions.update || 
-                  x.permissions.delete
+              authorized: foundModule.Routines.some((x: any) => 
+                x.Code === sub.code && (
+                  x.Permissions.Read || 
+                  x.Permissions.Create || 
+                  x.Permissions.Update || 
+                  x.Permissions.Delete
                 )
               )
             }));

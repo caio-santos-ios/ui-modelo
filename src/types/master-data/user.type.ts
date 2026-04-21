@@ -1,3 +1,5 @@
+import { TModule } from "../setting/profile-permission.type";
+
 export type TUser = {
     id: string;
     name: string;
@@ -38,6 +40,7 @@ export type TUserLogged = {
     master: boolean;
     role: string;
     blocked: boolean;
+    modules: TModule[];
 }
 
 export const ResetUserLogged: TUserLogged = {
@@ -48,7 +51,8 @@ export const ResetUserLogged: TUserLogged = {
     admin: false,
     master: false,
     role: "",
-    blocked: false
+    blocked: false,
+    modules: []
 }
 
 export type TUserProfile = {

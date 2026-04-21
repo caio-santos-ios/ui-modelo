@@ -1,10 +1,17 @@
 import { ResetUserLogged, TUserLogged } from "@/types/master-data/user.type";
+import { TModule } from "@/types/setting/profile-permission.type";
 import { jwtDecode } from "jwt-decode";
 
 type JwtPayload = {
     sub: string;
+    photo: string;
+    name: string;
     email: string;
-    unique_name?: string;
+    admin: string;
+    master: string;
+    role: string;
+    blocked: boolean;
+    modules: string;
 };
 
 const isBrowser = typeof window !== "undefined";
@@ -24,11 +31,11 @@ export const getLoggedUserId = (): string => {
 export const getUserLogged = (): TUserLogged => {
     if (!isBrowser) return ResetUserLogged;
     
-    const token = localStorage.getItem("telemovviToken") ?? "";
+    const token = localStorage.getItem("systemToken") ?? "";
     if (!token) return ResetUserLogged;
 
-    const decoded: any = jwtDecode<JwtPayload>(token);
-
+    const decoded: JwtPayload = jwtDecode<JwtPayload>(token);
+    
     return {
         email:  decoded.email,
         name:   decoded.name,
@@ -38,5 +45,6 @@ export const getUserLogged = (): TUserLogged => {
         master: decoded.master == "True",
         role: decoded.role,
         blocked: decoded.blocked,
+        modules: JSON.parse(decoded.modules),
     };
 };

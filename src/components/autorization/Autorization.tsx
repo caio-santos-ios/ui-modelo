@@ -7,21 +7,22 @@ import { userAdmin, userLoggerAtom } from "@/jotai/auth/auth.jotai";
 import { removeLocalStorage } from "@/service/config.service";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { ResetUserLogged } from "@/types/master-data/user.type";
+import { getUserLogged } from "@/utils/auth.util";
 
 export const Autorization = () => {
-    const [_, setIsLoading] = useAtom(loadingAtom);
-    const [__, setUserLogger] = useAtom(userLoggerAtom);
+    const [_, setLoading] = useAtom(loadingAtom);
+    const [__, setUserLogged] = useAtom(userLoggerAtom);
     const [___, setIsAdmin] = useAtom(userAdmin);
     const router = useRouter();
     const pathname = usePathname();
 
     useEffect(() => {
-        const localToken = localStorage.getItem("telemovviToken");
+        const localToken = localStorage.getItem("systemToken");
         const token = localToken ? localToken : "";
 
         if(!token) {
-            setUserLogger(ResetUserLogged);
-            setIsLoading(false);
+            setUserLogged(ResetUserLogged);
+            setLoading(false);
 
             if(!["reset-password", "signup", "new-code-confirm", "confirm-account"].includes(pathname.split("/")[1])) {
                 router.push("/");
@@ -29,22 +30,12 @@ export const Autorization = () => {
                 setIsAdmin(false);
             };
         } else {
-            setIsLoading(false);
-            const admin = localStorage.getItem("telemovviAdmin");
-            const name = localStorage.getItem("telemovviName");
-            const email = localStorage.getItem("telemovviEmail");
-            const photo = localStorage.getItem("telemovviPhoto");
+            setLoading(false);
+            const userLogged = getUserLogged();
 
-            setUserLogger({
-                ...ResetUserLogged,
-                name: name ? name : "",
-                email: email ? email : "",
-                photo: photo ? photo : "",
-            });
+            setUserLogged({...userLogged});
             
-            setIsAdmin(admin == 'true');
-
-            if(admin == "true") {
+            if(userLogged.admin || userLogged.master) {
                 if(pathname == "/" || pathname == "/reset-password") {
                     router.push("/dashboard");
                 };
