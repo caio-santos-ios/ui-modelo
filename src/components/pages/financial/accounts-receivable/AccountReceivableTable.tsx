@@ -55,13 +55,14 @@ export default function AccountReceivableTable() {
       const { data } = await api.get(`/accounts-receivable?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
       const result = data?.result?.data ?? ResetPagination;
       
-      setPagination({
+      setPagination(pag => ({
         currentPage: result.currentPage,
-        data: result.data ?? [],
+        data: result.data,
         sizePage: result.pageSize,
         totalPages: result.totalPages,
         totalCount: result.totalCount,
-      });
+        query: pag.query
+      }));
     } catch (error) {
       resolveResponse(error);
     } finally {

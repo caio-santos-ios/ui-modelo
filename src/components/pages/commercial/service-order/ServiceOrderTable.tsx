@@ -55,13 +55,14 @@ export default function ServiceOrderTable() {
       const { data } = await api.get(`/service-orders?${strSearch}&orderBy=createdAt&sort=desc&pageSize=999&pageNumber=${page}`, configApi());
       const result = data.result;
 
-      setPagination({
+      setPagination(pag => ({
         currentPage: result.currentPage,
         data: result.data,
         sizePage: result.pageSize,
         totalPages: result.totalPages,
         totalCount: result.totalCount,
-      });
+        query: pag.query
+      }));
 
       setItems(result.data);
     } catch (error) {

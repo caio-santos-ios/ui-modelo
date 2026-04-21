@@ -133,8 +133,8 @@ export default function ProfileUserForm({id}: TProp) {
   };
 
   const isChecked = (moduleCode: string, routineCode: string, operation: string) => {
-    const moduleItem = modules?.find(m => m.code === moduleCode);
-    const routineItem: any = moduleItem?.routines?.find(r => r.code === routineCode);
+    const moduleItem = modules?.find(m => m.Code === moduleCode);
+    const routineItem: any = moduleItem?.Routines?.find(r => r.code === routineCode);
     
     if (!routineItem) return false;
 

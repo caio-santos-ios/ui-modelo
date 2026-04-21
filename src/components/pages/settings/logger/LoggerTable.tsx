@@ -35,13 +35,14 @@ export default function LoggerTable() {
       const {data} = await api.get(`/loggers?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
       const result = data.result;
 
-      setPagination({
+      setPagination(pag => ({
         currentPage: result.currentPage,
         data: result.data,
         sizePage: result.pageSize,
         totalPages: result.totalPages,
         totalCount: result.totalCount,
-      });
+        query: pag.query
+      }));
     } catch (error) {
       resolveResponse(error);
     } finally {

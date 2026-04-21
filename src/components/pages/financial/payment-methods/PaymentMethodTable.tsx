@@ -19,10 +19,10 @@ import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 
 const columns: TDataTableColumns[] = [
-  {title: "Código", label: "code", type: "text"},
-  {title: "Nome", label: "name", type: "text"},
-  {title: "Parcelas", label: "numberOfInstallments", type: "text"},
-  {title: "Data de Criação", label: "createdAt", type: "date"},
+  { title: "Código", label: "code", type: "text" },
+  { title: "Nome", label: "name", type: "text" },
+  { title: "Parcelas", label: "numberOfInstallments", type: "text" },
+  { title: "Data de Criação", label: "createdAt", type: "date" },
 ]
 
 const module = "D";
@@ -30,24 +30,25 @@ const routine = "D1";
 
 export default function PaymentMethodTable() {
   const [_, setLoading] = useAtom(loadingAtom);
-  const [pagination, setPagination] = useAtom(paginationAtom); 
-  const [paymentMethod, setPaymentMethod] = useAtom(paymentMethodAtom);  
+  const [pagination, setPagination] = useAtom(paginationAtom);
+  const [paymentMethod, setPaymentMethod] = useAtom(paymentMethodAtom);
   const { isOpen, openModal, closeModal } = useModal();
   const [modalCreate, setModalCreate] = useAtom(paymentMethodModalAtom);
 
   const getAll = async (page: number) => {
     try {
       setLoading(true);
-      const {data} = await api.get(`/payment-methods?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
+      const { data } = await api.get(`/payment-methods?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
       const result = data?.result?.data;
-      
-      setPagination({
+
+      setPagination(pag => ({
         currentPage: result.currentPage,
-        data: result.data ?? [],
+        data: result.data,
         sizePage: result.pageSize,
         totalPages: result.totalPages,
         totalCount: result.totalCount,
-      });
+        query: pag.query
+      }));
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -68,7 +69,7 @@ export default function PaymentMethodTable() {
     try {
       setLoading(true);
       await api.delete(`/payment-methods/${paymentMethod.id}`, configApi());
-      resolveResponse({status: 204, message: "Excluído com sucesso"});
+      resolveResponse({ status: 204, message: "Excluído com sucesso" });
       closeModal();
       setPaymentMethod(ResetPaymentMethod);
       await getAll(pagination.currentPage);
@@ -82,17 +83,17 @@ export default function PaymentMethodTable() {
   const getObj = (obj: any, action: string) => {
     setPaymentMethod(obj);
 
-    if(action == "edit") {
+    if (action == "edit") {
       setModalCreate(true);
     };
 
-    if(action == "delete") {
+    if (action == "delete") {
       openModal();
     };
   };
-  
+
   useEffect(() => {
-    if(permissionRead(module, routine)) {
+    if (permissionRead(module, routine)) {
       getAll(1);
     };
   }, [modalCreate]);
@@ -100,24 +101,24 @@ export default function PaymentMethodTable() {
   return (
     <div>
       {
-        pagination.data.length > 0 ? 
-        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
-          <>
-            {
-              permissionUpdate(module, routine) &&
-              <IconEdit action="edit" obj={obj} getObj={getObj}/>
-            }
-            {
-              permissionDelete(module, routine) &&
-              <IconDelete action="delete" obj={obj} getObj={getObj}/> 
-            }
-          </>
-        )
-        }/>
-        :
-        <NotData />
+        pagination.data.length > 0 ?
+          <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
+            <>
+              {
+                permissionUpdate(module, routine) &&
+                <IconEdit action="edit" obj={obj} getObj={getObj} />
+              }
+              {
+                permissionDelete(module, routine) &&
+                <IconDelete action="delete" obj={obj} getObj={getObj} />
+              }
+            </>
+          )
+          } />
+          :
+          <NotData />
       }
-      <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Forma de Pagamento" />          
+      <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Forma de Pagamento" />
       <PaymentMethodModalCreate />
     </div>
   );

@@ -71,13 +71,14 @@ export default function ChartOfAccountsTable() {
       const { data } = await api.get(`/chart-of-accounts?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
       const result = data.result.data;
       
-      setPagination({
+      setPagination(pag => ({
         currentPage: result.currentPage,
         data: result.data.map((x: any) => ({...x, type: getTypeBadge(x.type), groupDRE: getDescriptionGroupDRE(x.groupDRE, x.type)})) ?? [],
         sizePage: result.pageSize,
         totalPages: result.totalPages,
         totalCount: result.totalCount,
-      });
+        query: pag.query
+      }));
     } catch (error) {
       resolveResponse(error);
     } finally {
