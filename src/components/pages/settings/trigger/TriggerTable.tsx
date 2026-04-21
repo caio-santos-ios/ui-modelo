@@ -12,31 +12,30 @@ import { triggerAtom, triggerModalAtom } from "@/jotai/settings/trigger.jotai";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
-import { ResetTrigger, TTrigger } from "@/types/setting/trigger.type";
 import { permissionDelete, permissionRead, permissionUpdate } from "@/utils/permission.util";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
 import { TriggerModalCreate } from "./TriggerModalCreate";
 
 const columns: TDataTableColumns[] = [
-    { title: "Código",          label: "code",          type: "text"     },
-    { title: "Nome",            label: "name",          type: "text"     },
-    { title: "E-mail",          label: "email",         type: "text"     },
-    { title: "Intervalo",       label: "intervalValue", type: "text"     },
-    { title: "Unidade",         label: "intervalUnit",  type: "text"     },
-    { title: "Próximo disparo", label: "nextFireAt",    type: "dateTime" },
-    { title: "Data de Criação", label: "createdAt",     type: "date"     },
+    { title: "Código", label: "code", type: "text" },
+    { title: "Nome", label: "name", type: "text" },
+    { title: "E-mail", label: "email", type: "text" },
+    { title: "Intervalo", label: "intervalValue", type: "text" },
+    { title: "Unidade", label: "intervalUnit", type: "text" },
+    { title: "Próximo disparo", label: "nextFireAt", type: "dateTime" },
+    { title: "Data de Criação", label: "createdAt", type: "date" },
 ];
 
-const module  = "A";
+const module = "A";
 const routine = "A3";
 
 export default function TriggerTable() {
-    const [_, setLoading]       = useAtom(loadingAtom);
+    const [_, setLoading] = useAtom(loadingAtom);
     const [pagination, setPagination] = useAtom(paginationAtom);
     const { isOpen, openModal, closeModal } = useModal();
     const [trigger, setTrigger] = useAtom(triggerAtom);
-    const [modal, setModal]     = useAtom(triggerModalAtom);
+    const [modal, setModal] = useAtom(triggerModalAtom);
 
     const getAll = async (page: number) => {
         try {
@@ -46,13 +45,14 @@ export default function TriggerTable() {
                 configApi()
             );
             const result = data.result;
-            setPagination({
+            setPagination(pag => ({
                 currentPage: result.currentPage,
-                data:        result.data,
-                sizePage:    result.pageSize,
-                totalPages:  result.totalPages,
-                totalCount:  result.totalCount,
-            });
+                data: result.data,
+                sizePage: result.pageSize,
+                totalPages: result.totalPages,
+                totalCount: result.totalCount,
+                query: pag.query
+            }));
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -76,7 +76,7 @@ export default function TriggerTable() {
 
     const getObj = (obj: any, action: string) => {
         setTrigger(obj);
-        if (action === "edit")   { setModal(true); setTrigger(obj); }
+        if (action === "edit") { setModal(true); setTrigger(obj); }
         if (action === "delete") { openModal(); }
     };
 

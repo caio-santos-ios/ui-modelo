@@ -15,9 +15,7 @@ import { ModalDelete } from "@/components/modal-delete/ModalDelete";
 import { NotData } from "@/components/not-data/NotData";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
-import { ResetTemplate, TTemplate } from "@/types/setting/template.type";
 import { MdPageview, MdSend } from "react-icons/md";
-import { VscOpenPreview } from "react-icons/vsc";
 import { templateAtom, templateModalPreviewAtom } from "@/jotai/settings/template.jotai";
 import { TemplateModalPreview } from "./TemplateModalPreview";
 
