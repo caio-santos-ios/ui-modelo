@@ -3,7 +3,7 @@
 import { useAtom } from "jotai";
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { userAdmin, userLoggerAtom } from "@/jotai/auth/auth.jotai";
+import { userAdmin, userLoggedAtom } from "@/jotai/auth/auth.jotai";
 import { removeLocalStorage } from "@/service/config.service";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { ResetUserLogged } from "@/types/master-data/user.type";
@@ -11,7 +11,7 @@ import { getUserLogged } from "@/utils/auth.util";
 
 export const Autorization = () => {
     const [_, setLoading] = useAtom(loadingAtom);
-    const [__, setUserLogged] = useAtom(userLoggerAtom);
+    const [__, setUserLogged] = useAtom(userLoggedAtom);
     const [___, setIsAdmin] = useAtom(userAdmin);
     const router = useRouter();
     const pathname = usePathname();
