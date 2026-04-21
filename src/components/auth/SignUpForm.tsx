@@ -40,8 +40,6 @@ const levels = [
 ];
 
 export function PasswordStrength({ password }: Props) {
-  // if (!password) return null;
-
   const score = criteria.filter((c) => c.test(password)).length;
   const level = levels[score - 1] ?? levels[0];
   const percent = (score / criteria.length) * 100;

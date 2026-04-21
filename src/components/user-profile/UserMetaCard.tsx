@@ -1,162 +1,182 @@
 "use client";
 
-import { useModal } from "../../hooks/useModal";
-import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
-import Label from "../form/Label";
-import { userLoggerAtom } from "@/jotai/auth/auth.jotai";
 import { useAtom } from "jotai";
-import { useForm } from "react-hook-form";
-import DropzoneComponent from "../form/form-elements/DropZone";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
-import { api, uriBase } from "@/service/api.service";
-import { configApi, resolveResponse } from "@/service/config.service";
-import { useEffect } from "react";
-import { ResetUserLogged, ResetUserProfile, TUserProfile } from "@/types/master-data/user.type";
+import { api } from "@/service/api.service";
+import { configApi, resolveResponse, saveLocalStorage } from "@/service/config.service";
+import { useEffect, useRef, useState } from "react";
+import { ResetUserProfile, TUser, TUserLogged, TUserProfile } from "@/types/master-data/user.type";
+import { decodedToken, getUserLogged } from "@/utils/auth.util";
+import { userAtom, userModalUpdatePasswordAtom } from "@/jotai/master-data/user.jotai";
+import { UserModalUpdatePassword } from "../pages/master-data/user/UserModalUpdatePassword";
+import { profileModalAtom } from "@/jotai/master-data/profile.jotai";
+import { ProfileModalCreate } from "../pages/master-data/profile/ProfileModalCreate";
+import { userLoggedAtom } from "@/jotai/auth/auth.jotai";
+
+const roleLabel: Record<string, string> = {
+  User: "Usuário",
+  Client: "Cliente",
+  Employee: "Colaborador",
+  Director: "Diretor(a)",
+  Master: "Master",
+  Admin: "Administrador",
+};
 
 export default function UserMetaCard() {
-  const [userLogger, setUserLogger] = useAtom(userLoggerAtom);
-  const [_, setIsLoading] = useAtom(loadingAtom);
-  const { isOpen, openModal, closeModal } = useModal();
+  const [_, setLoading] = useAtom(loadingAtom);
+  const [__, setModal] = useAtom(profileModalAtom);
+  const [user, setUser] = useAtom(userAtom);
+  const [___, setModalUpdatePassword] = useAtom(userModalUpdatePasswordAtom);
+  const [mounted, setMounted] = useState(false);
 
-  const { register, handleSubmit, watch, reset } = useForm<TUserProfile>({
-    defaultValues: ResetUserProfile
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { register, reset, watch, getValues } = useForm<TUserProfile>({
+    defaultValues: ResetUserProfile,
   });
-  
-  const update = async (body: TUserProfile) => {
+
+  // const settingNotification = watch("settingNotification");
+
+  const [userLogged, setUserLogged] = useAtom(userLoggedAtom);
+
+  const getById = async (id: string) => {
     try {
-    const { status, data} = await api.put(`/users`, body, configApi());
-      resolveResponse({status, ...data});
-      getUser();
-      closeModal();
+      setLoading(true);
+      const { data } = await api.get(`/users/${id}`, configApi());
+      const result = data.result.data;
+      reset(result);
+      setUser(result);
     } catch (error) {
       resolveResponse(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const uploadFile = async (file: File[]) => {
     const formBody = new FormData();
     formBody.append("id", watch("id")!);
-    const fileToUpload = file[0];
-    formBody.append('photo', fileToUpload);
-    await updatePhoto(formBody);
-  };
-  
-  const updatePhoto = async (form: FormData) => {
+    formBody.append("photo", file[0]);
     try {
-      const { status, data} = await api.put(`/users/profile-photo`, form, configApi(false));
+      setLoading(true);
+      const { data } = await api.put(`/users/profile-photo-token`, formBody, configApi(false));
       const result = data.result.data;
-      localStorage.setItem("telemovviPhoto", result.photo);
-      
-      setUserLogger({
-        ...userLogger,
-        photo: result.photo
-      });
-      resolveResponse({status, ...data});
-    } catch (error) {
-      resolveResponse(error);
-    }
-  };
-
-  const normalizeName = (name: string) => {
-    if(name) return name.slice(0, 1);
-  };
-
-  const getUser = async () => {
-    try {
-      setIsLoading(true);
-      const {data} = await api.get(`/users/logged`, configApi());
-      const result = data.result.data;
-      
-      if(result.photo) {
-        setUserLogger({
-          ...ResetUserLogged,
-          name: result.name,
-          email: result.email,
-          photo: result.photo
-        });
-      };
-  
-      reset({
-        id: result.id,
-        name: result.name,
-        email: result.email,
-        phone: result.phone
-      });
+      const userLogged: TUserLogged = decodedToken(result.token);
+      setUserLogged(userLogged);
+      saveLocalStorage(result, true);
     } catch (error) {
       resolveResponse(error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
+  const updateSettingsNotification: SubmitHandler<TUser> = async (body: TUser) => {
+    try {
+      setLoading(true);
+      const { data } = await api.put(`/users/setting-notifications`, body, configApi());
+      resolveResponse({ status: 200, message: data.result.message });
+    } catch (error) {
+      resolveResponse(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const normalizeName = (name: string) => name?.slice(0, 1).toUpperCase() ?? "";
+
   useEffect(() => {
-    getUser();
+    setMounted(true);
+    setUserLogged(getUserLogged());
+    getById(getUserLogged().id);
   }, []);
 
   return (
     <>
-      <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
-            <div className="w-20 h-20 flex justify-center items-center overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
-              {
-                userLogger.photo ?
-                <img className="w-full h-full object-cover rounded-full bg-white border border-gray-200 dark:border-gray-800" src={userLogger.photo} alt="foto do usuário" />
-                :
-                <p className="font-bold text-6xl text-gray-800 dark:text-white/90">{normalizeName(userLogger.name)}</p>
-              }
-            </div>
-            <div className="order-3 xl:order-2">
-              <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-                {userLogger.name}
-              </h4>
-              <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {userLogger.email}
-                </p>
-              </div>
-            </div>
-          </div>
-          <button onClick={openModal} className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200 lg:inline-flex lg:w-auto">
-            Editar
-          </button>
-        </div>
-      </div>
-      
-      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-          <div className="px-2 pr-14">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Editar Perfil
-            </h4>
-          </div>
-          <form onSubmit={handleSubmit(update)} className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div className="mt-7">
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label title="Nome completo" />
-                    <input placeholder="Seu nome" {...register("name")} type="text" className="input-erp-primary input-erp-default"/>
-                  </div>
+      <div className="p-6 border border-gray-200 rounded-2xl dark:border-gray-800 mb-4">
 
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label title="E-mail" />
-                    <input placeholder="Seu e-mail" {...register("email")} type="email" className="input-erp-primary input-erp-default"/>
+        <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
+
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 flex-1 min-w-0">
+
+            <div className="relative shrink-0 group">
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700 cursor-pointer ring-2 ring-offset-2 ring-transparent hover:ring-brand-500 dark:ring-offset-gray-900 transition-all"
+              >
+                {mounted && userLogged.photo ? (
+                  <img
+                    src={userLogged.photo}
+                    alt="Foto do usuário"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-brand-50 dark:bg-brand-900/20">
+                    <span className="text-3xl font-bold text-brand-600 dark:text-brand-400">
+                      {normalizeName(userLogged.name)}
+                    </span>
                   </div>
-                  <div className="col-span-2">
-                    <DropzoneComponent sendFile={uploadFile} title="Foto de Perfil" />
-                  </div>
+                )}
+                <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                  </svg>
                 </div>
               </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && files.length > 0) uploadFile(Array.from(files));
+                }}
+              />
             </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>Cancelar</Button>
-              <Button type="submit" size="sm">Salvar</Button>
+
+            <div className="flex flex-col gap-2 min-w-0 text-center sm:text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 flex-wrap justify-center sm:justify-start">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                  {userLogged.name}
+                </h4>
+              </div>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{userLogged.email}</p>
+
+              <div className="flex flex-wrap gap-3 justify-center sm:justify-start mt-1">
+                {userLogged.role && (
+                  <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                    </svg>
+                    {roleLabel[userLogged.role] ?? userLogged.role}
+                  </div>
+                )}
+              </div>
             </div>
-          </form>
+          </div>
+
+          <div className="flex gap-2 shrink-0 self-start sm:self-center w-full md:w-60">
+            <Button className="w-full" size="sm" variant="outline" onClick={() => setModalUpdatePassword(true)}>
+              Alterar senha
+            </Button>
+            <Button className="w-full" size="sm" variant="primary" onClick={() => setModal(true)}>
+              Editar
+            </Button>
+          </div>
+
         </div>
-      </Modal>
+      </div>
+
+      {/* <ProfileNotificationSettingsCard onSave={(settings) => { updateSettingsNotification({...ResetUser, id: user.id, settingNotification: settings}) }} defaultValues={settingNotification} /> */}
+
+      <ProfileModalCreate />
+      <UserModalUpdatePassword />
     </>
   );
 }

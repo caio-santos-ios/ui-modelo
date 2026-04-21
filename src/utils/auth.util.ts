@@ -27,12 +27,7 @@ export const getLoggedUserId = (): string => {
     }
 };
 
-export const getUserLogged = (): TUserLogged => {
-    if (!isBrowser) return ResetUserLogged;
-    
-    const token = localStorage.getItem("systemToken") ?? "";
-    if (!token) return ResetUserLogged;
-
+export const decodedToken = (token: string): TUserLogged => {
     const decoded: JwtPayload = jwtDecode<JwtPayload>(token);
     
     return {
@@ -46,4 +41,13 @@ export const getUserLogged = (): TUserLogged => {
         blocked: decoded.blocked,
         modules: JSON.parse(decoded.modules),
     };
+};
+
+export const getUserLogged = (): TUserLogged => {
+    if (!isBrowser) return ResetUserLogged;
+    
+    const token = localStorage.getItem("systemToken") ?? "";
+    if (!token) return ResetUserLogged;
+
+    return decodedToken(token);
 };
