@@ -7,7 +7,7 @@ import { useSidebar } from "../context/SidebarContext";
 import { ChevronDownIcon } from "../icons/index";
 import { useAtom } from "jotai";
 import { iconAtom } from "@/jotai/global/icons.jotai";
-import { userAdmin, userLoggerAtom } from "@/jotai/auth/auth.jotai";
+import { userAdmin, userLoggedAtom } from "@/jotai/auth/auth.jotai";
 import { NavItem } from "@/types/global/menu.type";
 import { menuRoutinesAtom } from "@/jotai/global/menu.jotai";
 import { Logo } from "@/components/logo/Logo";
@@ -19,7 +19,7 @@ const AppSidebar: React.FC = () => {
   const [icons] = useAtom(iconAtom);
   const [isAdmin] = useAtom(userAdmin);
   const [menu] = useAtom(menuRoutinesAtom);
-  const [userLogged] = useAtom(userLoggerAtom);
+  const [userLogged] = useAtom(userLoggedAtom);
 
   const [openSubmenu, setOpenSubmenu] = useState<{ index: number } | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
