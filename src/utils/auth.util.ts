@@ -1,5 +1,4 @@
 import { ResetUserLogged, TUserLogged } from "@/types/master-data/user.type";
-import { TModule } from "@/types/setting/profile-permission.type";
 import { jwtDecode } from "jwt-decode";
 
 type JwtPayload = {

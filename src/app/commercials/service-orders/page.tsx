@@ -15,7 +15,6 @@ export default function Manages() {
             <PageBreadcrumb pageIcon="MdBuild" pageTitle="Ordem de Serviço" pageSubTitle="Ordens de Serviços" />
             <div className="flex justify-end mb-3 gap-4">
                 <ServiceOrderButtonCreate />
-                {/* <ServiceOrderButtonSearch /> */}
             </div>
             <ServiceOrderTable />
         </div>

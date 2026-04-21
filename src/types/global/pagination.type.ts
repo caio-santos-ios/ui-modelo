@@ -1,9 +1,10 @@
 export type TPagination = {
-    data: any[],
-    totalPages: number,
-    totalCount: number,
-    currentPage: number,
-    sizePage: number
+    data: any[];
+    totalPages: number;
+    totalCount: number;
+    currentPage: number;
+    sizePage: number;
+    query: string;
 }
 
 export const ResetPagination: TPagination = {
@@ -11,5 +12,6 @@ export const ResetPagination: TPagination = {
     totalPages: 0,
     totalCount: 0,
     currentPage: 1,
-    sizePage: 10
+    sizePage: 10,
+    query: ""
 }

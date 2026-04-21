@@ -10,6 +10,7 @@ import { permissionRead } from "@/utils/permission.util";
 import { NotData } from "@/components/not-data/NotData";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
+import { AuditModalSearch } from "./AuditModalSearch";
 
 const columns: TDataTableColumns[] = [
   {title: "Metodo", label: "method", type: "text"},
@@ -18,7 +19,6 @@ const columns: TDataTableColumns[] = [
   {title: "Status", label: "statusCode", type: "text"},
   {title: "Data de Criação", label: "createdAt", type: "dateTime"},
   {title: "Usuário", label: "userName", type: "text"},
-  {title: "Auditoria", label: "audit", type: "booleanYesNo"},
   {title: "Tempo Segundos", label: "time", type: "int"},
 ]
 
@@ -32,16 +32,17 @@ export default function AuditTable() {
   const getAll = async (page: number) => {
     try {
       setLoading(true);
-      const {data} = await api.get(`/loggers?deleted=false&audit=true&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
+      const {data} = await api.get(`/loggers?${pagination.query}&audit=true&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
       const result = data.result;
 
-      setPagination({
+      setPagination(pag => ({
         currentPage: result.currentPage,
         data: result.data,
         sizePage: result.pageSize,
         totalPages: result.totalPages,
         totalCount: result.totalCount,
-      });
+        query: pag.query
+      }));
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -62,7 +63,7 @@ export default function AuditTable() {
     if(permissionRead(module, routine)) {
       getAll(1);
     };
-  }, []);
+  }, [pagination.query]);
 
   return (
     <div>
@@ -72,6 +73,8 @@ export default function AuditTable() {
         :
         <NotData />
       }
+
+      <AuditModalSearch />
     </div>    
   );
 }
