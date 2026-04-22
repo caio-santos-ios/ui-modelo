@@ -20,6 +20,7 @@ import { FaLock } from "react-icons/fa";
 import { getUserLogged } from "@/utils/auth.util";
 import { TUserLogged } from "@/types/master-data/user.type";
 import { UserModalUpdatePassword } from "./UserModalUpdatePassword";
+import { ResetPagination } from "@/types/global/pagination.type";
 
 const columns: TDataTableColumns[] = [
   {title: "Nome", label: "name", type: "text"},
@@ -44,8 +45,8 @@ export default function UserTable() {
     try {
       setLoading(true);
       const {data} = await api.get(`/users?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
-      const result = data.result;
-
+      const result = data.result.data ?? ResetPagination;
+      console.log(result)
       setPagination(pag => ({
         currentPage: result.currentPage,
         data: result.data,
