@@ -14,6 +14,7 @@ import { iconAtom } from "@/jotai/global/icons.jotai";
 import { menuRoutinesAtom } from "@/jotai/global/menu.jotai";
 import { NavItem, NavSubItem } from "@/types/global/menu.type";
 import { ResetProfileUser, TProfileUser } from "@/types/setting/profile-permission.type";
+import { userLoggedAtom } from "@/jotai/auth/auth.jotai";
 
 type TProp = {
   id?: string;
@@ -23,7 +24,7 @@ export default function ProfileUserForm({id}: TProp) {
   const [_, setIsLoading] = useAtom(loadingAtom);
   const [icons] = useAtom(iconAtom);
   const [menus] = useAtom<NavItem[]>(menuRoutinesAtom);
-  const [isMaster, setIsMaster] = useState(false);
+  const [userLogged] = useAtom(userLoggedAtom);
   const router = useRouter();
 
   const { register, reset, setValue, watch, getValues } = useForm<TProfileUser>({
@@ -114,6 +115,7 @@ export default function ProfileUserForm({id}: TProp) {
       
       if (routineIndex > -1) {
         const permissions = currentModules[moduleIndex].routines[routineIndex].permissions;
+        console.log(permissions)
 
         if (operation === "all") {
           const newValue = !permissions.read; 
@@ -126,30 +128,32 @@ export default function ProfileUserForm({id}: TProp) {
         } else {
           currentModules[moduleIndex].routines[routineIndex].permissions[operation] = !permissions[operation];
         }
-
+        console.log(currentModules)
         setValue("modules", currentModules);
       }
     }
   };
 
   const isChecked = (moduleCode: string, routineCode: string, operation: string) => {
-    const moduleItem = modules?.find(m => m.Code === moduleCode);
-    const routineItem: any = moduleItem?.Routines?.find(r => r.code === routineCode);
-    
-    if (!routineItem) return false;
+    const myModules: any[] = [...modules]; 
+    const moduleItem = myModules?.find(m => m.code === moduleCode);
+    if(moduleItem) {
+      const routineItem: any = moduleItem?.routines?.find((r: any) => r.code === routineCode);
+      
+      if (!routineItem) return false;
+      
+      if (operation === "all") {
+        const p = routineItem.permissions;
+        return p.create && p.update && p.delete && p.read;
+      }
+      
+      return !!routineItem.permissions[operation];
+    };
 
-    if (operation === "all") {
-      const p = routineItem.permissions;
-      return p.create && p.update && p.delete && p.read;
-    }
-
-    return !!routineItem.permissions[operation];
+    return false;
   };
 
   useEffect(() => {
-    const masterStr = localStorage.getItem("telemovviMaster");
-    if(masterStr) setIsMaster(masterStr === "true");
-
     const initial = async () => {
       if(id != "create") {
         await getById(id!);
@@ -179,7 +183,7 @@ export default function ProfileUserForm({id}: TProp) {
                   menus.map(menu => {
                     const IconComponent = icons[menu.icon];
 
-                    if(menu.code === "A" && !isMaster) return null;
+                    if(menu.code === "A" && !userLogged.master) return null;
                     if(!menu.subItems) return null;
 
                     return (
