@@ -46,7 +46,7 @@ export default function UserTable() {
       setLoading(true);
       const {data} = await api.get(`/users?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
       const result = data.result.data ?? ResetPagination;
-      console.log(result)
+      
       setPagination(pag => ({
         currentPage: result.currentPage,
         data: result.data,
