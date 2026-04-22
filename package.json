@@ -16,6 +16,7 @@
     "@fullcalendar/react": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
     "@heroui/react": "^2.8.7",
+    "@hookform/resolvers": "^5.2.2",
     "@microsoft/signalr": "^10.0.0",
     "@monaco-editor/react": "^4.7.0",
     "@react-jvectormap/core": "^1.0.4",
@@ -48,7 +49,8 @@
     "react-number-format": "^5.4.4",
     "react-toastify": "^11.0.5",
     "swiper": "^11.2.10",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

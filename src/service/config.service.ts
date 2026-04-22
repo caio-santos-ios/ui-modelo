@@ -87,6 +87,12 @@ const handleApiErrors = (error: any) => {
   return error.message || "Ocorreu um erro inesperado. Tente novamente.";
 };
 
+export const onError = (errors: any) => {
+  Object.values(errors).forEach((error: any) => {
+    if (error?.message) toast.warn(error.message, { theme: 'colored' });
+  });
+};
+
 export const saveLocalStorage = (data: TDataLocal, hasToken: boolean = false) => {
   if(hasToken) {
     localStorage.setItem("systemToken", data.token);

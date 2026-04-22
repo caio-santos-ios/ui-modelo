@@ -1,11 +1,11 @@
 import { TModule } from "../setting/profile-permission.type";
 
 export type TUser = {
-    id: string;
+    id?: string;
     name: string;
     email: string;
     profileUserId: string;
-    password: string;
+    password?: string;
 }
 
 export const ResetUser: TUser = {
