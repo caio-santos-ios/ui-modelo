@@ -7,5 +7,7 @@ export const paginationAtom = atom<TPagination>({
     totalCount: 100,
     currentPage: 1,
     sizePage: 10,
-    query: "deleted=false"
+    query: "deleted=false",
+    orderBy: "createdAt",
+    sort: "desc"
 })

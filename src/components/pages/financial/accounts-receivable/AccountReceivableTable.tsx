@@ -56,6 +56,7 @@ export default function AccountReceivableTable() {
       const result = data?.result?.data ?? ResetPagination;
       
       setPagination(pag => ({
+        ...pag,
         currentPage: result.currentPage,
         data: result.data,
         sizePage: result.pageSize,

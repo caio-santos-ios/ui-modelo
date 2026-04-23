@@ -39,10 +39,11 @@ export default function CustomerTable() {
   const getAll = async (page: number) => {
     try {
       setLoading(true);
-      const {data} = await api.get(`/customers?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
+      const {data} = await api.get(`/customers?deleted=false&orderBy=${pagination.orderBy}&sort=${pagination.sort}&pageSize=10&pageNumber=${page}`, configApi());
       const result = data.result.data ?? ResetPagination;
 
       setPagination(pag => ({
+        ...pag,
         currentPage: result.currentPage,
         data: result.data,
         sizePage: result.pageSize,
@@ -88,6 +89,16 @@ export default function CustomerTable() {
     await getAll(page);
   };
 
+  const changeOrderBy = async (orderBy: string) => {
+    setPagination(pag => ({
+      ...pag,
+      orderBy,
+      sort: pag.sort == "desc" ? "asc" : "desc"
+    }));
+
+    await getAll(pagination.currentPage);
+  };
+
   useEffect(() => {
     if(permissionRead(module, routine)) {
       getAll(1);
@@ -98,7 +109,7 @@ export default function CustomerTable() {
     <div>
       {
         pagination.data.length > 0 ? 
-        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
+        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} changeOrderBy={changeOrderBy} actions={(obj) => (
           <>
             {
               permissionUpdate(module, routine) &&

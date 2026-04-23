@@ -5,6 +5,8 @@ export type TPagination = {
     currentPage: number;
     sizePage: number;
     query: string;
+    orderBy: string;
+    sort: string;
 }
 
 export const ResetPagination: TPagination = {
@@ -13,5 +15,7 @@ export const ResetPagination: TPagination = {
     totalCount: 0,
     currentPage: 1,
     sizePage: 10,
-    query: ""
+    query: "",
+    orderBy: "createdAt",
+    sort: "desc"
 }

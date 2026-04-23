@@ -45,6 +45,7 @@ export default function ServiceOrderAttachmentsTab({ serviceOrderId }: TProp) {
       const result = data.result;
 
       setPagination(pag => ({
+        ...pag,
         currentPage: result.currentPage,
         data: result.data,
         sizePage: result.pageSize,

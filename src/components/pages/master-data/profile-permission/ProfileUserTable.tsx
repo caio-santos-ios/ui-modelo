@@ -41,6 +41,7 @@ export default function ProfileUserTable() {
       const result = data.result;
 
       setPagination(pag => ({
+        ...pag,
         currentPage: result.currentPage,
         data: result.data,
         sizePage: result.pageSize,

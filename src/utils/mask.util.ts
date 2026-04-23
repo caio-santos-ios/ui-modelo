@@ -198,3 +198,13 @@ export const formattedDocument = (value: string): string => {
     .replace(/(\d{4})(\d)/, "$1-$2")
     .substring(0, 18);
 };
+
+export const formattedInt = (value: string | number): string => {
+  if (value === null || value === undefined || value === '') return '0';
+
+  const number = Number(value);
+
+  if (isNaN(number)) return '0';
+
+  return number.toLocaleString('pt-BR');
+};

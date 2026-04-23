@@ -1,3 +1,5 @@
+import { formattedInt } from "@/utils/mask.util";
+
 type TProps = {
   currentPage: number;
   totalPages: number;
@@ -33,7 +35,7 @@ const Pagination = ({currentPage, totalData, totalPages, totalCount, onPageChang
   return (
     <div className="flex flex-col items-center md:flex-row md:justify-between">
       <h4 className="text-gray-700 dark:text-gray-400">
-        Mostrando {totalData} de {totalCount}
+        Mostrando {totalData} de {formattedInt(totalCount)}
       </h4>
 
       <div className="flex items-center">
@@ -61,7 +63,7 @@ const Pagination = ({currentPage, totalData, totalPages, totalCount, onPageChang
                     : "text-gray-700 dark:text-gray-400"
                   }`}
               >
-                {page}
+                {formattedInt(page)}
               </button>
             )
           )}

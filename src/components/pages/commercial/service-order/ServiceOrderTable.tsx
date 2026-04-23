@@ -56,6 +56,7 @@ export default function ServiceOrderTable() {
       const result = data.result;
 
       setPagination(pag => ({
+        ...pag,
         currentPage: result.currentPage,
         data: result.data,
         sizePage: result.pageSize,

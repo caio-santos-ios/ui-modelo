@@ -48,6 +48,7 @@ export default function UserTable() {
       const result = data.result.data ?? ResetPagination;
       
       setPagination(pag => ({
+        ...pag,
         currentPage: result.currentPage,
         data: result.data,
         sizePage: result.pageSize,
@@ -95,6 +96,10 @@ export default function UserTable() {
     await getAll(page);
   };
 
+  const changeOrderBy = async (orderBy: string) => {
+    console.log(orderBy)
+  };
+
   useEffect(() => {
     if(permissionRead(module, routine)) {
       getAll(1);
@@ -105,7 +110,7 @@ export default function UserTable() {
     <div>
       {
         pagination.data.length > 0 ? 
-        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
+        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} changeOrderBy={changeOrderBy} actions={(obj) => (
           <>
             {
               permissionUpdate(module, routine) && (obj.id == userLogged.id || userLogged.admin || userLogged.master) &&

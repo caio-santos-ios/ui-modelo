@@ -9,6 +9,7 @@ type TProps = {
     pagination: TPagination;
     columns: TDataTableColumns[];
     changePage: (page: number) => void;
+    changeOrderBy?: (column: string) => void;
     actions?: (row: any) => ReactNode;
     heightContainer?: string;
     isActions?: boolean;
@@ -36,7 +37,7 @@ const getStatusBadge = (status: string) => {
     );
 };
 
-export const DataTableCard = ({pagination, columns, changePage, actions, isActions = false, heightContainer = "max-h-[calc(100dvh-16rem)] md:max-h-[calc(100dvh-16.5rem)]"}: TProps) => {
+export const DataTableCard = ({pagination, columns, changePage, changeOrderBy, actions, isActions = false, heightContainer = "max-h-[calc(100dvh-16rem)] md:max-h-[calc(100dvh-16.5rem)]"}: TProps) => {
     const normalizeTableCell = (value: any, type: string) => {
         switch(type) {
             case "date":
@@ -64,7 +65,7 @@ export const DataTableCard = ({pagination, columns, changePage, actions, isActio
                                 <TableRow>
                                     {
                                         columns.map((column) => (
-                                            <TableCell key={column.label} isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">{column.title}</TableCell>
+                                            <TableCell changeOrderBy={() => changeOrderBy && changeOrderBy(column.label)} key={column.label} isHeader className={`px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 ${changeOrderBy && 'cursor-pointer'}`}>{column.title}</TableCell>
                                         ))
                                     }
                                     {
