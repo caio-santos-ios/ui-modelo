@@ -7,11 +7,10 @@ type TProp = {
     code: string;
     label: string;
     options: any[];
-    onAddClick?: () => void; 
     disabled?: boolean;
 };
 
-export const SelectPlus = ({options, code, label, onAddClick, disabled, ...rest}: TProp) => {
+export const Select = ({options, code, label, disabled, ...rest}: TProp) => {
 
     return (
         <div className="relative">
@@ -22,9 +21,6 @@ export const SelectPlus = ({options, code, label, onAddClick, disabled, ...rest}
                     ))
                 }
             </select>
-            <Button size="sm" variant="primary" onClick={onAddClick}>
-                <BiPlus />
-            </Button>
         </div>
     );
 }

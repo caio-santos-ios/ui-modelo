@@ -16,7 +16,7 @@ import { ModalDelete } from "@/components/modal-delete/ModalDelete";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { IconPayment } from "@/components/icons/financial/IconPayment";
-import { ResetPagination } from "@/types/global/pagination.type";
+import { ResetPagination, TPagination } from "@/types/global/pagination.type";
 import { IconCancel } from "@/components/icons/financial/IconCancel";
 import { accountPayableAtom, accountPayableCancelModalAtom, accountPayableModalAtom, accountPayablePaymentModalAtom } from "@/jotai/financial/accounts-payable.jotai";
 import { ResetAccountPayable } from "@/types/financial/account-payable.type";
@@ -25,15 +25,15 @@ import AccountPayableModalCreate from "./AccountPayableModalCreate";
 import { SupplierModalCreate } from "../../master-data/supplier/SupplierModalCreate";
 
 const columns: TDataTableColumns[] = [
-    {title: "Fornecedor",       label: "supplierName",      type: "text"},
-    {title: "Descrição",        label: "description",       type: "text"},
-    {title: "Forma pg.",        label: "paymentMethodName", type: "text"},
-    {title: "Valor",            label: "amount",            type: "money"},
-    {title: "Valor Recebido",   label: "amountPaid",        type: "money"},
-    {title: "Emissão",          label: "issueDate",         type: "date"},
-    {title: "Vencimento",       label: "dueDate",           type: "date"},
-    {title: "Status",           label: "status",            type: "workflow"},
-    {title: "Data de Criação",  label: "createdAt",         type: "date"},
+    { title: "Fornecedor", label: "supplierName", type: "text" },
+    { title: "Descrição", label: "description", type: "text" },
+    { title: "Forma pg.", label: "paymentMethodName", type: "text" },
+    { title: "Valor", label: "amount", type: "money" },
+    { title: "Valor Recebido", label: "amountPaid", type: "money" },
+    { title: "Emissão", label: "issueDate", type: "date" },
+    { title: "Vencimento", label: "dueDate", type: "date" },
+    { title: "Status", label: "status", type: "workflow" },
+    { title: "Data de Criação", label: "createdAt", type: "date" },
 ];
 
 const module = "D";
@@ -48,13 +48,14 @@ export default function AccountPayableTable() {
     const [modalPayment, setModalPayment] = useAtom(accountPayablePaymentModalAtom);
     const [modalCancel, setModalCancel] = useAtom(accountPayableCancelModalAtom);
 
-    const getAll = async (page: number) => {
+    const getAll = async (pag: TPagination) => {
         try {
             setLoading(true);
-            const { data } = await api.get(`/accounts-payable?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
+            const { data } = await api.get(`/accounts-payable?${pag.query}&orderBy=${pag.orderBy}&sort=${pag.sort}&pageSize=10&pageNumber=${pag.currentPage}`, configApi());
             const result = data?.result?.data ?? ResetPagination;
-            
+
             setPagination(pag => ({
+                ...pag,
                 currentPage: result.currentPage,
                 data: result.data,
                 sizePage: result.pageSize,
@@ -70,9 +71,26 @@ export default function AccountPayableTable() {
     };
 
     const changePage = async (page: number) => {
-        setPagination(prev => ({ ...prev, currentPage: page }));
-        await getAll(page);
+        setPagination(prev => ({
+            ...prev,
+            currentPage: page
+        }));
+
+        await getAll({ ...pagination, currentPage: page });
     };
+
+    const changeOrderBy = async (orderBy: string) => {
+        const orderBySort = orderBy.split(" ");
+
+        setPagination(pag => ({
+            ...pag,
+            orderBy: orderBySort[0],
+            sort: orderBySort[1]
+        }));
+
+        await getAll({ ...pagination, orderBy: orderBySort[0], sort: orderBySort[1] });
+    };
+
 
     const destroy = async () => {
         try {
@@ -81,22 +99,22 @@ export default function AccountPayableTable() {
             resolveResponse({ status: 204, message: "Excluído com sucesso" });
             closeModal();
             setAccountPayable(ResetAccountPayable);
-            await getAll(1);
+            await getAll(pagination);
         } catch (error) {
             resolveResponse(error);
         } finally {
             setLoading(false);
         }
-    };  
-    
+    };
+
     const cancel = async () => {
         try {
             setLoading(true);
-            await api.put(`/accounts-payable/cancel`, {...accountPayable}, configApi());
+            await api.put(`/accounts-payable/cancel`, { ...accountPayable }, configApi());
             resolveResponse({ status: 204, message: "Cancelado com sucesso" });
             setAccountPayable(ResetAccountPayable);
             setModalCancel(false);
-            await getAll(1);
+            await getAll(pagination);
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -116,46 +134,46 @@ export default function AccountPayableTable() {
 
     useEffect(() => {
         if (permissionRead(module, routine)) {
-            getAll(1);
+            getAll(pagination);
         }
     }, [modalCreate, modalPayment, modalCancel]);
 
     return (
         <div>
             {
-                pagination.data.length > 0 ? 
-                <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine) || permissionRead(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
-                <>
-                    {
-                        permissionUpdate(module, routine) && obj.status !== "Pago" && obj.status !== "Cancelado" &&
-                        <IconPayment action="pay" obj={obj} getObj={getObj}/>
-                    }
-                    {
-                        permissionUpdate(module, routine) && obj.status == "Em Aberto" &&
-                        <IconEdit action="edit" obj={obj} getObj={getObj}/>
-                    }
-                    {
-                        permissionDelete(module, routine) && (obj.status == "Pago" || obj.status == "Pago Parcial") &&
-                        <IconCancel action="cancel" obj={obj} getObj={getObj}/>
-                    }
-                    {
-                        permissionDelete(module, routine) && obj.status == "Em Aberto" &&
-                        <IconDelete action="delete" obj={obj} getObj={getObj}/>
-                    }
-                    {
-                        permissionRead(module, routine) && obj.status != "Em Aberto" &&
-                        <IconView action="view" obj={obj} getObj={getObj} />
-                    }
-                </>
-                )}/>
-                :
-                <NotData />
+                pagination.data.length > 0 ?
+                    <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine) || permissionRead(module, routine)} pagination={pagination} columns={columns} changePage={changePage} changeOrderBy={changeOrderBy} actions={(obj) => (
+                        <>
+                            {
+                                permissionUpdate(module, routine) && obj.status !== "Pago" && obj.status !== "Cancelado" &&
+                                <IconPayment action="pay" obj={obj} getObj={getObj} />
+                            }
+                            {
+                                permissionUpdate(module, routine) && obj.status == "Em Aberto" &&
+                                <IconEdit action="edit" obj={obj} getObj={getObj} />
+                            }
+                            {
+                                permissionDelete(module, routine) && (obj.status == "Pago" || obj.status == "Pago Parcial") &&
+                                <IconCancel action="cancel" obj={obj} getObj={getObj} />
+                            }
+                            {
+                                permissionDelete(module, routine) && obj.status == "Em Aberto" &&
+                                <IconDelete action="delete" obj={obj} getObj={getObj} />
+                            }
+                            {
+                                permissionRead(module, routine) && obj.status != "Em Aberto" &&
+                                <IconView action="view" obj={obj} getObj={getObj} />
+                            }
+                        </>
+                    )} />
+                    :
+                    <NotData />
             }
             <SupplierModalCreate />
             <AccountPayableModalCreate />
-            <AccountPayableModalPayment /> 
-            <ModalDelete confirm={cancel} isOpen={modalCancel} closeModal={() => setModalCancel(false)} title="Cancelar Conta a Pagar" description="Deseja Cancelar esse Título?" />          
-            <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Conta a Pagar" />          
+            <AccountPayableModalPayment />
+            <ModalDelete confirm={cancel} isOpen={modalCancel} closeModal={() => setModalCancel(false)} title="Cancelar Conta a Pagar" description="Deseja Cancelar esse Título?" />
+            <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Conta a Pagar" />
         </div>
     );
 }

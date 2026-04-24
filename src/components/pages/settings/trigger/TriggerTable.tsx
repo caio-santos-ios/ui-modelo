@@ -16,6 +16,7 @@ import { permissionDelete, permissionRead, permissionUpdate } from "@/utils/perm
 import { useAtom } from "jotai";
 import { useEffect } from "react";
 import { TriggerModalCreate } from "./TriggerModalCreate";
+import { TPagination } from "@/types/global/pagination.type";
 
 const columns: TDataTableColumns[] = [
     { title: "Código", label: "code", type: "text" },
@@ -37,15 +38,16 @@ export default function TriggerTable() {
     const [trigger, setTrigger] = useAtom(triggerAtom);
     const [modal, setModal] = useAtom(triggerModalAtom);
 
-    const getAll = async (page: number) => {
+    const getAll = async (pag: TPagination) => {
         try {
             setLoading(true);
             const { data } = await api.get(
-                `/triggers?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`,
+                `/triggers?${pag.query}&orderBy=${pag.orderBy}&sort=${pag.sort}&pageSize=10&pageNumber=${pag.currentPage}`,
                 configApi()
             );
             const result = data.result;
             setPagination(pag => ({
+                ...pag,
                 currentPage: result.currentPage,
                 data: result.data,
                 sizePage: result.pageSize,
@@ -66,7 +68,7 @@ export default function TriggerTable() {
             await api.delete(`/triggers/${trigger.id}`, configApi());
             resolveResponse({ status: 204, message: "Excluída com sucesso" });
             closeModal();
-            await getAll(pagination.currentPage);
+            await getAll(pagination);
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -81,12 +83,28 @@ export default function TriggerTable() {
     };
 
     const changePage = async (page: number) => {
-        setPagination((prev) => ({ ...prev, currentPage: page }));
-        await getAll(page);
+        setPagination(prev => ({
+            ...prev,
+            currentPage: page
+        }));
+
+        await getAll({ ...pagination, currentPage: page });
+    };
+
+    const changeOrderBy = async (orderBy: string) => {
+        const orderBySort = orderBy.split(" ");
+
+        setPagination(pag => ({
+            ...pag,
+            orderBy: orderBySort[0],
+            sort: orderBySort[1]
+        }));
+
+        await getAll({ ...pagination, orderBy: orderBySort[0], sort: orderBySort[1] });
     };
 
     useEffect(() => {
-        if (permissionRead(module, routine)) getAll(1);
+        if (permissionRead(module, routine)) getAll(pagination);
     }, [modal]);
 
     return (
@@ -97,6 +115,7 @@ export default function TriggerTable() {
                     pagination={pagination}
                     columns={columns}
                     changePage={changePage}
+                    changeOrderBy={changeOrderBy}
                     actions={(obj) => (
                         <>
                             {permissionUpdate(module, routine) && (

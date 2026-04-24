@@ -35,7 +35,7 @@
 
 //     const { register, getValues, setValue, reset, watch } = useForm<TServiceOrderSearch>();
 
-//     const getAll = async (page: number) => {
+//     const getAll = async (pag: TPagination) => {
 //         try {
 //             const filter = resolveParamsRequest({...getValues()});
 
@@ -158,7 +158,7 @@
 //                             reset(ResetServiceOrderSearch);
 //                             setModalSearch(false);
 //                             setSearch(false);
-//                             getAll(1);
+//                             getAll(pagination);
 //                         }}>Limpar Filtros</Button>
 //                         <Button size="sm" variant="primary" onClick={() => getAll(1)}>Buscar</Button>
 //                     </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import { FieldInput } from "@/components/form/FieldInput";
+import { FieldSelect } from "@/components/form/FieldSelect";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import ModalV2 from "@/components/ui/modalV2"
@@ -87,17 +89,9 @@ export const CustomerModalCreate = () => {
         <ModalV2 isOpen={modal} onClose={closeModal} title="Cliente" size="lg">
             <form className="flex flex-col p-4 md:p-6">
                 <div className="grid grid-cols-6 gap-4">
-                    <div className="col-span-6 md:col-span-2">
-                        <Label title="Tipo"/>
-                        <select {...register("type")} className="h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 text-gray-800 dark:bg-dark-900">
-                            <option value="J" className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Pessoa Juridica</option>
-                            <option value="F" className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Pessoa Física</option>
-                        </select>
-                    </div> 
-                    <div className="col-span-6 md:col-span-4">
-                        <Label title={`${type == 'J' ? 'Razão Social' : 'Nome'}`}/>
-                        <input placeholder={`${type == 'J' ? 'Razão Social' : 'Nome'}`} {...register("corporateName")} type="text" className="input-erp-primary input-erp-default"/>
-                    </div>
+                    <FieldSelect registration={{...register("type")}} label="Tipo" options={[{code: "", name: "Selecione"}, {code: "J", name: "Pessoa Juridica"}, {code: "F", name: "Pessoa Física"}]} optionLabel="name" optionValue="code" cols="col-span-6 md:col-span-2"/>
+                    <FieldInput registration={{...register("corporateName")}} placeholder={`${type == 'J' ? 'Razão Social' : 'Nome'}`} label={`${type == 'J' ? 'Razão Social' : 'Nome'}`} cols="col-span-6 md:col-span-4"/>
+                    
                     {
                         type == "J" && (
                             <div className="col-span-6">

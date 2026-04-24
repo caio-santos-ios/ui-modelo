@@ -46,7 +46,7 @@ export default function ServiceOrderTable() {
   const dragId = useRef<string | null>(null);
   const router = useRouter();
 
-  const getAll = async (page: number) => {
+  const getAll = async (pag: TPagination) => {
     try {
       let strSearch = "deleted=false";
       if (search) strSearch += `&regex$or$code=${search}&regex$or$customerName=${search}&regex$or$device.serialImei`;
@@ -79,7 +79,7 @@ export default function ServiceOrderTable() {
       await api.delete(`/service-orders/${selected.id}`, configApi());
       resolveResponse({ status: 204, message: "Excluído com sucesso" });
       closeModal();
-      await getAll(pagination.currentPage);
+      await getAll(pagination);
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -133,7 +133,7 @@ export default function ServiceOrderTable() {
   };
 
   useEffect(() => {
-    if (permissionRead(module, routine)) getAll(1);
+    if (permissionRead(module, routine)) getAll(pagination);
   }, [search, statusFilter]);
 
   return (

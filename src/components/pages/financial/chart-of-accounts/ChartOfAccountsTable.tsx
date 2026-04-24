@@ -16,13 +16,14 @@ import { IconDelete } from "@/components/icons/global/iconDelete/IconDelete";
 import { ModalDelete } from "@/components/modal-delete/ModalDelete";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
+import { TPagination } from "@/types/global/pagination.type";
 
 const columns: TDataTableColumns[] = [
-  {title: "Código",           label: "code",       type: "text"},
-  {title: "Nome",             label: "name",       type: "text"},
-  {title: "Tipo",             label: "type",       type: "text"},
-  {title: "Grupo DRE",        label: "groupDRE",   type: "text"},
-  {title: "Data de Criação",  label: "createdAt",  type: "date"},
+  { title: "Código", label: "code", type: "text" },
+  { title: "Nome", label: "name", type: "text" },
+  { title: "Tipo", label: "type", type: "text" },
+  { title: "Grupo DRE", label: "groupDRE", type: "text" },
+  { title: "Data de Criação", label: "createdAt", type: "date" },
 ];
 
 const module = "D";
@@ -35,28 +36,28 @@ export default function ChartOfAccountsTable() {
   const [modalCreate, setModalCreate] = useAtom(chartOfAccountModalAtom);
   const [chartOfAccount, setChartOfAccount] = useAtom(chartOfAccountAtom);
   const [groupsDespesaDRE] = useState<any[]>([
-    { value: "none", level: 1, label: "Não mostrar no DRE" },    
+    { value: "none", level: 1, label: "Não mostrar no DRE" },
     { value: "deducoes", level: 1, label: "Deduções" },
     { value: "imp_vendas", level: 2, label: "Impostos sobre vendas" },
     { value: "com_vendas", level: 2, label: "Comissões sobre vendas" },
-    { value: "dev_vendas", level: 2, label: "Devolução de vendas" },    
+    { value: "dev_vendas", level: 2, label: "Devolução de vendas" },
     { value: "custos", level: 1, label: "Custos operacionais" },
-    { value: "cpv", level: 2, label: "Custo dos produtos vendidos" },    
+    { value: "cpv", level: 2, label: "Custo dos produtos vendidos" },
     { value: "desp_op", level: 1, label: "Despesas operacionais" },
     { value: "desp_adm", level: 2, label: "Despesas administrativas" },
     { value: "desp_ger", level: 2, label: "Despesas operacionais" },
-    { value: "desp_com", level: 2, label: "Despesas comerciais" },    
+    { value: "desp_com", level: 2, label: "Despesas comerciais" },
     { value: "desp_fin", level: 1, label: "Despesas financeiras" },
     { value: "emp_div", level: 2, label: "Empréstimos e dívidas" },
     { value: "jur_mul", level: 2, label: "Juros/multas pagos" },
     { value: "desc_conc", level: 2, label: "Descontos concedidos" },
-    { value: "tax_ban", level: 2, label: "Taxas/tarifas bancárias" },    
+    { value: "tax_ban", level: 2, label: "Taxas/tarifas bancárias" },
     { value: "outras", level: 1, label: "Outras despesas" },
     { value: "outras_esp", level: 2, label: "Outras despesas" },
   ]);
   const [groupsReceitaDRE] = useState<any[]>([
     { type: "dre", value: "rec_bruta", level: 1, label: "Receita bruta" },
-    { type: "dre", value: "rec_vendas", level: 2, label: "Receitas de vendas" },    
+    { type: "dre", value: "rec_vendas", level: 2, label: "Receitas de vendas" },
     { type: "dre", value: "rec_fin", level: 1, label: "Receitas financeiras" },
     { type: "dre", value: "rend_fin", level: 2, label: "Rendimentos financeiros" },
     { type: "dre", value: "jur_rec", level: 2, label: "Juros/multas recebidos" },
@@ -65,15 +66,16 @@ export default function ChartOfAccountsTable() {
     { type: "dre", value: "outras_rec_item", level: 2, label: "Outras receitas" },
   ]);
 
-  const getAll = async (page: number) => {
+  const getAll = async (pag: TPagination) => {
     try {
       setLoading(true);
-      const { data } = await api.get(`/chart-of-accounts?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
+      const { data } = await api.get(`/chart-of-accounts?${pag.query}&orderBy=${pag.orderBy}&sort=${pag.sort}&pageSize=10&pageNumber=${pag.currentPage}`, configApi());
       const result = data.result.data;
-      
+
       setPagination(pag => ({
+        ...pag,
         currentPage: result.currentPage,
-        data: result.data.map((x: any) => ({...x, type: getTypeBadge(x.type), groupDRE: getDescriptionGroupDRE(x.groupDRE, x.type)})) ?? [],
+        data: result.data.map((x: any) => ({ ...x, type: getTypeBadge(x.type), groupDRE: getDescriptionGroupDRE(x.groupDRE, x.type) })) ?? [],
         sizePage: result.pageSize,
         totalPages: result.totalPages,
         totalCount: result.totalCount,
@@ -92,7 +94,7 @@ export default function ChartOfAccountsTable() {
       await api.delete(`/chart-of-accounts/${chartOfAccount.id}`, configApi());
       resolveResponse({ status: 204, message: "Excluído com sucesso" });
       closeModal();
-      await getAll(pagination.currentPage);
+      await getAll(pagination);
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -100,9 +102,26 @@ export default function ChartOfAccountsTable() {
     }
   };
 
+
   const changePage = async (page: number) => {
-    setPagination((prev) => ({ ...prev, currentPage: page }));
-    await getAll(page);
+    setPagination(prev => ({
+      ...prev,
+      currentPage: page
+    }));
+
+    await getAll({ ...pagination, currentPage: page });
+  };
+
+  const changeOrderBy = async (orderBy: string) => {
+    const orderBySort = orderBy.split(" ");
+
+    setPagination(pag => ({
+      ...pag,
+      orderBy: orderBySort[0],
+      sort: orderBySort[1]
+    }));
+
+    await getAll({ ...pagination, orderBy: orderBySort[0], sort: orderBySort[1] });
   };
 
   const getObj = (obj: any, action: string) => {
@@ -127,35 +146,35 @@ export default function ChartOfAccountsTable() {
       return groupsReceitaDRE.find(g => g.value === group)?.label || group;
     }
   }
-  
+
   useEffect(() => {
     if (permissionRead(module, routine)) {
-      getAll(1);
+      getAll(pagination);
     }
   }, [modalCreate]);
 
   return (
     <div>
       {
-        pagination.data.length > 0 ? 
-        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
-          <>
-            {
-              permissionUpdate(module, routine) &&
-              <IconEdit action="edit" obj={obj} getObj={getObj}/>
-            }
-            {
-              permissionDelete(module, routine) &&
-              <IconDelete action="delete" obj={obj} getObj={getObj}/>
-            }
-          </>
-        )
-        }/>
-        :
-        <NotData />
+        pagination.data.length > 0 ?
+          <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} changeOrderBy={changeOrderBy} actions={(obj) => (
+            <>
+              {
+                permissionUpdate(module, routine) &&
+                <IconEdit action="edit" obj={obj} getObj={getObj} />
+              }
+              {
+                permissionDelete(module, routine) &&
+                <IconDelete action="delete" obj={obj} getObj={getObj} />
+              }
+            </>
+          )
+          } />
+          :
+          <NotData />
       }
       <ChartOfAccountsModalCreate />
-      <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Plano de Contas" />          
+      <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Plano de Contas" />
     </div>
   );
 }

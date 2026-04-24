@@ -18,10 +18,11 @@ import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { MdPageview, MdSend } from "react-icons/md";
 import { templateAtom, templateModalPreviewAtom } from "@/jotai/settings/template.jotai";
 import { TemplateModalPreview } from "./TemplateModalPreview";
+import { TPagination } from "@/types/global/pagination.type";
 
 const columns: TDataTableColumns[] = [
-  {title: "Código", label: "code", type: "text"},
-  {title: "Data de Criação", label: "createdAt", type: "date"},
+  { title: "Código", label: "code", type: "text" },
+  { title: "Data de Criação", label: "createdAt", type: "date" },
 ]
 
 const module = "A";
@@ -29,16 +30,16 @@ const routine = "A2";
 
 export default function TemplateTable() {
   const [_, setLoading] = useAtom(loadingAtom);
-  const [pagination, setPagination] = useAtom(paginationAtom); 
+  const [pagination, setPagination] = useAtom(paginationAtom);
   const { isOpen, openModal, closeModal } = useModal();
   const [template, setTemplate] = useAtom(templateAtom);
   const [__, setPreviewTemplateModal] = useAtom(templateModalPreviewAtom);
   const router = useRouter();
 
-  const getAll = async (page: number) => {
+  const getAll = async (pag: TPagination) => {
     try {
       setLoading(true);
-      const {data} = await api.get(`/templates?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
+      const { data } = await api.get(`/templates?${pag.query}&orderBy=${pag.orderBy}&sort=${pag.sort}&pageSize=10&pageNumber=${pag.currentPage}`, configApi());
       const result = data.result;
 
       setPagination(pag => ({
@@ -56,26 +57,26 @@ export default function TemplateTable() {
       setLoading(false);
     }
   };
-  
+
   const destroy = async () => {
     try {
       setLoading(true);
       await api.delete(`/templates/${template.id}`, configApi());
-      resolveResponse({status: 204, message: "Excluído com sucesso"});
+      resolveResponse({ status: 204, message: "Excluído com sucesso" });
       closeModal();
-      await getAll(pagination.currentPage);
+      await getAll(pagination);
     } catch (error) {
       resolveResponse(error);
     } finally {
       setLoading(false);
     }
   };
-  
+
   const send = async (obj: any) => {
     try {
       setLoading(true);
-      await api.put(`/templates/send-mail`, {...obj}, configApi());
-      resolveResponse({status: 200, message: "Enviado com sucesso"});
+      await api.put(`/templates/send-mail`, { ...obj }, configApi());
+      resolveResponse({ status: 200, message: "Enviado com sucesso" });
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -86,15 +87,15 @@ export default function TemplateTable() {
   const getObj = (obj: any, action: string) => {
     setTemplate(obj);
 
-    if(action == "view") {
+    if (action == "view") {
       setPreviewTemplateModal(true);
     };
 
-    if(action == "edit") {
+    if (action == "edit") {
       router.push(`/settings/templates/${obj.id}`);
     };
 
-    if(action == "delete") {
+    if (action == "delete") {
       openModal();
     };
   };
@@ -105,49 +106,61 @@ export default function TemplateTable() {
       currentPage: page
     }));
 
-    await getAll(page);
+    await getAll({ ...pagination, currentPage: page });
+  };
+
+  const changeOrderBy = async (orderBy: string) => {
+    const orderBySort = orderBy.split(" ");
+
+    setPagination(pag => ({
+      ...pag,
+      orderBy: orderBySort[0],
+      sort: orderBySort[1]
+    }));
+
+    await getAll({ ...pagination, orderBy: orderBySort[0], sort: orderBySort[1] });
   };
 
   useEffect(() => {
-    if(permissionRead(module, routine)) {
-      getAll(1);
+    if (permissionRead(module, routine)) {
+      getAll(pagination);
     };
   }, []);
 
   return (
     <div>
       {
-        pagination.data.length > 0 ? 
-        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
-          <>
-            {
-              permissionRead(module, routine) &&
-              <div title="Visualizar" onClick={() => getObj(obj, "view")} className="cursor-pointer text-orange-400 hover:text-orange-500">
-                <MdPageview />
-              </div>
-            }
-            {
-              permissionUpdate(module, routine) &&
-              <div title="Enviar E-mail" onClick={() => send(obj)} className="cursor-pointer text-blue-400 hover:text-blue-500">
-                <MdSend />
-              </div>
-            }
-            {
-              permissionUpdate(module, routine) &&
-              <IconEdit action="edit" obj={obj} getObj={getObj}/>
-            }
-            {
-              permissionDelete(module, routine) &&
-              <IconDelete action="delete" obj={obj} getObj={getObj}/> 
-            }
-          </>
-        )
-        }/>
-        :
-        <NotData />
+        pagination.data.length > 0 ?
+          <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} changeOrderBy={changeOrderBy} actions={(obj) => (
+            <>
+              {
+                permissionRead(module, routine) &&
+                <div title="Visualizar" onClick={() => getObj(obj, "view")} className="cursor-pointer text-orange-400 hover:text-orange-500">
+                  <MdPageview />
+                </div>
+              }
+              {
+                permissionUpdate(module, routine) &&
+                <div title="Enviar E-mail" onClick={() => send(obj)} className="cursor-pointer text-blue-400 hover:text-blue-500">
+                  <MdSend />
+                </div>
+              }
+              {
+                permissionUpdate(module, routine) &&
+                <IconEdit action="edit" obj={obj} getObj={getObj} />
+              }
+              {
+                permissionDelete(module, routine) &&
+                <IconDelete action="delete" obj={obj} getObj={getObj} />
+              }
+            </>
+          )
+          } />
+          :
+          <NotData />
       }
       <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Perfil de Usuário" />
       <TemplateModalPreview />
-    </div>    
+    </div>
   );
 }

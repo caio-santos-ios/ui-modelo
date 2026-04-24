@@ -36,7 +36,7 @@ export default function CustomerTable() {
   const [customer, setUser] = useAtom(customerAtom);
   const [modal, setModal] = useAtom(customerModalAtom);
 
-  const getAll = async (page: number) => {
+  const getAll = async (pag: TPagination) => {
     try {
       setLoading(true);
       const {data} = await api.get(`/customers?deleted=false&orderBy=${pagination.orderBy}&sort=${pagination.sort}&pageSize=10&pageNumber=${page}`, configApi());
@@ -64,7 +64,7 @@ export default function CustomerTable() {
       await api.delete(`/customers/${customer.id}`, configApi());
       resolveResponse({status: 204, message: "Excluído com sucesso"});
       closeModal();
-      await getAll(pagination.currentPage);
+      await getAll(pagination);
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -86,7 +86,7 @@ export default function CustomerTable() {
       currentPage: page
     }));
 
-    await getAll(page);
+    await getAll({...pagination, currentPage: page});
   };
 
   const changeOrderBy = async (orderBy: string) => {
@@ -96,12 +96,12 @@ export default function CustomerTable() {
       sort: pag.sort == "desc" ? "asc" : "desc"
     }));
 
-    await getAll(pagination.currentPage);
+    await getAll(pagination);
   };
 
   useEffect(() => {
     if(permissionRead(module, routine)) {
-      getAll(1);
+      getAll(pagination);
     };
   }, [modal]);
 

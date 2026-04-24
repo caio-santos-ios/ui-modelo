@@ -38,7 +38,7 @@ export default function ServiceOrderAttachmentsTab({ serviceOrderId }: TProp) {
   const [modal, setModal] = useAtom(attachmentModalAtom);
   const [modalDelete, setModalDelete] = useAtom(modalDeleteAtom);
 
-  const getAll = async (page: number) => {
+  const getAll = async (pag: TPagination) => {
     try {
       setLoading(true);
       const { data } = await api.get(`/attachments?deleted=false&parent=service-orders&parentId=${serviceOrderId}&pageSize=50&pageNumber=${page}`, configApi());
@@ -65,7 +65,7 @@ export default function ServiceOrderAttachmentsTab({ serviceOrderId }: TProp) {
       setLoading(true);
       await api.delete(`/attachments/${attachment.id}`, configApi());
       resolveResponse({ status: 204, message: "Anexo removido" });
-      getAll(1);
+      getAll(pagination);
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -85,11 +85,11 @@ export default function ServiceOrderAttachmentsTab({ serviceOrderId }: TProp) {
       currentPage: page
     }));
 
-    await getAll(page);
+    await getAll({...pagination, currentPage: page});
   };
 
   useEffect(() => {
-    getAll(1);
+    getAll(pagination);
   }, [modal]);
 
   return (

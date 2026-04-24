@@ -3,7 +3,7 @@ import Pagination from "../tables/Pagination";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../table/Table";
 import { formattedDocument, formattedMoney, maskDate } from "@/utils/mask.util";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 type TProps = {
     pagination: TPagination;
@@ -15,31 +15,33 @@ type TProps = {
     isActions?: boolean;
 }
 
-const statusLabel: {label: string; className: string;}[] = [
-    {label: "Em Aberto", className: "bg-gray-100 text-gray-700"},
-    {label: "Recebido Parcial", className: "bg-orange-100 text-orange-700"},
-    {label: "Recebido", className: "bg-green-100 text-green-700"},
-    {label: "Cancelado", className: "bg-red-100 text-red-700"},
-    {label: "Pago Parcial", className: "bg-orange-100 text-orange-700"},
-    {label: "Pago", className: "bg-green-100 text-green-700"},
+const statusLabel: { label: string; className: string; }[] = [
+    { label: "Em Aberto", className: "bg-gray-100 text-gray-700" },
+    { label: "Recebido Parcial", className: "bg-orange-100 text-orange-700" },
+    { label: "Recebido", className: "bg-green-100 text-green-700" },
+    { label: "Cancelado", className: "bg-red-100 text-red-700" },
+    { label: "Pago Parcial", className: "bg-orange-100 text-orange-700" },
+    { label: "Pago", className: "bg-green-100 text-green-700" },
 ]
 
 const getStatusBadge = (status: string) => {
     let s = statusLabel.find(x => x.label == status);
-    if(!s) {
+    if (!s) {
         s = { label: status, className: "bg-gray-100 text-gray-700" };
     };
 
     return (
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${s.className}`}>
-        {s.label}
+            {s.label}
         </span>
     );
 };
 
-export const DataTableCard = ({pagination, columns, changePage, changeOrderBy, actions, isActions = false, heightContainer = "max-h-[calc(100dvh-16rem)] md:max-h-[calc(100dvh-16.5rem)]"}: TProps) => {
+export const DataTableCard = ({ pagination, columns, changePage, changeOrderBy, actions, isActions = false, heightContainer = "max-h-[calc(100dvh-16rem)] md:max-h-[calc(100dvh-16.5rem)]" }: TProps) => {
+    const [orderBy, setOrderBy] = useState<{ column: string; direction: "asc" | "desc" } | null>(null);
+
     const normalizeTableCell = (value: any, type: string) => {
-        switch(type) {
+        switch (type) {
             case "date":
                 return maskDate(value);
             case "dateTime":
@@ -52,7 +54,14 @@ export const DataTableCard = ({pagination, columns, changePage, changeOrderBy, a
                 return formattedMoney(value);
             default:
                 return value;
-        }   
+        }
+    };
+
+
+    const handleOrderBy = (column: string) => {
+        const direction = orderBy?.column === column && orderBy.direction === "asc" ? "desc" : "asc";
+        setOrderBy({ column, direction });
+        changeOrderBy && changeOrderBy(`${column} ${direction}`);
     };
 
     return (
@@ -61,11 +70,34 @@ export const DataTableCard = ({pagination, columns, changePage, changeOrderBy, a
                 <div className={`${heightContainer} max-w-full overflow-x-auto`}>
                     <div className="min-w-[1102px] divide-y hidden md:block">
                         <Table className="divide-y">
-                            <TableHeader className="border-b border-gray-100 dark:border-white/5 tele-table-thead">
+                            <TableHeader className="border-b border-gray-100 dark:border-white/5 tele-table-thead sticky top-0 z-10 bg-white dark:bg-gray-900 rounded-4xl">
                                 <TableRow>
                                     {
-                                        columns.map((column) => (
-                                            <TableCell changeOrderBy={() => changeOrderBy && changeOrderBy(column.label)} key={column.label} isHeader className={`px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 ${changeOrderBy && 'cursor-pointer'}`}>{column.title}</TableCell>
+                                        columns.map((column, index) => (
+                                            <TableCell
+                                                changeOrderBy={() => handleOrderBy(column.label)}
+                                                key={column.label}
+                                                isHeader
+                                                className={`px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400
+                                                    ${changeOrderBy && 'cursor-pointer'}
+                                                    ${index === 0 ? 'rounded-tl-xl' : ''}
+                                                    ${index === columns.length - 1 && !isActions ? 'rounded-tr-xl' : ''}
+                                                `}>
+                                                <div className="flex items-center gap-1 select-none">
+                                                    {column.title}
+                                                    {changeOrderBy && (
+                                                        <span className="flex flex-col leading-none text-gray-400">
+                                                            <svg className={`w-3 h-3 ${orderBy?.column === column.label && orderBy.direction === "asc" ? "text-brand-500" : ""}`} viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M12 6l-8 8h16z" />
+                                                            </svg>
+                                                            <svg className={`w-3 h-3 ${orderBy?.column === column.label && orderBy.direction === "desc" ? "text-brand-500" : ""}`} viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M12 18l8-8H4z" />
+                                                            </svg>
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            // <TableCell changeOrderBy={() => changeOrderBy && changeOrderBy(column.label)} key={column.label} isHeader className={`px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 ${changeOrderBy && 'cursor-pointer'}`}>{column.title}</TableCell>
                                         ))
                                     }
                                     {
@@ -87,7 +119,7 @@ export const DataTableCard = ({pagination, columns, changePage, changeOrderBy, a
                                         {
                                             actions && isActions && (
                                                 <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-500 dark:text-gray-400">
-                                                    <div className="flex gap-3"> 
+                                                    <div className="flex gap-3">
                                                         {actions(x)}
                                                     </div>
                                                 </TableCell>
@@ -99,37 +131,37 @@ export const DataTableCard = ({pagination, columns, changePage, changeOrderBy, a
                         </Table>
 
                     </div>
-                    
-                    <div className="block md:hidden divide-y divide-gray-100 dark:divide-white/5">
-                    {pagination.data.map((x: any) => (
-                        <div key={x.id} className="px-4 py-4 flex flex-col gap-3">
-                            {columns.length > 0 && (
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">
-                                        {normalizeTableCell(x[columns[0].label], columns[0].type)}
-                                    </span>
-                                    {actions && isActions && (
-                                        <div className="flex gap-2">
-                                            {actions(x)}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
 
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                                {columns.slice(1).map((column) => (
-                                    <div key={column.label} className="flex flex-col gap-0.5">
-                                        <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                                            {column.title}
+                    <div className="block md:hidden divide-y divide-gray-100 dark:divide-white/5">
+                        {pagination.data.map((x: any) => (
+                            <div key={x.id} className="px-4 py-4 flex flex-col gap-3">
+                                {columns.length > 0 && (
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">
+                                            {normalizeTableCell(x[columns[0].label], columns[0].type)}
                                         </span>
-                                        <span className="text-xs text-gray-600 dark:text-gray-300 truncate">
-                                            {normalizeTableCell(x[column.label], column.type)}
-                                        </span>
+                                        {actions && isActions && (
+                                            <div className="flex gap-2">
+                                                {actions(x)}
+                                            </div>
+                                        )}
                                     </div>
-                                ))}
+                                )}
+
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                    {columns.slice(1).map((column) => (
+                                        <div key={column.label} className="flex flex-col gap-0.5">
+                                            <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                                                {column.title}
+                                            </span>
+                                            <span className="text-xs text-gray-600 dark:text-gray-300 truncate">
+                                                {normalizeTableCell(x[column.label], column.type)}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
                     </div>
                 </div>
             </div>

@@ -17,6 +17,7 @@ import { IconDelete } from "@/components/icons/global/iconDelete/IconDelete";
 import { ModalDelete } from "@/components/modal-delete/ModalDelete";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
+import { TPagination } from "@/types/global/pagination.type";
 
 const columns: TDataTableColumns[] = [
   { title: "Código", label: "code", type: "text" },
@@ -35,10 +36,10 @@ export default function PaymentMethodTable() {
   const { isOpen, openModal, closeModal } = useModal();
   const [modalCreate, setModalCreate] = useAtom(paymentMethodModalAtom);
 
-  const getAll = async (page: number) => {
+  const getAll = async (pag: TPagination) => {
     try {
       setLoading(true);
-      const { data } = await api.get(`/payment-methods?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
+      const { data } = await api.get(`/payment-methods?${pag.query}&orderBy=${pag.orderBy}&sort=${pag.sort}&pageSize=10&pageNumber=${pag.currentPage}`, configApi());
       const result = data?.result?.data;
 
       setPagination(pag => ({
@@ -57,13 +58,26 @@ export default function PaymentMethodTable() {
     }
   };
 
+
   const changePage = async (page: number) => {
     setPagination(prev => ({
       ...prev,
       currentPage: page
     }));
 
-    await getAll(page);
+    await getAll({ ...pagination, currentPage: page });
+  };
+
+  const changeOrderBy = async (orderBy: string) => {
+    const orderBySort = orderBy.split(" ");
+
+    setPagination(pag => ({
+      ...pag,
+      orderBy: orderBySort[0],
+      sort: orderBySort[1]
+    }));
+
+    await getAll({ ...pagination, orderBy: orderBySort[0], sort: orderBySort[1] });
   };
 
   const destroy = async () => {
@@ -73,7 +87,7 @@ export default function PaymentMethodTable() {
       resolveResponse({ status: 204, message: "Excluído com sucesso" });
       closeModal();
       setPaymentMethod(ResetPaymentMethod);
-      await getAll(pagination.currentPage);
+      await getAll(pagination);
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -95,7 +109,7 @@ export default function PaymentMethodTable() {
 
   useEffect(() => {
     if (permissionRead(module, routine)) {
-      getAll(1);
+      getAll(pagination);
     };
   }, [modalCreate]);
 
@@ -103,7 +117,7 @@ export default function PaymentMethodTable() {
     <div>
       {
         pagination.data.length > 0 ?
-          <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
+          <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} changeOrderBy={changeOrderBy} actions={(obj) => (
             <>
               {
                 permissionUpdate(module, routine) &&

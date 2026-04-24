@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import Label from "./Label";
-import { toast } from "react-toastify";
 
 type TProp = {
     cols: string;

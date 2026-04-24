@@ -837,16 +837,16 @@ span.flatpickr-weekday,
 }
 
 ::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
+  background-color: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--erp-primary-color);
+  background: var(--color-brand-500);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--erp-primary-color);
+  background: var(--color-brand-500);
 }
 
 @layer utilities {

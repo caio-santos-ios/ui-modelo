@@ -17,6 +17,7 @@ import { NotData } from "@/components/not-data/NotData";
 import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { TDataTableColumns } from "@/types/global/data-table-card.type";
 import { ResetUserProfile, TUserProfile } from "@/types/master-data/user.type";
+import { TPagination } from "@/types/global/pagination.type";
 
 const columns: TDataTableColumns[] = [
   {title: "Código", label: "code", type: "text"},
@@ -34,10 +35,10 @@ export default function ProfileUserTable() {
   const [profileUser, setProfileUser] = useState<TUserProfile>(ResetUserProfile);
   const router = useRouter();
 
-  const getAll = async (page: number) => {
+  const getAll = async (pag: TPagination) => {
     try {
       setLoading(true);
-      const {data} = await api.get(`/profile-users?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
+      const {data} = await api.get(`/profile-users?${pag.query}&orderBy=${pag.orderBy}&sort=${pag.sort}&pageSize=10&pageNumber=${pag.currentPage}`, configApi());
       const result = data.result;
 
       setPagination(pag => ({
@@ -62,7 +63,7 @@ export default function ProfileUserTable() {
       await api.delete(`/profile-users/${profileUser.id}`, configApi());
       resolveResponse({status: 204, message: "Excluído com sucesso"});
       closeModal();
-      await getAll(pagination.currentPage);
+      await getAll(pagination);
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -88,12 +89,24 @@ export default function ProfileUserTable() {
       currentPage: page
     }));
 
-    await getAll(page);
+    await getAll({...pagination, currentPage: page});
+  };
+
+  const changeOrderBy = async (orderBy: string) => {
+    const orderBySort = orderBy.split(" ");
+
+    setPagination(pag => ({
+      ...pag,
+      orderBy: orderBySort[0],
+      sort: orderBySort[1]
+    }));
+
+    await getAll({...pagination, orderBy: orderBySort[0], sort: orderBySort[1]});
   };
 
   useEffect(() => {
     if(permissionRead(module, routine)) {
-      getAll(1);
+      getAll(pagination);
     };
   }, []);
 
@@ -101,7 +114,7 @@ export default function ProfileUserTable() {
     <div>
       {
         pagination.data.length > 0 ? 
-        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} actions={(obj) => (
+        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} changeOrderBy={changeOrderBy} actions={(obj) => (
           <>
             {
               permissionUpdate(module, routine) &&

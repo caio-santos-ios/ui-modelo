@@ -20,12 +20,12 @@ import { FaLock } from "react-icons/fa";
 import { getUserLogged } from "@/utils/auth.util";
 import { TUserLogged } from "@/types/master-data/user.type";
 import { UserModalUpdatePassword } from "./UserModalUpdatePassword";
-import { ResetPagination } from "@/types/global/pagination.type";
+import { ResetPagination, TPagination } from "@/types/global/pagination.type";
 
 const columns: TDataTableColumns[] = [
-  {title: "Nome", label: "name", type: "text"},
-  {title: "E-mail", label: "email", type: "text"},
-  {title: "Data de Criação", label: "createdAt", type: "date"},
+  { title: "Nome", label: "name", type: "text" },
+  { title: "E-mail", label: "email", type: "text" },
+  { title: "Data de Criação", label: "createdAt", type: "date" },
 ]
 
 const module = "B";
@@ -33,7 +33,7 @@ const routine = "B1";
 
 export default function UserTable() {
   const [_, setLoading] = useAtom(loadingAtom);
-  const [pagination, setPagination] = useAtom(paginationAtom); 
+  const [pagination, setPagination] = useAtom(paginationAtom);
   const { isOpen, openModal, closeModal } = useModal();
   const [user, setUser] = useAtom(userAtom);
   const [modal, setModal] = useAtom(userModalAtom);
@@ -41,12 +41,12 @@ export default function UserTable() {
 
   const userLogged: TUserLogged = getUserLogged();
 
-  const getAll = async (page: number) => {
+  const getAll = async (pag: TPagination) => {
     try {
       setLoading(true);
-      const {data} = await api.get(`/users?deleted=false&orderBy=createdAt&sort=desc&pageSize=10&pageNumber=${page}`, configApi());
+      const { data } = await api.get(`/users?${pag.query}&orderBy=${pag.orderBy}&sort=${pag.sort}&pageSize=10&pageNumber=${pag.currentPage}`, configApi());
       const result = data.result.data ?? ResetPagination;
-      
+
       setPagination(pag => ({
         ...pag,
         currentPage: result.currentPage,
@@ -62,14 +62,14 @@ export default function UserTable() {
       setLoading(false);
     }
   };
-  
+
   const destroy = async () => {
     try {
       setLoading(true);
       await api.delete(`/users/${user.id}`, configApi());
-      resolveResponse({status: 204, message: "Excluído com sucesso"});
+      resolveResponse({ status: 204, message: "Excluído com sucesso" });
       closeModal();
-      await getAll(pagination.currentPage);
+      await getAll(pagination);
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -80,11 +80,11 @@ export default function UserTable() {
   const getObj = (obj: any, action: string) => {
     setUser(obj);
 
-    if(action == "edit") setModal(true);
+    if (action == "edit") setModal(true);
 
-    if(action == "update-password") { setModalUpdatePassword(true); }
+    if (action == "update-password") { setModalUpdatePassword(true); }
 
-    if(action == "delete") openModal();
+    if (action == "delete") openModal();
   };
 
   const changePage = async (page: number) => {
@@ -93,48 +93,56 @@ export default function UserTable() {
       currentPage: page
     }));
 
-    await getAll(page);
+    await getAll({...pagination, currentPage: page});
   };
 
   const changeOrderBy = async (orderBy: string) => {
-    console.log(orderBy)
+    const orderBySort = orderBy.split(" ");
+
+    setPagination(pag => ({
+      ...pag,
+      orderBy: orderBySort[0],
+      sort: orderBySort[1]
+    }));
+
+    await getAll({...pagination, orderBy: orderBySort[0], sort: orderBySort[1]});
   };
 
   useEffect(() => {
-    if(permissionRead(module, routine)) {
-      getAll(1);
+    if (permissionRead(module, routine)) {
+      getAll(pagination);
     };
   }, [modal, modalUpdatePassword]);
 
   return (
     <div>
       {
-        pagination.data.length > 0 ? 
-        <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} changeOrderBy={changeOrderBy} actions={(obj) => (
-          <>
-            {
-              permissionUpdate(module, routine) && (obj.id == userLogged.id || userLogged.admin || userLogged.master) &&
-              <div title="Alterar Senha" onClick={() => getObj(obj, "update-password")} className="cursor-pointer text-blue-400 hover:text-blue-500">
-                <FaLock />
-              </div>
-            }
-            {
-              permissionUpdate(module, routine) &&
-              <IconEdit action="edit" obj={obj} getObj={getObj}/>
-            }
-            {
-              permissionDelete(module, routine) &&
-              <IconDelete action="delete" obj={obj} getObj={getObj}/> 
-            }
-          </>
-        )
-        }/>
-        :
-        <NotData />
+        pagination.data.length > 0 ?
+          <DataTableCard isActions={permissionUpdate(module, routine) || permissionDelete(module, routine)} pagination={pagination} columns={columns} changePage={changePage} changeOrderBy={changeOrderBy} actions={(obj) => (
+            <>
+              {
+                permissionUpdate(module, routine) && (obj.id == userLogged.id || userLogged.admin || userLogged.master) &&
+                <div title="Alterar Senha" onClick={() => getObj(obj, "update-password")} className="cursor-pointer text-blue-400 hover:text-blue-500">
+                  <FaLock />
+                </div>
+              }
+              {
+                permissionUpdate(module, routine) &&
+                <IconEdit action="edit" obj={obj} getObj={getObj} />
+              }
+              {
+                permissionDelete(module, routine) &&
+                <IconDelete action="delete" obj={obj} getObj={getObj} />
+              }
+            </>
+          )
+          } />
+          :
+          <NotData />
       }
       <UserModalUpdatePassword />
       <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Usuário" />
       <UserModalCreate />
-    </div>    
+    </div>
   );
 }

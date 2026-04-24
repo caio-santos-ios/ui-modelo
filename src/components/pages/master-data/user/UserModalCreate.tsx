@@ -132,7 +132,6 @@ export const UserModalCreate = () => {
                 </div>
                 <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
                     <Button size="sm" variant="outline" onClick={closeModal}>Cancelar</Button>
-                    {/* <Button size="sm" variant="primary" onClick={handleSubmit(confirm)}>Confirmar</Button> */}
                     <Button size="sm" variant="primary" onClick={handleSubmit(confirm, onError)}>Confirmar</Button>
                 </div>
             </form>
