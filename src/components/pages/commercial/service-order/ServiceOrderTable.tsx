@@ -16,6 +16,7 @@ import { IconDelete } from "@/components/icons/global/iconDelete/IconDelete";
 import { IconEdit } from "@/components/icons/global/iconEdit/IconEdit";
 import { ModalDelete } from "@/components/modal-delete/ModalDelete";
 import { ResetServiceOrder, TServiceOrder } from "@/types/commercial/sales-order.type";
+import { TPagination } from "@/types/global/pagination.type";
 
 const COLUMNS = [
   { key: "Em Aberto",  label: "Em aberto",  color: "text-blue-600 dark:text-blue-400",  bg: "bg-blue-50 dark:bg-blue-950/40",  dot: "bg-blue-500" },
@@ -52,7 +53,7 @@ export default function ServiceOrderTable() {
       if (search) strSearch += `&regex$or$code=${search}&regex$or$customerName=${search}&regex$or$device.serialImei`;
       if (statusFilter) strSearch += `&status=${statusFilter}`;
 
-      const { data } = await api.get(`/service-orders?${strSearch}&orderBy=createdAt&sort=desc&pageSize=999&pageNumber=${page}`, configApi());
+      const { data } = await api.get(`/service-orders?${strSearch}&orderBy=createdAt&sort=desc&pageSize=999&pageNumber=${pagination.currentPage}`, configApi());
       const result = data.result;
 
       setPagination(pag => ({
@@ -225,7 +226,6 @@ export default function ServiceOrderTable() {
         })}
       </div>
 
-      {/* <ServiceOrderModalSearch /> */}
       <ServiceOrderModalCreate />
       <ModalDelete confirm={destroy} isOpen={isOpen} closeModal={closeModal} title="Excluir Ordem de Serviço" />          
     </div>
