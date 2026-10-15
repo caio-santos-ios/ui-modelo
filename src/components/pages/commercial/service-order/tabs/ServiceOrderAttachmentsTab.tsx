@@ -18,6 +18,7 @@ import { DataTableCard } from "@/components/data-table-card/DataTableCard";
 import { NotData } from "@/components/not-data/NotData";
 import { modalDeleteAtom } from "@/jotai/global/modal.jotai";
 import { ModalDelete } from "@/components/modal-delete/ModalDelete";
+import { TPagination } from "@/types/global/pagination.type";
 
 type TProp = {
   serviceOrderId: string;
@@ -41,7 +42,7 @@ export default function ServiceOrderAttachmentsTab({ serviceOrderId }: TProp) {
   const getAll = async (pag: TPagination) => {
     try {
       setLoading(true);
-      const { data } = await api.get(`/attachments?deleted=false&parent=service-orders&parentId=${serviceOrderId}&pageSize=50&pageNumber=${page}`, configApi());
+      const { data } = await api.get(`/attachments?deleted=false&parent=service-orders&parentId=${serviceOrderId}&pageSize=50&pageNumber=${pag.currentPage}`, configApi());
       const result = data.result;
 
       setPagination(pag => ({
