@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = process.env.NEXT_PUBLIC_API_URL;
+const url = 'https://modelo-caio-santos-ios.duckdns.org'; //process.env.NEXT_PUBLIC_API_URL;
 export const uriBase = url;
 export const baseURL = `${uriBase}/api`;
 
